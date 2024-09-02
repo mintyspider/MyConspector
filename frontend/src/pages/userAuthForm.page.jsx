@@ -34,10 +34,9 @@ const AuthForm = ({type}) => {
                 name="password"
                 type="password"
                 placeholder="Пароль"
-                icon="lock"
                 required
             />
-            
+
         </form>
     </section>
   )
