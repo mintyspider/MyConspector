@@ -13,9 +13,31 @@ const AuthForm = ({type}) => {
 
             {
                 type == 'sign-up' ? 
-                <InputBox />
+                <InputBox
+                    name="fullname"
+                    type="text"
+                    placeholder="Ваше имя"
+                    icon="user"
+                />
                 : ''
             }
+
+            <InputBox
+                name="email"
+                type="email"
+                placeholder="Электронная почта"
+                icon="envelope"
+                required
+            />
+
+            <InputBox
+                name="password"
+                type="password"
+                placeholder="Пароль"
+                icon="lock"
+                required
+            />
+            
         </form>
     </section>
   )

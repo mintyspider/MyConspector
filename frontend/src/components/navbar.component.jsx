@@ -44,7 +44,7 @@ const Navbar = () => {
                 </Link>
 
                 <Link to='/signup' className='btn-light py-2 hidden md:flex'>
-                    <i class="fi fi-rr-"></i>
+                    <i class="fi fi-rr-user-add"></i>
                     <p className='pl-2'>Регистрация</p>
                 </Link>
 
