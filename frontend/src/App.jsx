@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from "./components/navbar.component";
+import AuthForm from "./pages/userAuthForm.page";
 
 
 const App = () => {
@@ -8,8 +9,8 @@ const App = () => {
         <Router>
             <Routes>
                 <Route path="/" element={<Navbar />}>
-                    <Route path="signin" element={ <h1>sign in</h1> } />
-                    <Route path="signup" element={ <h1>sign up</h1> } />
+                    <Route path="signin" element={ <AuthForm/> } />
+                    <Route path="signup" element={ <AuthForm/> } />
                 </Route>
             </Routes>
         </Router>
