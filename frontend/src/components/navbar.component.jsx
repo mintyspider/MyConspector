@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import logo from "../imgs/logo.png";
 import { Link, Outlet } from 'react-router-dom';
+import { UserContext } from '../App';
 
 const Navbar = () => {
 
     // toggle search bar
     const [searchBoxVisibility, setSearchBoxVisibility] = useState(false);
+
+    const { userAuth } = useContext(UserContext);
+    const accessToken = userAuth?.accessToken;
+    const profile_img = userAuth?.profile_img;
 
   return (
     <>
@@ -29,25 +34,55 @@ const Navbar = () => {
 
                 <button className='md:hidden bg-grey w-12 h-12 rounded-full flex items-center justify-center'
                 onClick={() => setSearchBoxVisibility(!searchBoxVisibility)}>
-                    <i className="fi fi-rr-search text-xl"></i>
+                    <i className="fi fi-rr-search block mt-2 text-xl"></i>
                 </button>
 
                 <button className='bg-grey w-12 h-12 rounded-full flex items-center justify-center'>
                     <Link to='/editor'>
-                        <i className="fi fi-rr-file-edit text-2xl text-dark-grey"></i>
+                        <i className="fi fi-rr-file-edit text-2xl block mt-2 text-dark-grey"></i>
                     </Link>
                 </button>
 
-                <Link to='/signin' className='btn-dark py-2 flex'>
-                    <i class="fi fi-rr-sign-in-alt"></i>
-                    <p className='pl-2'>Вход</p>
-                </Link>
+                {
+                    accessToken ?
+                    <>
+                        <Link to="/dashboard/notification">
+                            <button className='w-12 h-12 rounded-full bg-grey relative hover:bg-black/10'>
+                                <i className="fi fi-rr-bell text-2xl block mt-2 text-dark-grey"></i>
+                            </button>
+                        </Link>
 
-                <Link to='/signup' className='btn-light py-2 hidden md:flex'>
-                    <i class="fi fi-rr-user-add"></i>
-                    <p className='pl-2'>Регистрация</p>
-                </Link>
+                        <div className='relative'>
+                            <button className='w-12 h-12 mt-2'>
+                                <img src={profile_img} className='w-full h-full object-cover rounded-full' />
+                            </button>
+                        </div>
+                    </>
+                    :
+                    <>
+                        <Link to='/signin'>
+                            <button className='bg-grey w-12 h-12 rounded-full flex md:hidden items-center justify-center'>
+                                <i className="fi fi-rr-sign-in-alt text-2xl block mt-2 text-dark-grey"></i>
+                            </button>
+                        </Link>
 
+                        <Link to='/signup'>
+                            <button className='bg-grey w-12 h-12 rounded-full flex md:hidden items-center justify-center'>
+                                <i className="fi fi-rr-user-add text-2xl block mt-2 text-dark-grey"></i>
+                            </button>
+                        </Link>
+
+                        <Link to='/signin' className='btn-dark py-2 hidden md:flex'>
+                            <i className="fi fi-rr-sign-in-alt"></i>
+                            <p className='pl-2'>Вход</p>
+                        </Link>
+
+                        <Link to='/signup' className='btn-light py-2 hidden md:flex'>
+                            <i className="fi fi-rr-user-add"></i>
+                            <p className='pl-2'>Регистрация</p>
+                        </Link>
+                    </>
+                }
             </div>
 
         </nav>
