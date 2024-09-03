@@ -37,19 +37,15 @@ const userSchema = mongoose.Schema({
         },
     },
     social_links: {
-        youtube: {
+        vk: {
             type: String,
             default: "",
         },
-        instagram: {
+        telegram: {
             type: String,
             default: "",
         },
-        facebook: {
-            type: String,
-            default: "",
-        },
-        twitter: {
+        dzen: {
             type: String,
             default: "",
         },
