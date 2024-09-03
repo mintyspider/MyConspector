@@ -155,11 +155,9 @@ server.post("/google-auth", async (req, res) => {
     getAuth()
     .verifyIdToken(accessToken)
     .then(async (decodedUser) => {
-        let { email, name, picture } = decodedUser;
+        let { email, name } = decodedUser;
 
-        picture = picture.replace("s96-c", "s384-c")
-
-        let user = await User.findOne({"personal_info.email" : email}).select("personal_info.fullname personal_info.username personal_info.profile_img google_auth").then((u) => {
+        let user = await User.findOne({"personal_info.email" : email}).select("personal_info.fullname personal_info.username google_auth").then((u) => {
             return u || null
         }).catch(err => {
             return res.status(500).json({"error" : err.message })
@@ -177,7 +175,6 @@ server.post("/google-auth", async (req, res) => {
                 personal_info:{
                     fullname: name,
                     email,
-                    profile_img: picture,
                     username
                 },
                 google_auth: true
