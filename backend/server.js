@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 // schema below
 import User from './Schema/User.js';
@@ -19,7 +20,10 @@ mongoose.connect(process.env.DB_LOCATION, {
 
 // formating the data to be sent to the database
 const formatData = (user) => {
+
+    const accessToken = jwt.sign({ id: user._id }, process.env.SECRET_ACCESS_KEY);
     return {
+        accessToken,
         profile_img: user.personal_info.profile_img,
         username: user.personal_info.username,
         fullname: user.personal_info.fullname
@@ -98,6 +102,42 @@ server.post("/signup", async (req, res) => {
         }
         return res.status(500).json({ 'error': 'Internal Server Error' });
     }
+});
+
+// signing in
+server.post("/signin", async (req, res) => {
+        let { email, password } = req.body;
+
+        // validation
+        if (!email.length) {
+            return res.status(403).json({ 'error': 'Email is required' });
+        }
+
+        if (!password.length) {
+            return res.status(403).json({ 'error': 'Password is required' });
+        }
+
+        User.findOne({ "personal_info.email" : email }).then((user) => {
+            if(!user){
+                return res.status(403).json({"error":"Email not found"})
+            }
+
+            bcrypt.compare(password, user.personal_info.password, (err, result) => {
+                if(err){
+                    return res.status(403).json({"error":"Error occured while signing in"})
+                }
+
+                if(!result){
+                    return res.status(403).json({"error":"Password is wrong =( Try again"})
+                } else{
+                    return res.status(200).json(formatData(user))
+                }
+            })
+            console.log(user)
+        }).catch(err => {
+            console.log(err);
+            return res.status(500).json({"error":"Internal Server Error"})
+        })
 });
 
 server.listen(PORT, () => {
