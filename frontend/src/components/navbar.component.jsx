@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import logo from "../imgs/logo.png";
 import { Link, Outlet } from 'react-router-dom';
 import { UserContext } from '../App';
+import UserNavigation from './user-navigation.component';
 
 const Navbar = () => {
 
@@ -56,6 +57,8 @@ const Navbar = () => {
                             <button className='w-12 h-12 mt-2'>
                                 <img src={profile_img} className='w-full h-full object-cover rounded-full' />
                             </button>
+
+                            <UserNavigation />
                         </div>
                     </>
                     :
