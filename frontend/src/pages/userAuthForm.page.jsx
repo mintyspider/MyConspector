@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import logo from '../imgs/full-logo.png'
 import InputBox from '../components/input.component'
 import google from '../imgs/google.png'
@@ -8,8 +8,6 @@ import { Toaster, toast } from "react-hot-toast";
 import axios from 'axios';
 
 const AuthForm = ({ type }) => {
-
-    const auth = useRef();
 
     const userAuthToServer = (serverRoute, formData) => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData).then(({data}) => {
@@ -26,7 +24,7 @@ const AuthForm = ({ type }) => {
         let serverRoute = type == "sign-in" ? "/signin" : "/signup";
 
         //form data
-        let form = new FormData(auth.current);
+        let form = new FormData(formAuth);
         let formData = {};
         let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
         let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
@@ -36,7 +34,7 @@ const AuthForm = ({ type }) => {
 
         let { fullname, email, password } = formData;
         // validation
-        if (fullname){
+        if (serverRoute == '/signup'){
             if (fullname.length < 3) {
                 return toast.error('Имя должно содержать хотя бы 3 символа');
             }
@@ -65,7 +63,7 @@ const AuthForm = ({ type }) => {
         <section className={'h-cover flex items-center justify-center md:justify-around flex-col ' + ( type=='sign-in' ? 'md:flex-row' : 'md:flex-row-reverse')}>
             <img src={logo} alt="" className='w-[20%] mb-3 md:w-[49%] md:mb-0'/>
             <Toaster />
-            <form ref={auth} className='w-[80%] max-w-[400px] md:w-[49%]'>
+            <form id="formAuth" className='w-[80%] max-w-[400px] md:w-[49%]'>
                 <h1 className='text-4xl font-gelasio text-center mb-24'>
                     {type == 'sign-in' ? 'Входи и действуй!' : 'Здесь все начинается'}
                 </h1>
