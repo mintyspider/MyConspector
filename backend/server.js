@@ -3,12 +3,14 @@ import mongoose from 'mongoose';
 import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import cors from 'cors';
 
 // schema below
 import User from './Schema/User.js';
 
 const server = express();
 server.use(express.json());
+server.use(cors());
 const PORT = process.env.PORT || 3000;
 
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email

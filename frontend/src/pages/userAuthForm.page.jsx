@@ -5,16 +5,27 @@ import google from '../imgs/google.png'
 import { Link } from 'react-router-dom'
 import AnimationWrapper from '../common/page-animation'
 import { Toaster, toast } from "react-hot-toast";
+import axios from 'axios';
 
 const AuthForm = ({ type }) => {
 
     const auth = useRef();
 
+    const userAuthToServer = (serverRoute, formData) => {
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData).then(({data}) => {
+            console.log(data);
+        }).catch(({ response }) => {
+            toast.error(response.data.error)
+        })
+    }
+
     const handleSubmit = (e) => {
 
         e.preventDefault();
 
-        //formData
+        let serverRoute = type == "sign-in" ? "/signin" : "/signup";
+
+        //form data
         let form = new FormData(auth.current);
         let formData = {};
         let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
@@ -45,6 +56,9 @@ const AuthForm = ({ type }) => {
         if (!passwordRegex.test(password)) {
             return toast.error('Пароль должен состоять не менее чем из 6 символов и содержать как минимум одну заглавную букву, одну строчную букву и одну цифру');
         }
+
+        //sending to backend
+        userAuthToServer(serverRoute, formData);
     }
   return (
     <AnimationWrapper key={type}>
