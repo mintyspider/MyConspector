@@ -17,6 +17,15 @@ mongoose.connect(process.env.DB_LOCATION, {
     autoIndex: true,
 });
 
+// formating the data to be sent to the database
+const formatData = (user) => {
+    return {
+        profile_img: user.personal_info.profile_img,
+        username: user.personal_info.username,
+        fullname: user.personal_info.fullname
+    }
+}
+
 // generating username
 const generateUsername = async (email) => {
     let baseUsername = email.split('@')[0];
@@ -82,7 +91,7 @@ server.post("/signup", async (req, res) => {
         // Save the user
         await user.save();
 
-        return res.status(200).json({ user: user });
+        return res.status(200).json({ "user" : formatData(user) });
     } catch (err) {
         if (err.code === 11000) {
             return res.status(500).json({ 'error': 'Email already exists' });
