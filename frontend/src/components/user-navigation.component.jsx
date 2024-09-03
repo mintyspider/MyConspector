@@ -18,7 +18,7 @@ const UserNavigation = () => {
 
   return (
     <AnimationWrapper 
-    className="absolute right-0 z-50 "
+    className="absolute right-0 z-50 mt-[29%]"
     transition={{duration : 0.2}}
     >
         <div className='bg-white absolute right-0 border border-grey w-60 duration-200'>
@@ -27,15 +27,18 @@ const UserNavigation = () => {
                 Новый конспект
             </Link>
 
-            <Link to={`/user/${username}`} className='link pl-8 py-4'>
+            <Link to={`/user/${username}`} className='flex gap-2 pl-8 py-4 link'>
+                <i className="fi fi-rr-circle-user text-dark-grey"></i>
                 Моя страница
             </Link>
 
-            <Link to='/dashboard/blogs' className='link pl-8 py-4'>
+            <Link to='/dashboard/blogs' className='flex gap-2 pl-8 py-4 link'>
+                <i className="fi fi-rr-note text-dark-grey"></i>
                 Конспекты
             </Link>
 
-            <Link to='/settings/edit-profile' className='link pl-8 py-4'>
+            <Link to='/settings/edit-profile' className='flex gap-2 pl-8 py-4 link'>
+                <i className="fi fi-rr-settings-sliders text-dark-grey"></i>
                 Настройки
             </Link>
             

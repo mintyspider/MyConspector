@@ -13,6 +13,18 @@ const Navbar = () => {
     const accessToken = userAuth?.accessToken;
     const profile_img = userAuth?.profile_img;
 
+    const [ menu, setMenu ] = useState(false);
+
+    const handleMenu = () => {
+        setMenu(cur => !cur)
+    }
+
+    const handleHideMenu = () => {
+        setTimeout(() => {
+            setMenu(false);
+        }, 200)
+    }
+
   return (
     <>
         <nav className='navbar'>
@@ -53,12 +65,16 @@ const Navbar = () => {
                             </button>
                         </Link>
 
-                        <div className='relative'>
+                        <div className='relative' onClick={handleMenu} onBlur={handleHideMenu}>
                             <button className='w-12 h-12 mt-2'>
                                 <img src={profile_img} className='w-full h-full object-cover rounded-full' />
                             </button>
 
-                            <UserNavigation />
+                            { menu ?
+                                <UserNavigation /> 
+                                : ""
+                            }
+                                
                         </div>
                     </>
                     :
