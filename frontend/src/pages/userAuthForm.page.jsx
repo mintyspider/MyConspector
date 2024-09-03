@@ -1,17 +1,23 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import logo from '../imgs/full-logo.png'
 import InputBox from '../components/input.component'
 import google from '../imgs/google.png'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import AnimationWrapper from '../common/page-animation'
 import { Toaster, toast } from "react-hot-toast";
 import axios from 'axios';
+import { storeInSession } from '../common/session'
+import { UserContext } from '../App'
 
 const AuthForm = ({ type }) => {
 
+    let { userAuth: { accessToken }, setUserAuth } = useContext(UserContext)
+
     const userAuthToServer = (serverRoute, formData) => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData).then(({data}) => {
-            console.log(data);
+            storeInSession("user", JSON.stringify(data))
+
+            setUserAuth(data)
         }).catch(({ response }) => {
             toast.error(response.data.error)
         })
@@ -59,6 +65,9 @@ const AuthForm = ({ type }) => {
         userAuthToServer(serverRoute, formData);
     }
   return (
+    accessToken ?
+    <Navigate to='/' />
+    :
     <AnimationWrapper key={type}>
         <section className={'h-cover flex items-center justify-center md:justify-around flex-col ' + ( type=='sign-in' ? 'md:flex-row' : 'md:flex-row-reverse')}>
             <img src={logo} alt="" className='w-[20%] mb-3 md:w-[49%] md:mb-0'/>
