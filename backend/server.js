@@ -112,12 +112,17 @@ server.post('/signin', async (req, res) => {
       return res.status(403).json({ error: 'Email not found' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.personal_info.password);
+    if(!user.google_auth){
+      const isMatch = await bcrypt.compare(password, user.personal_info.password);
     if (!isMatch) {
       return res.status(403).json({ error: 'Password is incorrect. Please try again' });
     }
 
     return res.status(200).json(formatData(user));
+    } else {
+      return res.status(403).json({"error":"Your account was created using Google. Try to continue with Google"})
+    }
+
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Internal Server Error' });
