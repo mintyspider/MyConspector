@@ -2,8 +2,18 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import logo from "../imgs/logo.png"
 import AnimationWrapper from '../common/page-animation'
+import defaultPannel from "../imgs/blog_banner.png"
 
 const BlogEditor = () => {
+
+    const handleBannerUpload = (e) => {
+        console.log(e);
+        let image = e.target.files[0];
+
+        console.log(image);
+
+        
+    }
   return (
     <>
         <nav className='navbar'>
@@ -28,8 +38,15 @@ const BlogEditor = () => {
             <section>
                 <div className='mx-auto max-w-[900px] w-full'>
                     <div className='relative aspect-video bg-white border-4 border-grey hover:opacity-80'>
-                        <label>
-                            <input id="uploadBanner"/>
+                        <label htmlFor='uploadBanner'>
+                            <img src={defaultPannel} className='z-20' />
+                            <input 
+                            id="uploadBanner"
+                            type='file'
+                            accept='.png, .jpg, .jpeg'
+                            hidden
+                            onChange={handleBannerUpload}
+                            />
                         </label>
                     </div>
                 </div>
