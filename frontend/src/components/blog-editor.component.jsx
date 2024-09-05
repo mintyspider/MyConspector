@@ -1,31 +1,39 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from "../imgs/logo.png";
 import AnimationWrapper from '../common/page-animation';
 import defaultPannel from "../imgs/blog_banner.png";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../common/firebase';  // Путь к вашему файлу конфигурации
+import { EditorContext } from '../pages/editor.pages';
+import { toast, Toaster } from 'react-hot-toast';
 
 const BlogEditor = () => {
+
+    const { blog, setBlog } = useContext(EditorContext);
     const [bannerImage, setBannerImage] = useState(defaultPannel);
 
     const handleBannerUpload = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            const storageRef = ref(storage, `gs://myconspector.appspot.com/${file.name}`);
+            const storageRef = ref(storage, `banners/${file.name}`);
+            const toastId = toast.loading("Загрузка...");
             try {
                 await uploadBytes(storageRef, file);
                 const downloadURL = await getDownloadURL(storageRef);
-                console.log("Download URL:", downloadURL); // Проверьте, что URL верен
+                console.log("Download URL:", downloadURL);
+                toast.success("Загрузка завершена", { id: toastId })
                 setBannerImage(downloadURL);
+                setBlog({ ...blog, banner: downloadURL });
             } catch (error) {
+                toast.error("Ошибка при загрузке файла")
                 console.error("Ошибка при загрузке файла:", error);
             }
         }
     };
 
     const handleTitleKeyDown = (e) => {
-        if(e.keyCode == 13) {
+        if (e.keyCode === 13) {
             e.preventDefault();
         }
     }
@@ -34,16 +42,25 @@ const BlogEditor = () => {
         let input = e.target;
         input.style.height = 'auto';
         input.style.height = input.scrollHeight + "px";
+
+        // Обновление состояния заголовка
+        setBlog({ ...blog, title: input.value });
+    }
+
+    const handleError = (e) => {
+        let img = e.target;
+        img.src = defaultPannel;
     }
 
     return (
         <>
+            <Toaster />
             <nav className='navbar'>
                 <Link to="/" className='flex-none w-12'>
                     <img src={logo} alt="Logo" />
                 </Link>
                 <p className='max-md:hidden text-black line-clamp-1 w-full text-bold text-2xl'>
-                    Новый конспект
+                    {blog.title.length ? blog.title : "Новый конспект"}
                 </p>
 
                 <div className='flex gap-4 ml-auto'>
@@ -63,7 +80,7 @@ const BlogEditor = () => {
                     <div className='mx-auto max-w-[900px] w-full'>
                         <div className='relative aspect-video bg-white border-4 border-grey hover:opacity-80'>
                             <label htmlFor='uploadBanner'>
-                                <img src={bannerImage} className='z-20' alt="Banner" />
+                                <img src={bannerImage} className='z-20' alt="Banner" onError={handleError}/>
                                 <input 
                                     id="uploadBanner"
                                     type='file'
@@ -74,10 +91,15 @@ const BlogEditor = () => {
                             </label>
                         </div>
 
-                        <textarea placeholder='Тема конспекта' className='text-4xl font-medium w-full h-13 outline-none text-center resize-none mt-10 leading-tight placeholder:opacity-40'
-                        onKeyDown={handleTitleKeyDown} 
-                        onChange={handleTitleChange}>
-                        </textarea>
+                        <textarea 
+                            placeholder='Тема конспекта' 
+                            className='text-4xl font-medium w-full h-13 outline-none text-center resize-none mt-10 leading-tight placeholder:opacity-40'
+                            onKeyDown={handleTitleKeyDown} 
+                            onChange={handleTitleChange}
+                            value={blog.title}
+                        />
+
+                        <hr className='w-full opacity-10 my-5'/>
                     </div>
                 </section>
             </AnimationWrapper>
