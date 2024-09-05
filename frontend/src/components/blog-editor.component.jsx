@@ -7,6 +7,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../common/firebase';  // Путь к вашему файлу конфигурации
 import { EditorContext } from '../pages/editor.pages';
 import { toast, Toaster } from 'react-hot-toast';
+import TextEditor from './editor-js.component';
 
 const BlogEditor = () => {
 
@@ -93,13 +94,16 @@ const BlogEditor = () => {
 
                         <textarea 
                             placeholder='Тема конспекта' 
-                            className='text-4xl font-medium w-full h-13 outline-none text-center resize-none mt-10 leading-tight placeholder:opacity-40'
+                            className='text-4xl font-medium w-full h-13 outline-none text-center resize-none mt-7 leading-tight placeholder:opacity-40'
                             onKeyDown={handleTitleKeyDown} 
                             onChange={handleTitleChange}
                             value={blog.title}
                         />
 
                         <hr className='w-full opacity-10 my-5'/>
+
+                        <TextEditor />
+
                     </div>
                 </section>
             </AnimationWrapper>
