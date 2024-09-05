@@ -1,5 +1,5 @@
 // ContentEditor.js
-import React, { useEffect, useRef, useContext, useState } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import EditorJS from '@editorjs/editorjs';
 import Embed from '@editorjs/embed';
 import List from '@editorjs/list';
@@ -115,6 +115,7 @@ const ContentEditor = () => {
             editorRef.current = new EditorJS({
                 holderId: "textEditor",
                 data: '',
+                tools: tools,
                 placeholder: "Не бойся начать с чистого листа...",
                 onReady: () => {
                     console.log("Editor.js is ready!");
