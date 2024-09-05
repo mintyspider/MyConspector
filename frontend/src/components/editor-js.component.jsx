@@ -1,5 +1,5 @@
 // ContentEditor.js
-import React, { useEffect, useRef, useContext } from 'react';
+import React, { useEffect, useRef, useContext, useState } from 'react';
 import EditorJS from '@editorjs/editorjs';
 import Embed from '@editorjs/embed';
 import List from '@editorjs/list';
@@ -13,9 +13,9 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../common/firebase';
 import { EditorContext } from '../pages/editor.pages';
 
-const TextEditor = () => {
-    const isReady = useRef(false);
+const ContentEditor = () => {
     const { blog, setBlog } = useContext(EditorContext);
+    const editorRef = useRef(null);
 
     const uploadImageByFile = async (file) => {
         const storageRef = ref(storage, `files/${file.name}`);
@@ -25,7 +25,6 @@ const TextEditor = () => {
             await uploadBytes(storageRef, file);
             const downloadURL = await getDownloadURL(storageRef);
             toast.success("Загрузка завершена", { id: toastId });
-            setBlog({ ...blog, content: downloadURL });
             return {
                 success: 1,
                 file: {
@@ -94,19 +93,43 @@ const TextEditor = () => {
         inlineCode: InlineCode
     };
 
-    useEffect(() => {
+    const saveData = async () => {
+        if (editorRef.current) {
+            try {
+                const data = await editorRef.current.save();
+                
+                if(data.blocks.length){
+                    setBlog({ ...blog, content: data });
+                }
+                console.log(content);
+            } catch (error) {
+                console.error("Ошибка при сохранении данных:", error);
+            }
+        }
+    };
+
+    const isReady = useRef(false);
+
+        useEffect(() => {
         if (!isReady.current) {
-            new EditorJS({
-                holderId: "editorjs",
+            editorRef.current = new EditorJS({
+                holderId: "textEditor",
                 data: '',
                 placeholder: "Не бойся начать с чистого листа...",
-                tools: tools,
+                onReady: () => {
+                    console.log("Editor.js is ready!");
+                },
+                onChange: async () => {
+                    saveData;
+                }
             });
             isReady.current = true;
         }
-    }, []);
 
-    return <div id="editorjs" className='font-gelasio'></div>;
+        //
+    }, [blog.content]);
+
+    return <div id="textEditor" className='font-gelasio'></div>;
 };
 
-export default TextEditor;
+export default ContentEditor;

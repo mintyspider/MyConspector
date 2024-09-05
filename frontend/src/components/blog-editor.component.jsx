@@ -11,7 +11,7 @@ import TextEditor from './editor-js.component';
 
 const BlogEditor = () => {
 
-    const { blog, setBlog } = useContext(EditorContext);
+    const { blog, setBlog, blog: {banner, title, content } } = useContext(EditorContext);
     const [bannerImage, setBannerImage] = useState(defaultPannel);
 
     const handleBannerUpload = async (e) => {
@@ -52,6 +52,16 @@ const BlogEditor = () => {
         let img = e.target;
         img.src = defaultPannel;
     }
+    
+    const handlePublish = () => {
+        //validation
+        if(!banner.length){
+            return toast.error("Необходимо загрузить баннер")
+        }
+        if(!title.length){
+            return toast.error("Необходимо озаглавить конспект")
+        }
+        }
 
     return (
         <>
@@ -65,7 +75,8 @@ const BlogEditor = () => {
                 </p>
 
                 <div className='flex gap-4 ml-auto'>
-                    <button className='btn-dark py-2 flex gap-2'>
+                    <button className='btn-dark py-2 flex gap-2'
+                    onClick={handlePublish}>
                         <i className="fi fi-rr-file-upload mt-1"></i>
                         Опубликовать
                     </button>
@@ -111,4 +122,4 @@ const BlogEditor = () => {
     );
 };
 
-export default BlogEditor;
+export default BlogEditor

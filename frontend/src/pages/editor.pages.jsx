@@ -20,7 +20,7 @@ const EditorPage = () => {
     const [blog, setBlog] = useState(BlogStructure);
 
     const [editorState, setEditorState] = useState("editor");
-
+    
     const { userAuth } = useContext(UserContext);
     const accessToken = userAuth?.accessToken;
 
