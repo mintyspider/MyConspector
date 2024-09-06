@@ -88,8 +88,22 @@ const AuthForm = ({ type }) => {
     <Navigate to='/' />
     :
     <AnimationWrapper key={type}>
-        <section className={'h-cover flex items-center justify-center md:justify-around flex-col ' + ( type=='sign-in' ? 'md:flex-row' : 'md:flex-row-reverse')}>
-            <img src={logo} alt="" className='w-[20%] mb-3 md:w-[49%] md:mb-0'/>
+        <section className={'h-cover flex items-center justify-center md:justify-around flex-col ' + ( type=='sign-in' ? 'lg:flex-row' : 'lg:flex-row-reverse')}>
+            <div className="text-justify">
+                <img src={logo} alt="" className="w-[30%] mb-3 lg:w-[49%] md:mb-0 mx-auto" />
+                <div className="hidden lg:block mt-3 w-[66%] mx-auto">
+                    <h4 className='text-center text-2xl xl:text-4xl'>Почему полезно писать конcпекты?</h4>
+                    <p>Есть краткосрочная и долгосрочная память. Прочитанная в учебниках и прослушанная на лекциях информация обычно остается в краткосрочной памяти.</p>
+                    <p>Записывание конспектов переводит материал из краткосрочной в долгосрочную память. В результате вы лучше запоминаете записанный материал.</p>
+                    <p>Если вы ведете конспекты, то перед экзаменом или контрольной вам нужно только повторить тему, потому что основная информация уже успела отложиться у вас в долгосрочной памяти. Конспект помогает:</p>
+                    <ol className='list-disc list-inside text-left'>
+                        <li>лучше запоминать информацию;</li>
+                        <li>структурировать информацию, полученную на уроке, лекции или взятую из учебника, книги;</li>
+                        <li>быстро готовиться к контрольным, экзаменам, зачётам;</li>
+                        <li>сразу ухватить самое главное из изучаемой темы.</li>
+                    </ol>
+                </div>
+            </div>
             <Toaster />
             <form id="formAuth" className='w-[80%] max-w-[400px] md:w-[49%]'>
                 <h1 className='text-4xl font-gelasio text-center mb-24'>
