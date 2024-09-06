@@ -11,7 +11,7 @@ import TextEditor from './editor-js.component';
 
 const BlogEditor = () => {
 
-    const { blog, setBlog, blog: {banner, title, content } } = useContext(EditorContext);
+    const { blog, setBlog, blog: {banner, title, content }, editorState, setEditorState } = useContext(EditorContext);
     const [bannerImage, setBannerImage] = useState(defaultPannel);
 
     const handleBannerUpload = async (e) => {
@@ -61,7 +61,8 @@ const BlogEditor = () => {
         if(!title.length){
             return toast.error("Необходимо озаглавить конспект")
         }
-        }
+        setEditorState("publish")
+    }
 
     return (
         <>
