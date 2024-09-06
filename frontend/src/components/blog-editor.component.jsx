@@ -4,15 +4,14 @@ import logo from "../imgs/logo.png";
 import AnimationWrapper from '../common/page-animation';
 import defaultPannel from "../imgs/blog_banner.png";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../common/firebase';  // Путь к вашему файлу конфигурации
+import { storage } from '../common/firebase';
 import { EditorContext } from '../pages/editor.pages';
 import { toast, Toaster } from 'react-hot-toast';
 import TextEditor from './editor-js.component';
 
 const BlogEditor = () => {
-
-    const { blog, setBlog, blog: {banner, title, content }, editorState, setEditorState } = useContext(EditorContext);
-    const [bannerImage, setBannerImage] = useState(defaultPannel);
+    const { blog, setBlog, editorState, setEditorState } = useContext(EditorContext);
+    const [bannerImage, setBannerImage] = useState(blog.banner || defaultPannel);
 
     const handleBannerUpload = async (e) => {
         const file = e.target.files[0];
@@ -23,11 +22,14 @@ const BlogEditor = () => {
                 await uploadBytes(storageRef, file);
                 const downloadURL = await getDownloadURL(storageRef);
                 console.log("Download URL:", downloadURL);
-                toast.success("Загрузка завершена", { id: toastId })
+                toast.success("Загрузка завершена", { id: toastId });
+
+                // Обновляем состояние баннера и блога
                 setBannerImage(downloadURL);
-                setBlog({ ...blog, banner: downloadURL });
+                setBlog(prevBlog => ({ ...prevBlog, banner: downloadURL }));
+
             } catch (error) {
-                toast.error("Ошибка при загрузке файла")
+                toast.error("Ошибка при загрузке файла");
                 console.error("Ошибка при загрузке файла:", error);
             }
         }
@@ -40,28 +42,30 @@ const BlogEditor = () => {
     }
 
     const handleTitleChange = (e) => {
-        let input = e.target;
+        const input = e.target;
         input.style.height = 'auto';
-        input.style.height = input.scrollHeight + "px";
+        input.style.height = `${input.scrollHeight}px`;
 
         // Обновление состояния заголовка
-        setBlog({ ...blog, title: input.value });
+        setBlog(prevBlog => ({ ...prevBlog, title: input.value }));
+        console.log("title:", e.target.value);
     }
 
     const handleError = (e) => {
-        let img = e.target;
+        const img = e.target;
         img.src = defaultPannel;
     }
-    
+
     const handlePublish = () => {
-        //validation
-        if(!banner.length){
-            return toast.error("Необходимо загрузить баннер")
+        console.log("blog: ", blog);
+        // Проверка перед публикацией
+        if (!blog.banner) {
+            return toast.error("Необходимо загрузить баннер");
         }
-        if(!title.length){
-            return toast.error("Необходимо озаглавить конспект")
+        if (!blog.title) {
+            return toast.error("Необходимо озаглавить конспект");
         }
-        setEditorState("publish")
+        setEditorState("publish");
     }
 
     return (
@@ -77,7 +81,7 @@ const BlogEditor = () => {
 
                 <div className='flex gap-4 ml-auto'>
                     <button className='btn-dark py-2 flex gap-2'
-                    onClick={handlePublish}>
+                        onClick={handlePublish}>
                         <i className="fi fi-rr-file-upload mt-1"></i>
                         Опубликовать
                     </button>
@@ -93,8 +97,8 @@ const BlogEditor = () => {
                     <div className='mx-auto max-w-[900px] w-full'>
                         <div className='relative aspect-video bg-white border-4 border-grey hover:opacity-80'>
                             <label htmlFor='uploadBanner'>
-                                <img src={bannerImage} className='z-20' alt="Banner" onError={handleError}/>
-                                <input 
+                                <img src={bannerImage} className='z-20' alt="Banner" onError={handleError} />
+                                <input
                                     id="uploadBanner"
                                     type='file'
                                     accept='.png, .jpg, .jpeg'
@@ -104,15 +108,15 @@ const BlogEditor = () => {
                             </label>
                         </div>
 
-                        <textarea 
-                            placeholder='Тема конспекта' 
+                        <textarea
+                            placeholder='Тема конспекта'
                             className='text-4xl font-medium w-full h-13 outline-none text-center resize-none mt-7 leading-tight placeholder:opacity-40'
-                            onKeyDown={handleTitleKeyDown} 
+                            onKeyDown={handleTitleKeyDown}
                             onChange={handleTitleChange}
                             value={blog.title}
                         />
 
-                        <hr className='w-full opacity-10 my-5'/>
+                        <hr className='w-full opacity-10 my-5' />
 
                         <TextEditor />
 
@@ -123,4 +127,4 @@ const BlogEditor = () => {
     );
 };
 
-export default BlogEditor
+export default BlogEditor;
