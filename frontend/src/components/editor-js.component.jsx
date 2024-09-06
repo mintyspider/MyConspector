@@ -98,7 +98,6 @@ const ContentEditor = () => {
                 const data = await editorRef.current.save();
                 if (data.blocks.length) {
                     setBlog(prevBlog => ({ ...prevBlog, content: data }));
-                    setBlog(...blog, content: data)
                 }
                 console.log("Content saved:", data);
             } catch (error) {
