@@ -11,6 +11,5 @@ It uses latest tech like
 + jsonwebtokens,
 + react router,
 + firebase,
-+ AWS,
 + google authentication
 and much more.
