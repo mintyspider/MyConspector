@@ -1,7 +1,13 @@
-POST http://localhost:3000/signin
+POST http://localhost:3000/createpost
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGYxYzc2ZDEwZGVhOWVhOTRiNTZhYSIsImlhdCI6MTcyNTg5Nzg0NiwiYXVkIjoieW91ci1hcHAiLCJpc3MiOiJ5b3VyLWFwcCJ9.NtsjB4k0KwxQF2ThoBWc_6AkJVGmyX_Bj8bnFFkEE5g
 
 {
-    "email": "kunal0@yahoo.com",
-    "password": "Kunaal"
+    "title" : "Мой блог пост",
+    "banner" : "https://example.com/image-url",
+    "des" : "this is my des",
+    "content": {
+        "blocks" : [ 1, 2 ]
+    },
+    "tags" : ["tag1", "tag2"]
 }

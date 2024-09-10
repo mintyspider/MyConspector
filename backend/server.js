@@ -7,8 +7,12 @@ import cors from 'cors';
 import admin from 'firebase-admin';
 import serviceAccountKey from './myconspector-firebase-adminsdk-ashvx-82f1ab0443.json' assert { type: 'json' };
 import { getAuth } from 'firebase-admin/auth';
+import { nanoid } from 'nanoid';
 
+//Schemas
 import User from './Schema/User.js';
+import Blog from './Schema/Blog.js'
+
 
 const server = express();
 server.use(express.json());
@@ -26,12 +30,61 @@ mongoose.connect(process.env.DB_LOCATION, {
   autoIndex: true,
 });
 
+//verifying user to publish posts 
+const verifyJWT = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token == null) {
+        return res.status(401).json({"error" : "No access token"})
+    }
+
+    jwt.verify(token, process.env.SECRET_ACCESS_KEY, (err, user) => {
+        if(err){
+            res.status(403).json({'error' : 'Invalid access token'})
+        }
+
+        req.user = user.id;
+        next()
+
+    })
+}
+
+const translit = ((word) => {
+	var converter = {
+		'а': 'a',    'б': 'b',    'в': 'v',    'г': 'g',    'д': 'd',
+		'е': 'e',    'ё': 'e',    'ж': 'zh',   'з': 'z',    'и': 'i',
+		'й': 'y',    'к': 'k',    'л': 'l',    'м': 'm',    'н': 'n',
+		'о': 'o',    'п': 'p',    'р': 'r',    'с': 's',    'т': 't',
+		'у': 'u',    'ф': 'f',    'х': 'h',    'ц': 'c',    'ч': 'ch',
+		'ш': 'sh',   'щ': 'sch',  'ь': '',     'ы': 'y',    'ъ': '',
+		'э': 'e',    'ю': 'yu',   'я': 'ya'
+	};
+ 
+	word = word.toLowerCase();
+  
+	var answer = '';
+	for (var i = 0; i < word.length; ++i ) {
+		if (converter[word[i]] == undefined){
+			answer += word[i];
+		} else {
+			answer += converter[word[i]];
+		}
+	}
+ 
+	answer = answer.replace(/[^-0-9a-z]/g, '-');
+	answer = answer.replace(/[-]+/g, '-');
+	answer = answer.replace(/^\-|-$/g, ''); 
+	return answer;
+});
+
+
 // Formatting the data to be sent to the database
 const formatData = (user) => {
   const accessToken = jwt.sign(
     { id: user._id },
     process.env.SECRET_ACCESS_KEY,
-    { expiresIn: '1h', audience: 'your-app', issuer: 'your-app' }
+    { audience: 'your-app', issuer: 'your-app' }
   );
   return {
     accessToken,
@@ -166,6 +219,64 @@ server.post('/google-auth', async (req, res) => {
       error: 'Authentication failed. Try another Google account or log in with email and password',
     });
   }
+});
+
+//Blog post
+server.post('/createpost', verifyJWT, (req, res) => {
+  let authId = req.user;
+
+  let { title, des, banner, tags, content, draft } = req.body;
+
+  if (!title || !title.length) {
+      return res.status(403).json({ "error": "there is no title" });
+  }
+
+  if (!des || des.length === 0 || des.length > 200) {
+      return res.status(403).json({ "error": "blog description must be 1-200 characters" });
+  }
+
+  if (!banner || !banner.length) {
+      return res.status(403).json({ "error": "there is no banner" });
+  }
+
+  if (!Array.isArray(tags) || tags.length === 0 || tags.length > 10) {
+      return res.status(403).json({ "error": "there must be 1-10 tags" });
+  }
+
+  if (!content || !content.blocks || !content.blocks.length) {
+      return res.status(403).json({ "error": "there is no content" });
+  }
+
+  tags = tags.map(tag => tag.toLowerCase());
+  
+  let blog_id = translit(title) + nanoid();
+
+  let blog = new Blog({
+    title,
+    des,
+    banner,
+    content,
+    tags,
+    author: authId,
+    blog_id,
+    draft: Boolean(draft)
+  })
+
+    blog.save().then((blog) => {
+
+      let incrimentVal = draft ? 0 : 1;
+      User.findOneAndUpdate({ _id: authId }, { $inc : { "account_info.total_posts" : incrimentVal }, $push: { "blogs": blog._id } })
+      .then(user => {
+        return res.status(200).json({ "message": "Blog post created successfully", id: blog.blog_id });
+      })
+      .catch (err => {
+      return res.status(500).json({ error: 'Failed to update total posts number' });
+      })
+      
+    })
+    .catch (err => {
+      return res.status(500).json({ error: 'Internal Server Error' });
+    });
 });
 
 server.listen(PORT, () => {
