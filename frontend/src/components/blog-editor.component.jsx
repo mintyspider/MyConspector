@@ -7,7 +7,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../common/firebase';
 import { EditorContext } from '../pages/editor.pages';
 import { toast, Toaster } from 'react-hot-toast';
-import TextEditor from './editor-js.component';
+import ContentEditor from './editor-js.component';
 
 const BlogEditor = () => {
     const { blog, setBlog, editorState, setEditorState } = useContext(EditorContext);
@@ -59,11 +59,14 @@ const BlogEditor = () => {
     const handlePublish = () => {
         console.log("blog: ", blog);
         // Проверка перед публикацией
-        if (!blog.banner) {
+        if (!blog.banner.length) {
             return toast.error("Необходимо загрузить баннер");
         }
-        if (!blog.title) {
+        if (!blog.title.length) {
             return toast.error("Необходимо озаглавить конспект");
+        }
+        if (!blog.content.length) {
+            return toast.error("Необходимо заполнить конспект");
         }
         setEditorState("publish");
     }
@@ -118,7 +121,7 @@ const BlogEditor = () => {
 
                         <hr className='w-full opacity-10 my-5' />
 
-                        <TextEditor />
+                        <ContentEditor value={blog.content}/>
 
                     </div>
                 </section>

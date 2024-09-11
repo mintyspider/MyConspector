@@ -3,9 +3,16 @@ import AnimationWrapper from '../common/page-animation';
 import { Toaster, toast } from 'react-hot-toast';
 import { EditorContext } from '../pages/editor.pages';
 import Tags from './tags.component';
+import axios from 'axios';
+import { UserContext } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 const PublishForm = () => {
   const { setEditorState, setBlog, blog, blog:{ banner, title, tags, des } } = useContext(EditorContext);
+
+  let { userAuth: {accessToken} } = useContext(UserContext);
+
+  let navigate = useNavigate();
 
   let characterLimit = 200;
   let tagLimit = 10;
@@ -37,7 +44,7 @@ const PublishForm = () => {
       e.preventDefault();
       let tag = e.target.value;
       if(tags.length < tagLimit){
-        if(!tags.includes(tag) && tag.length){
+        if(!tags.contains(tag) && tag.length){
           setBlog({...blog, tags : [...tags, tag ]})
         }
       } else{
@@ -45,6 +52,55 @@ const PublishForm = () => {
       }
       e.target.value = "";
     }
+  }
+
+  const publishBlog = (e) => {
+
+    if (e.target.classList.contains('disable')){
+      e.target.classList.add('bg-dark-grey');
+      return;
+    }
+
+    if(!title.length){
+      return toast.error("Озаглавьте конспект");
+    }
+
+    if(!des.length || des.length > characterLimit){
+      return toast.error(`Добавьте описение конспекту (допустимый объем символов - ${characterLimit})`);
+    }
+
+    if(!tags.length || tags.length > tagLimit){
+      return toast.error(`Добавьте хотя бы одну метку конспекту (не более ${tagLimit})`);
+    }
+    let loadingToast = toast.loading("Публикация...");
+
+    e.target.classList.add('disable');
+
+    let blogObj = { title, banner, des, content, tags, draft: false }
+
+    axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', blogObj, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    }).then(() => {
+      e.target.classList.remove('disable')
+      e.target.classList.remove('bg-dark-grey')
+
+      toast.dismiss(loadingToast)
+      toast.success("Публикация завершена")
+
+      setTimeout(() => {
+        navigate("/")
+      }, 500)
+    }).catch(( { response } ) => {
+      e.target.classList.remove('disable')
+      e.target.classList.remove('bg-dark-grey')
+
+      toast.dismiss(loadingToast)
+      console.log(response.data.error)
+      return toast.error("Произошла ошибка")
+      
+    })
   }
 
   return (
@@ -95,7 +151,7 @@ const PublishForm = () => {
           
           <p className='mt-1 text-dark-grey text-sm text-right'>{ tagLimit - tags.length } / { tagLimit } </p>
         
-            <button className='btn-dark px-8'>Опубликовать</button>
+            <button className='btn-dark px-8' onClick={publishBlog}>Опубликовать</button>
         </div>
       </section>
     </AnimationWrapper>

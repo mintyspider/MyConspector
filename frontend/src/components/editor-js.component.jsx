@@ -14,6 +14,7 @@ import { EditorContext } from '../pages/editor.pages';
 
 const ContentEditor = () => {
     const { blog, setBlog, blog : { content } } = useContext(EditorContext);
+
     const editorRef = useRef(null);
 
     const uploadImageByFile = async (file) => {
@@ -96,10 +97,15 @@ const ContentEditor = () => {
         if (editorRef.current) {
             try {
                 const data = await editorRef.current.save();
-                if (data.blocks.length) {
-                    setBlog(prevBlog => ({ ...prevBlog, content: data }));
-                }
-                console.log("Content saved:", data);
+                console.log("EditorJS Saved Data:", data); // Проверяем, что вернулись корректные данные
+                
+                // Обновляем состояние blog, добавляя блоки из EditorJS в content
+                setBlog(prevBlog => ({
+                    ...prevBlog, 
+                    content: data.blocks // Сохраняем блоки текста
+                }));
+                
+                console.log("Content saved in blog:", blog); // Проверяем обновленное состояние
             } catch (error) {
                 console.error("Ошибка при сохранении данных:", error);
             }
@@ -109,30 +115,27 @@ const ContentEditor = () => {
     const isReady = useRef(false);
 
     useEffect(() => {
-        // Проверка наличия элемента перед инициализацией
         if (!isReady.current) {
             editorRef.current = new EditorJS({
                 holderId: "textEditor",
-                data: blog.content,
+                data: blog.content, // Инициализация с данными из blog
                 tools: tools,
-                placeholder: "Не бойся начать с чистого листа...",
-                onReady: () => {
-                    console.log("Editor.js is ready!");
-                },
+                placeholder: "Начни писать...",
                 onChange: async () => {
-                    await saveData(); // Обновляем данные при изменении
+                    await saveData(); // Сохраняем данные при каждом изменении
                 }
             });
             isReady.current = true;
         }
-
+    
         // Очистка при размонтировании компонента
         return () => {
             if (editorRef.current) {
                 editorRef.current = null;
             }
         };
-    }, [blog.content]);
+    }, []); // Только один раз при монтировании
+    
 
     return <div id="textEditor" className='font-gelasio'></div>;
 };
