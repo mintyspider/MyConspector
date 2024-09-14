@@ -222,7 +222,7 @@ server.post('/google-auth', async (req, res) => {
 });
 
 //Blog post
-server.post('/createpost', verifyJWT, (req, res) => {
+server.post('/createblog', verifyJWT, (req, res) => {
   let authId = req.user;
 
   let { title, des, banner, tags, content, draft } = req.body;
@@ -243,7 +243,7 @@ server.post('/createpost', verifyJWT, (req, res) => {
       return res.status(403).json({ "error": "there must be 1-10 tags" });
   }
 
-  if (!content || !content.blocks || !content.blocks.length) {
+  if (!content) {
       return res.status(403).json({ "error": "there is no content" });
   }
 

@@ -65,7 +65,7 @@ const BlogEditor = () => {
         if (!blog.title.length) {
             return toast.error("Необходимо озаглавить конспект");
         }
-        if (!blog.content.length) {
+        if (!blog.content.blocks.length) {
             return toast.error("Необходимо заполнить конспект");
         }
         setEditorState("publish");

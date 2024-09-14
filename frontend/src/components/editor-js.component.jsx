@@ -94,21 +94,12 @@ const ContentEditor = () => {
     };
 
     const saveData = async () => {
-        if (editorRef.current) {
-            try {
-                const data = await editorRef.current.save();
-                console.log("EditorJS Saved Data:", data); // Проверяем, что вернулись корректные данные
-                
-                // Обновляем состояние blog, добавляя блоки из EditorJS в content
-                setBlog(prevBlog => ({
-                    ...prevBlog, 
-                    content: data.blocks // Сохраняем блоки текста
-                }));
-                
-                console.log("Content saved in blog:", blog); // Проверяем обновленное состояние
-            } catch (error) {
-                console.error("Ошибка при сохранении данных:", error);
-            }
+        try {
+            const outputData = await editorRef.current.save();
+            console.log('Сохраненные данные:', outputData);
+            setBlog(prevBlog => ({ ...prevBlog, content: {blocks: outputData.blocks} })); // Обновляем состояние
+        } catch (error) {
+            console.error('Ошибка при сохранении данных:', error);
         }
     };
 
@@ -118,24 +109,20 @@ const ContentEditor = () => {
         if (!isReady.current) {
             editorRef.current = new EditorJS({
                 holderId: "textEditor",
-                data: blog.content, // Инициализация с данными из blog
+                data: content.blocks,
                 tools: tools,
-                placeholder: "Начни писать...",
+                placeholder: "Не бойся начать с чистого листа...",
                 onChange: async () => {
-                    await saveData(); // Сохраняем данные при каждом изменении
+                    await saveData();
                 }
             });
             isReady.current = true;
         }
-    
-        // Очистка при размонтировании компонента
-        return () => {
-            if (editorRef.current) {
-                editorRef.current = null;
-            }
-        };
     }, []); // Только один раз при монтировании
-    
+
+    useEffect(() => {
+        console.log('Состояние blog обновлено:', blog);
+      }, [blog]); // Сработает, когда blog изменится
 
     return <div id="textEditor" className='font-gelasio'></div>;
 };

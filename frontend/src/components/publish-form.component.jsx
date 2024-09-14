@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import AnimationWrapper from '../common/page-animation';
 import { Toaster, toast } from 'react-hot-toast';
 import { EditorContext } from '../pages/editor.pages';
@@ -8,9 +8,13 @@ import { UserContext } from '../App';
 import { useNavigate } from 'react-router-dom';
 
 const PublishForm = () => {
-  const { setEditorState, setBlog, blog, blog:{ banner, title, tags, des } } = useContext(EditorContext);
+  const { setEditorState, setBlog, blog, blog:{ banner, title, tags, des, content } } = useContext(EditorContext);
 
   let { userAuth: {accessToken} } = useContext(UserContext);
+
+  useEffect(() => {
+    console.log('Состояние blog обновлено:', blog);
+  }, [blog]); // Сработает, когда blog изменится
 
   let navigate = useNavigate();
 
@@ -44,7 +48,7 @@ const PublishForm = () => {
       e.preventDefault();
       let tag = e.target.value;
       if(tags.length < tagLimit){
-        if(!tags.contains(tag) && tag.length){
+        if(!tags.includes(tag) && tag.length){
           setBlog({...blog, tags : [...tags, tag ]})
         }
       } else{
@@ -56,52 +60,88 @@ const PublishForm = () => {
 
   const publishBlog = (e) => {
 
+    // Блокируем кнопку, если она уже нажата
     if (e.target.classList.contains('disable')){
       e.target.classList.add('bg-dark-grey');
       return;
     }
 
+    // Проверка заголовка
     if(!title.length){
       return toast.error("Озаглавьте конспект");
     }
 
+    // Проверка описания
     if(!des.length || des.length > characterLimit){
       return toast.error(`Добавьте описение конспекту (допустимый объем символов - ${characterLimit})`);
     }
 
+    // Проверка меток (тегов)
     if(!tags.length || tags.length > tagLimit){
       return toast.error(`Добавьте хотя бы одну метку конспекту (не более ${tagLimit})`);
     }
+
+    // Проверка баннера
+    if (!banner || !banner.length) {
+      return toast.error("Добавьте баннер для конспекта");
+    }
+
+    // Проверка контента (EditorJS)
+    if (!content || !content.blocks || !content.blocks.length) {
+      console.log("=) :", content.blocks)
+      return toast.error("Добавьте контент конспекту");
+      
+    }
+
     let loadingToast = toast.loading("Публикация...");
 
+    // Блокируем кнопку
     e.target.classList.add('disable');
 
-    let blogObj = { title, banner, des, content, tags, draft: false }
+    let blogObj = { 
+      title, 
+      banner, 
+      des, 
+      content: { blocks: content.blocks }, // Оборачиваем в объект с ключом `blocks`
+      tags, 
+      draft: false 
+    };
+    
 
+    // Отправляем запрос на сервер
     axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', blogObj, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }
     }).then(() => {
-      e.target.classList.remove('disable')
-      e.target.classList.remove('bg-dark-grey')
+      // Разблокируем кнопку
+      e.target.classList.remove('disable');
+      e.target.classList.remove('bg-dark-grey');
 
-      toast.dismiss(loadingToast)
-      toast.success("Публикация завершена")
+      toast.dismiss(loadingToast);
+      toast.success("Публикация завершена");
 
+      // Перенаправление через 500 мс
       setTimeout(() => {
-        navigate("/")
-      }, 500)
-    }).catch(( { response } ) => {
-      e.target.classList.remove('disable')
-      e.target.classList.remove('bg-dark-grey')
+        navigate("/");
+      }, 500);
+    }).catch(({ response }) => {
+      // Разблокируем кнопку при ошибке
+      e.target.classList.remove('disable');
+      e.target.classList.remove('bg-dark-grey');
 
-      toast.dismiss(loadingToast)
-      console.log(response.data.error)
-      return toast.error("Произошла ошибка")
-      
-    })
-  }
+      toast.dismiss(loadingToast);
+
+      // Выводим ошибку сервера, если она есть
+      if (response && response.data && response.data.error) {
+        console.log(response.data.error);
+        return toast.error(response.data.error);
+      }
+
+      return toast.error("Произошла ошибка при публикации");
+    });
+};
+
 
   return (
     <AnimationWrapper>
