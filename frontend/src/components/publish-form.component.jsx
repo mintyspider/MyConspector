@@ -20,6 +20,7 @@ const PublishForm = () => {
 
   let characterLimit = 200;
   let tagLimit = 10;
+  
   const handleClose = () => {
     console.log("Current blog data:", blog);
 
@@ -178,7 +179,7 @@ const PublishForm = () => {
           <p className='text-dark-grey mb-2 mt-9'>Метки - (помогают пользователям в поиске необходимой информации)</p>
 
           <div className='relative input-box pl-2 py-2 pb-4'>
-            <input type="text" placeholder='Метка' className='sticky font-normal input-box bg-white top-0 left-0 pl-4 mb-5 focus:bg-white' 
+            <input type="text" placeholder='Метка' className='sticky font-normal text-dark-grey input-box bg-white top-0 left-0 pl-4 mb-5 focus:bg-white' 
             onKeyDown={handleTopic}/>
             
             {

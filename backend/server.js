@@ -230,21 +230,22 @@ server.post('/createblog', verifyJWT, (req, res) => {
   if (!title || !title.length) {
       return res.status(403).json({ "error": "there is no title" });
   }
-
-  if (!des || des.length === 0 || des.length > 200) {
-      return res.status(403).json({ "error": "blog description must be 1-200 characters" });
-  }
-
+  
   if (!banner || !banner.length) {
       return res.status(403).json({ "error": "there is no banner" });
   }
 
-  if (!Array.isArray(tags) || tags.length === 0 || tags.length > 10) {
-      return res.status(403).json({ "error": "there must be 1-10 tags" });
-  }
-
   if (!content) {
       return res.status(403).json({ "error": "there is no content" });
+  }
+  if (!draft) {
+    if (!Array.isArray(tags) || tags.length === 0 || tags.length > 10) {
+        return res.status(403).json({ "error": "there must be 1-10 tags" });
+    }
+
+    if (!des || des.length === 0 || des.length > 200) {
+        return res.status(403).json({ "error": "blog description must be 1-200 characters" });
+    }
   }
 
   tags = tags.map(tag => tag.toLowerCase());

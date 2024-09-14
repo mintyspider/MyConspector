@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from "../imgs/logo.png";
 import AnimationWrapper from '../common/page-animation';
 import defaultPannel from "../imgs/blog_banner.png";
@@ -8,9 +8,11 @@ import { storage } from '../common/firebase';
 import { EditorContext } from '../pages/editor.pages';
 import { toast, Toaster } from 'react-hot-toast';
 import ContentEditor from './editor-js.component';
+import axios from 'axios';
+import { UserContext } from '../App';
 
 const BlogEditor = () => {
-    const { blog, setBlog, editorState, setEditorState } = useContext(EditorContext);
+    const { setEditorState, setBlog, blog, blog:{ banner, title, tags, des, content } } = useContext(EditorContext);
     const [bannerImage, setBannerImage] = useState(blog.banner || defaultPannel);
 
     const handleBannerUpload = async (e) => {
@@ -71,6 +73,92 @@ const BlogEditor = () => {
         setEditorState("publish");
     }
 
+    let { userAuth: {accessToken} } = useContext(UserContext);
+
+    let navigate = useNavigate();
+
+    const handleSave = (e) => {
+        // Блокируем кнопку, если она уже нажата
+    if (e.target.classList.contains('disable')){
+        e.target.classList.add('bg-dark-grey');
+        return;
+      }
+  
+      // Проверка заголовка
+      if(!title.length){
+        return toast.error("Озаглавьте конспект");
+      }
+  
+      //Проверка описания
+      //if(!des.length || des.length > characterLimit){
+        //return toast.error(`Добавьте описение конспекту (допустимый объем символов - ${characterLimit})`);
+      //}
+  
+      // Проверка меток (тегов)
+      //if(!tags.length || tags.length > tagLimit){
+        //return toast.error(`Добавьте хотя бы одну метку конспекту (не более ${tagLimit})`);
+      //}
+  
+      // Проверка баннера
+      if (!banner || !banner.length) {
+        return toast.error("Добавьте баннер для конспекта");
+      }
+  
+      // Проверка контента (EditorJS)
+      if (!content || !content.blocks || !content.blocks.length) {
+        console.log("=) :", content.blocks)
+        return toast.error("Добавьте контент конспекту");
+        
+      }
+  
+      let loadingToast = toast.loading("Сохранение черновика...");
+  
+      // Блокируем кнопку
+      e.target.classList.add('disable');
+  
+      let blogObj = { 
+        title, 
+        banner, 
+        des, 
+        content: { blocks: content.blocks }, // Оборачиваем в объект с ключом `blocks`
+        tags, 
+        draft: true 
+      };
+      
+      // Отправляем запрос на сервер
+      axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', blogObj, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      }).then(() => {
+        // Разблокируем кнопку
+        e.target.classList.remove('disable');
+        e.target.classList.remove('bg-grey');
+  
+        toast.dismiss(loadingToast);
+        toast.success("Сохранение завершено");
+  
+        // Перенаправление через 500 мс
+        setTimeout(() => {
+          navigate("/");
+        }, 500);
+      }).catch(({ response }) => {
+        // Разблокируем кнопку при ошибке
+        e.target.classList.remove('disable');
+        e.target.classList.remove('bg-grey');
+  
+        toast.dismiss(loadingToast);
+  
+        // Выводим ошибку сервера, если она есть
+        if (response && response.data && response.data.error) {
+          console.log(response.data.error);
+          return toast.error(response.data.error);
+        }
+  
+        return toast.error("Произошла ошибка при сохранении");
+      });
+  };
+
     return (
         <>
             <Toaster />
@@ -88,7 +176,8 @@ const BlogEditor = () => {
                         <i className="fi fi-rr-file-upload mt-1"></i>
                         Опубликовать
                     </button>
-                    <button className='btn-light py-2 flex gap-2'>
+                    <button className='btn-light py-2 flex gap-2'
+                        onClick={handleSave}>
                         <i className="fi fi-rr-disk text-dark-grey mt-1"></i>
                         Сохранить черновик
                     </button>
