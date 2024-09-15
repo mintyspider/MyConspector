@@ -221,6 +221,24 @@ server.post('/google-auth', async (req, res) => {
   }
 });
 
+ //Newest posts
+server.get('/latestblogs', (req, res) => {
+
+  let maxLimit = 5;
+
+  Blog.find({ draft:false })
+  .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+  .sort({"publishedAt" : -1 })
+  .select("blog_id title des banner activity tags publishedAt -_id")
+  .limit(maxLimit)
+  .then(blogs => {
+    return res.status(200).json({ blogs })
+  })
+  .catch(err => {
+    return res.status(500).json({err: err.message})
+  })
+})
+
 //Blog post
 server.post('/createblog', verifyJWT, (req, res) => {
   let authId = req.user;
