@@ -4,10 +4,12 @@ import AnimationWrapper from '../common/page-animation'
 import InPageNavigation from '../components/inpage-navigation.component'
 import Loader from '../components/loader.component'
 import BlogPostCard from '../components/blog-post.component'
+import MinimalBlogPost from '../components/nobanner-blog-post.component'
 
 const HomePage = () => {
 
   let [blogs, setBlogs] = useState(null);
+  let [trendingBlogs, setTrendingBlogs] = useState(null);
 
   const fetchLatestBlogs = () => {
     axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/latestblogs")
@@ -19,8 +21,19 @@ const HomePage = () => {
     })
   }
 
+  const fetchTrendingBlogs = () => {
+    axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/trendindblogs")
+    .then(({ data }) => {
+      setTrendingBlogs(data.blogs)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
   useEffect(() => {
     fetchLatestBlogs();
+    fetchTrendingBlogs();
   }, [])
 
   return (
@@ -40,7 +53,17 @@ const HomePage = () => {
                       })
                     }
                   </>
-                  <h1>Trendpage</h1>
+                  <>
+                  {
+                      trendingBlogs == null 
+                      ? <Loader />
+                      : trendingBlogs.map((blog, i) => {
+                        return <AnimationWrapper transition={{duration: 1, delay: i*.1 }} key={i}>
+                          <MinimalBlogPost blog={blog} index={i}/>
+                        </AnimationWrapper>
+                      })
+                    }
+                  </>
                 </InPageNavigation>
             </div>
             {/* Фильтры и самые популярные конспекты */}
