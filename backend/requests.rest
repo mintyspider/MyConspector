@@ -4,7 +4,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGYxYzc2Z
 
 {
     "title" : "Мой блог пост",
-    "banner" : "https://example.com/image-url",
     "des" : "this is my des",
     "content": {
         "blocks" : [ 1, 2 ]

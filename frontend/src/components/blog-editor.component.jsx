@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from "../imgs/logo.png";
 import AnimationWrapper from '../common/page-animation';
-import defaultPannel from "../imgs/blog_banner.png";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../common/firebase';
 import { EditorContext } from '../pages/editor.pages';
@@ -12,30 +11,7 @@ import axios from 'axios';
 import { UserContext } from '../App';
 
 const BlogEditor = () => {
-    const { setEditorState, setBlog, blog, blog:{ banner, title, tags, des, content } } = useContext(EditorContext);
-    const [bannerImage, setBannerImage] = useState(blog.banner || defaultPannel);
-
-    const handleBannerUpload = async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const storageRef = ref(storage, `banners/${file.name}`);
-            const toastId = toast.loading("Загрузка...");
-            try {
-                await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(storageRef);
-                console.log("Download URL:", downloadURL);
-                toast.success("Загрузка завершена", { id: toastId });
-
-                // Обновляем состояние баннера и блога
-                setBannerImage(downloadURL);
-                setBlog(prevBlog => ({ ...prevBlog, banner: downloadURL }));
-
-            } catch (error) {
-                toast.error("Ошибка при загрузке файла");
-                console.error("Ошибка при загрузке файла:", error);
-            }
-        }
-    };
+    const { setEditorState, setBlog, blog, blog:{ title, tags, des, content } } = useContext(EditorContext);
 
     const handleTitleKeyDown = (e) => {
         if (e.keyCode === 13) {
@@ -61,9 +37,6 @@ const BlogEditor = () => {
     const handlePublish = () => {
         console.log("blog: ", blog);
         // Проверка перед публикацией
-        if (!blog.banner.length) {
-            return toast.error("Необходимо загрузить баннер");
-        }
         if (!blog.title.length) {
             return toast.error("Необходимо озаглавить конспект");
         }
@@ -89,21 +62,6 @@ const BlogEditor = () => {
         return toast.error("Озаглавьте конспект");
       }
   
-      //Проверка описания
-      //if(!des.length || des.length > characterLimit){
-        //return toast.error(`Добавьте описение конспекту (допустимый объем символов - ${characterLimit})`);
-      //}
-  
-      // Проверка меток (тегов)
-      //if(!tags.length || tags.length > tagLimit){
-        //return toast.error(`Добавьте хотя бы одну метку конспекту (не более ${tagLimit})`);
-      //}
-  
-      // Проверка баннера
-      if (!banner || !banner.length) {
-        return toast.error("Добавьте баннер для конспекта");
-      }
-  
       // Проверка контента (EditorJS)
       if (!content || !content.blocks || !content.blocks.length) {
         console.log("=) :", content.blocks)
@@ -117,8 +75,7 @@ const BlogEditor = () => {
       e.target.classList.add('disable');
   
       let blogObj = { 
-        title, 
-        banner, 
+        title,  
         des, 
         content: { blocks: content.blocks }, // Оборачиваем в объект с ключом `blocks`
         tags, 
@@ -185,21 +142,7 @@ const BlogEditor = () => {
             </nav>
 
             <AnimationWrapper>
-                <section>
-                    <div className='mx-auto max-w-[900px] w-full'>
-                        <div className='relative aspect-video bg-white border-4 border-grey hover:opacity-80'>
-                            <label htmlFor='uploadBanner'>
-                                <img src={bannerImage} className='z-20' alt="Banner" onError={handleError} />
-                                <input
-                                    id="uploadBanner"
-                                    type='file'
-                                    accept='.png, .jpg, .jpeg'
-                                    hidden
-                                    onChange={handleBannerUpload}
-                                />
-                            </label>
-                        </div>
-
+                <section className='w-full'>
                         <textarea
                             placeholder='Тема конспекта'
                             className='text-4xl font-medium w-full h-13 outline-none text-center resize-none mt-7 leading-tight placeholder:opacity-40'
@@ -211,8 +154,7 @@ const BlogEditor = () => {
                         <hr className='w-full opacity-10 my-5' />
 
                         <ContentEditor value={blog.content}/>
-
-                    </div>
+                    
                 </section>
             </AnimationWrapper>
         </>

@@ -11,10 +11,6 @@ const blogSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    banner: {
-        type: String,
-        // required: true,
-    },
     des: {
         type: String,
         maxlength: 200,

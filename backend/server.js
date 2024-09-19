@@ -229,7 +229,7 @@ server.get('/latestblogs', (req, res) => {
   Blog.find({ draft:false })
   .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
   .sort({"publishedAt" : -1 })
-  .select("blog_id title des banner activity tags publishedAt -_id")
+  .select("blog_id title des activity tags publishedAt -_id")
   .limit(maxLimit)
   .then(blogs => {
     return res.status(200).json({ blogs })
@@ -257,18 +257,35 @@ server.get('/trendindblogs', (req, res) => {
   })
 })
 
+server.post('/searchblogs', (req, res) => {
+  let { tag } = req.body;
+  tag = tag.toUpperCase()
+
+  let findQuery = { tags: tag, draft: false };
+
+  let maxLimit = 5;
+
+  Blog.find(findQuery)
+  .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+  .sort({"publishedAt" : -1 })
+  .select("blog_id title des activity tags publishedAt -_id")
+  .limit(maxLimit)
+  .then(blogs => {
+    return res.status(200).json({ blogs })
+  })
+  .catch(err => {
+    return res.status(500).json({err: err.message})
+  })
+})
+
 //Blog post
 server.post('/createblog', verifyJWT, (req, res) => {
   let authId = req.user;
 
-  let { title, des, banner, tags, content, draft } = req.body;
+  let { title, des, tags, content, draft } = req.body;
 
   if (!title || !title.length) {
       return res.status(403).json({ "error": "there is no title" });
-  }
-  
-  if (!banner || !banner.length) {
-      return res.status(403).json({ "error": "there is no banner" });
   }
 
   if (!content) {
@@ -291,7 +308,6 @@ server.post('/createblog', verifyJWT, (req, res) => {
   let blog = new Blog({
     title,
     des,
-    banner,
     content,
     tags,
     author: authId,

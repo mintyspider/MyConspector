@@ -8,7 +8,7 @@ import { UserContext } from '../App';
 import { useNavigate } from 'react-router-dom';
 
 const PublishForm = () => {
-  const { setEditorState, setBlog, blog, blog:{ banner, title, tags, des, content } } = useContext(EditorContext);
+  const { setEditorState, setBlog, blog, blog:{ title, tags, des, content } } = useContext(EditorContext);
 
   let { userAuth: {accessToken} } = useContext(UserContext);
 
@@ -47,7 +47,7 @@ const PublishForm = () => {
   const handleTopic = (e) => {
     if(e.keyCode == 13 || e.keyCode == 188){
       e.preventDefault();
-      let tag = e.target.value;
+      let tag = e.target.value.toLowerCase();
       if(tags.length < tagLimit){
         if(!tags.includes(tag) && tag.length){
           setBlog({...blog, tags : [...tags, tag ]})
@@ -82,11 +82,6 @@ const PublishForm = () => {
       return toast.error(`Добавьте хотя бы одну метку конспекту (не более ${tagLimit})`);
     }
 
-    // Проверка баннера
-    if (!banner || !banner.length) {
-      return toast.error("Добавьте баннер для конспекта");
-    }
-
     // Проверка контента (EditorJS)
     if (!content || !content.blocks || !content.blocks.length) {
       console.log("=) :", content.blocks)
@@ -100,8 +95,7 @@ const PublishForm = () => {
     e.target.classList.add('disable');
 
     let blogObj = { 
-      title, 
-      banner, 
+      title,
       des, 
       content: { blocks: content.blocks }, // Оборачиваем в объект с ключом `blocks`
       tags, 
@@ -157,10 +151,6 @@ const PublishForm = () => {
 
         <div className='max-w-[550px] center'>
           <p className="text-dark-grey mb-1">Предпросмотр</p>
-
-          <div className='w-full aspect-video rounded-lg overflow-hidden bg-grey mt-4'>
-            <img src={banner} alt="" />
-          </div>
 
           <h1 className='text-4xl font-medium mt-2 leading-tight line-clamp-2'>{title}</h1>
 

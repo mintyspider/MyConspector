@@ -13,10 +13,20 @@ const HomePage = () => {
   let [trendingBlogs, setTrendingBlogs] = useState(null);
   let [pageState, setPageState] = useState("Новое");
 
-  let categories = ["ИМИТ", "ИФ", "ИИЯ"]
+  let categories = ["ИБЭАТ", "ИИЯ", "ИИПСН", "ИЛГСН", "ИМИТ", "МИ", "ИПП", "ИФКСТ", "ИФ", "ИЭП", "ФТИ"]
 
   const fetchLatestBlogs = () => {
     axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/latestblogs")
+    .then(({ data }) => {
+      setBlogs(data.blogs)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
+  const fetchBlogsByCategory = () => {
+    axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", { tag: pageState })
     .then(({ data }) => {
       setBlogs(data.blogs)
     })
@@ -41,6 +51,8 @@ const HomePage = () => {
 
     if(pageState == "Новое"){
       fetchLatestBlogs();
+    } else {
+      fetchBlogsByCategory()
     }
 
     if(!trendingBlogs){
@@ -91,6 +103,7 @@ const HomePage = () => {
                   </>
                 </InPageNavigation>
             </div>
+
             {/* Фильтры и самые популярные конспекты */}
             <div className='min-w-[40%] lg:min-w-[400px] max-w-min border-1 border-grey pl-8 pt-3 max-md:hidden'>
               <div className='flex flex-col gap-10'>
@@ -99,7 +112,7 @@ const HomePage = () => {
 
                 <div className='flex gap-3 flex-wrap'>{
                   categories.map((category, i) => {
-                    return <button key={i} className={"tag "+ (pageState == category ? "bg-black text-white" : "")}onClick={loadBlogByCategory}>
+                    return <button key={i} className={"tag "+ (pageState == category ? "bg-black text-white" : "")} onClick={loadBlogByCategory}>
                       {category}
                     </button>
                   })}

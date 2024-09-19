@@ -13,7 +13,7 @@ const Tags = ({ tag, tagIndex }) => {
     const handleTagEdit = (e) => {
       if(e.keyCode == 13 || e.keyCode == 188){
         e.preventDefault();
-        let currentTag = e.target.innerText;
+        let currentTag = e.target.innerText.toUpperCase();
         tags[tagIndex] = currentTag;
         setBlog({...blog, tags: tags})
         e.target.setAttribute("contentEditable", false)

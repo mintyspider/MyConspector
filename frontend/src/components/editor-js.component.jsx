@@ -124,7 +124,18 @@ const ContentEditor = () => {
         console.log('Состояние blog обновлено:', blog);
       }, [blog]); // Сработает, когда blog изменится
 
-    return <div id="textEditor" className='font-gelasio'></div>;
-};
+    return (
+    <div>
+        {/* Панель инструментов */}
+        <div className="toolbar">
+            <button onClick={() => editorRef.current.blocks.insert('header')}>Заголовок</button>
+            <button onClick={() => editorRef.current.blocks.insert('list')}>Список</button>
+            <button onClick={() => editorRef.current.blocks.insert('quote')}>Цитата</button>
+            <button onClick={() => editorRef.current.blocks.insert('image')}>Изображение</button>
+        </div>
+        {/* Контейнер редактора */}
+        <div id="textEditor" className="editor-container"></div>
+    </div>
+)};
 
 export default ContentEditor;

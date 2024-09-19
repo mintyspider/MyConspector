@@ -113,6 +113,35 @@
     .blog-index{
         @apply text-4xl sm:text-3xl lg:text-5xl font-bold text-grey leading-none;
     }
+    /* Стили для панели инструментов */
+    .toolbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        border-bottom: 1px solid #ddd;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .toolbar button {
+        @apply btn-light
+    }
+
+    .toolbar button:hover {
+        @apply btn-dark
+    }
+
+    .toolbar i {
+        margin-right: 5px;
+    }
+
 }
 
 .ce-block__content, .ce-toolbar__content{

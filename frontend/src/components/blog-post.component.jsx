@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 const BlogPostCard = ({ content, author }) => {
 
-    let { publishedAt, tags, title, des, banner, activity: {total_likes}, blog_id: id } = content;
+    let { publishedAt, tags, title, des, activity: {total_likes}, blog_id: id } = content;
 
     let { fullname, profile_img, username } = author;
   return (
@@ -28,10 +28,6 @@ const BlogPostCard = ({ content, author }) => {
             {total_likes}
         </span>
       </div>
-    </div>
-
-    <div className='h-28 aspect-square bg-grey'>
-        <img src={banner} className='w-full h-full aspect-square object-cover'/>
     </div>
     </Link>
   )
