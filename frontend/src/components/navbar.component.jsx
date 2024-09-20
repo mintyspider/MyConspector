@@ -50,11 +50,16 @@ const Navbar = () => {
                     <i className="fi fi-rr-search block mt-2 text-xl"></i>
                 </button>
 
-                <button className='bg-grey w-12 h-12 rounded-full flex items-center justify-center'>
-                    <Link to='/editor'>
+                <Link to='/editor'>
+                    <button className='md:hidden bg-grey w-12 h-12 rounded-full flex items-center justify-center'>    
                         <i className="fi fi-rr-file-edit text-2xl block mt-2 text-dark-grey"></i>
-                    </Link>
-                </button>
+                    </button>
+                </Link>
+                
+                <Link to='/editor' className='btn-light py-2 hidden md:flex'>
+                    <i className="fi fi-rr-file-edit"></i>
+                    <p className='pl-2'>Новый конспект</p>
+                </Link>
 
                 {
                     accessToken ?
