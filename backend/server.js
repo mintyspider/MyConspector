@@ -257,9 +257,9 @@ server.get('/trendindblogs', (req, res) => {
   })
 })
 
+// Show posts categories & search
 server.post('/searchblogs', (req, res) => {
   let { tag } = req.body;
-  tag = tag.toUpperCase()
 
   let findQuery = { tags: tag, draft: false };
 
