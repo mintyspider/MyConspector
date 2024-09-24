@@ -7,6 +7,7 @@ import BlogPostCard from '../components/blog-post.component'
 import MinimalBlogPost from '../components/nobanner-blog-post.component'
 import { activeTabLineRef, activeTabRef } from '../components/inpage-navigation.component'
 import NoDataMessage from '../components/nodata.component'
+import { filterPaginationData } from '../common/filter-pagination-data'
 
 const HomePage = () => {
 
@@ -16,11 +17,22 @@ const HomePage = () => {
 
   let categories = ["ИБЭАТ", "ИИЯ", "ИИПСН", "ИЛГСН", "ИМИТ", "МИ", "ИПП", "ИФКСТ", "ИФ", "ИЭП", "ФТИ"]
 
-  const fetchLatestBlogs = () => {
-    axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/latestblogs")
+  const fetchLatestBlogs = (page = 1 ) => {
+    axios
+    .post(import.meta.env.VITE_SERVER_DOMAIN + "/latestblogs", { page })
     .then(({ data }) => {
-      setBlogs(data.blogs)
-    })
+
+      let formattedBlogs = filterPaginationData({ 
+        create_new_arr: true, 
+        state: blogs, 
+        data: data.blogs, 
+        page, 
+        countRoute: "/countlatestblogs", 
+        data_to_send: { draft: false } 
+      })
+      setBlogs(formattedBlogs)
+      })
+      
     .catch(err => {
       console.log(err)
     })
