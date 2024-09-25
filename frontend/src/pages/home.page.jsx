@@ -17,7 +17,16 @@ const HomePage = () => {
 
   let categories = ["ИБЭАТ", "ИИЯ", "ИИПСН", "ИЛГСН", "ИМИТ", "МИ", "ИПП", "ИФКСТ", "ИФ", "ИЭП", "ФТИ"]
 
-  const fetchLatestBlogs = (page = 1 ) => {
+  const fetchLatestBlogs = () => {
+    axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/latestblogs")
+    .then(({ data }) => {
+      setBlogs(data.blogs)})
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+  {/*const fetchLatestBlogs = (page = 1 ) => {
     axios
     .post(import.meta.env.VITE_SERVER_DOMAIN + "/latestblogs", { page })
     .then(({ data }) => {
@@ -32,11 +41,10 @@ const HomePage = () => {
       })
       setBlogs(formattedBlogs)
       })
-      
     .catch(err => {
       console.log(err)
     })
-  }
+  }*/}
 
   const fetchBlogsByCategory = () => {
     axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", { tag: pageState.toLowerCase() })

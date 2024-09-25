@@ -221,10 +221,8 @@ server.post('/google-auth', async (req, res) => {
   }
 });
 
- //Newest posts
-server.post('/latestblogs', (req, res) => {
-
-  let { page } = req.body;
+//Newest posts
+server.get('/latestblogs', (req, res) => {
 
   let maxLimit = 5;
 
@@ -232,7 +230,6 @@ server.post('/latestblogs', (req, res) => {
   .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
   .sort({"publishedAt" : -1 })
   .select("blog_id title des activity tags publishedAt -_id")
-  .skip((page - 1) * maxLimit)
   .limit(maxLimit)
   .then(blogs => {
     return res.status(200).json({ blogs })
@@ -241,6 +238,27 @@ server.post('/latestblogs', (req, res) => {
     return res.status(500).json({err: err.message})
   })
 })
+
+ //Newest posts
+//server.post('/latestblogs', (req, res) => {
+
+  //let { page } = req.body;
+
+  //let maxLimit = 5;
+
+  //Blog.find({ draft:false })
+  //.populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+  //.sort({"publishedAt" : -1 })
+  //.select("blog_id title des activity tags publishedAt -_id")
+  //.skip((page - 1) * maxLimit)
+  //.limit(maxLimit)
+  //.then(blogs => {
+    //return res.status(200).json({ blogs })
+  //})
+  //.catch(err => {
+    //return res.status(500).json({err: err.message})
+  //})
+//})
 
 server.get("/countlatestblogs", (req, res) => {
   
