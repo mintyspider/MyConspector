@@ -8,6 +8,7 @@ import MinimalBlogPost from '../components/nobanner-blog-post.component'
 import { activeTabLineRef, activeTabRef } from '../components/inpage-navigation.component'
 import NoDataMessage from '../components/nodata.component'
 import { filterPaginationData } from '../common/filter-pagination-data'
+import LoadMoreDataBtn from '../components/load-more.component'
 
 const HomePage = () => {
 
@@ -15,36 +16,26 @@ const HomePage = () => {
   let [trendingBlogs, setTrendingBlogs] = useState(null);
   let [pageState, setPageState] = useState("Новое");
 
-  let categories = ["ИБЭАТ", "ИИЯ", "ИИПСН", "ИЛГСН", "ИМИТ", "МИ", "ИПП", "ИФКСТ", "ИФ", "ИЭП", "ФТИ"]
+  let categories = ["ИБЭАТ", "ИИЯ", "ИИПСН", "ИЛГСН", "ИМИТ", "МИ", "ИПП", "ИФКСТ", "ИФ", "ИЭП", "ФТИ"];
 
-  const fetchLatestBlogs = () => {
-    axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/latestblogs")
-    .then(({ data }) => {
-      setBlogs(data.blogs)})
-    .catch(err => {
-      console.log(err)
-    })
-}
-
-  {/*const fetchLatestBlogs = (page = 1 ) => {
+  const fetchLatestBlogs = ( {page = 1} ) => {
     axios
     .post(import.meta.env.VITE_SERVER_DOMAIN + "/latestblogs", { page })
-    .then(({ data }) => {
-
-      let formattedBlogs = filterPaginationData({ 
-        create_new_arr: true, 
+    .then( async ({ data }) => {
+      console.log(data.blogs, data.blogs.length)
+      let formattedBlogs = await filterPaginationData({ 
         state: blogs, 
         data: data.blogs, 
         page, 
         countRoute: "/countlatestblogs", 
-        data_to_send: { draft: false } 
       })
+      console.log("data:", formattedBlogs)
       setBlogs(formattedBlogs)
       })
     .catch(err => {
       console.log(err)
     })
-  }*/}
+  }
 
   const fetchBlogsByCategory = () => {
     axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", { tag: pageState.toLowerCase() })
@@ -71,7 +62,7 @@ const HomePage = () => {
     activeTabRef.current.click();
 
     if(pageState == "Новое"){
-      fetchLatestBlogs();
+      fetchLatestBlogs({page: 1});
     } else {
       fetchBlogsByCategory()
     }
@@ -104,14 +95,15 @@ const HomePage = () => {
                     {
                       blogs == null 
                       ? <Loader />
-                      : blogs.length 
-                        ? blogs.map((blog, i) => {
+                      : blogs.results
+                        ? blogs.results.map((blog, i) => {
                             return <AnimationWrapper transition={{duration: 1, delay: i*.1 }} key={i}>
                               <BlogPostCard content={blog} author={blog.author.personal_info}/>
                             </AnimationWrapper>
                           })
-                          : <NoDataMessage message="Ничего не найдено （＞人＜；）"/>
+                        : <NoDataMessage message="Ничего не найдено （＞人＜；）"/>
                     }
+                    <LoadMoreDataBtn state={blogs} fetch={fetchLatestBlogs} />
                   </>
                   <>
                   {

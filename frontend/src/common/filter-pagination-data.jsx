@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from 'react'
 
-export const filterPaginationData = async ({ create_new_arr = false, state, data, page, countRoute, data_to_send }) => {
+export const filterPaginationData = async ({ create_new_arr = false, state, data, page, countRoute, data_to_send = {} }) => {
   
     let obj;
 
@@ -17,4 +17,5 @@ export const filterPaginationData = async ({ create_new_arr = false, state, data
             console.log(err)
       )
   }
+  return obj
 }
