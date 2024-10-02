@@ -248,7 +248,20 @@ server.post("/countlatestblogs", (req, res) => {
     return res.status(200).json({ totalDocs: count })
   })
   .catch(err => {
-    return res.status(500).json({err: err.message})
+    return res.status(500).json({error: err.message})
+  })
+})
+
+server.post("/countsearchblogs", (req, res) => {
+
+  let { tag } = req.body;
+
+  Blog.countDocuments({ draft: false, tags: tag })
+  .then(count => {
+    return res.status(200).json({ totalDocs: count })
+  })
+  .catch(err => {
+    return res.status(500).json({error: err.message})
   })
 })
 
@@ -285,7 +298,7 @@ server.post('/searchblogs', (req, res) => {
   .select("blog_id title des activity tags publishedAt -_id")
   .limit(maxLimit)
   .then(blogs => {
-    return res.status(200).json({ blogs })
+    return res.status(200).json({ blogs: blogs })
   })
   .catch(err => {
     return res.status(500).json({err: err.message})
