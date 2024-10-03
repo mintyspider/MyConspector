@@ -40,16 +40,19 @@ const HomePage = () => {
   }
 
   const fetchBlogsByCategory = ({ page }) => {
+    console.log("page:", pageState)
+    let searchPageState = pageState.toLowerCase();
+    console.log("new page:", searchPageState)
     axios
-    .post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", { page, pageState })
+    .post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", { page, searchPageState})
     .then( async ({ data }) => {
-      console.log(data.blogs, data.blogs.length)
+      console.log("this is some blogs to find:", data.blogs, data.blogs.length)
       let formattedBlogs = await filterPaginationData({ 
         state: blogs, 
         data: data.blogs, 
         page, 
         countRoute: "/countsearchblogs",
-        data_to_send: { tag: pageState }
+        data_to_send: { tag: searchPageState }
       })
       console.log("dataset:", formattedBlogs)
       if (JSON.stringify(formattedBlogs) !== JSON.stringify(blogs)) {

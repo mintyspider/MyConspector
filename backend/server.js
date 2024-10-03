@@ -252,9 +252,11 @@ server.post("/countlatestblogs", (req, res) => {
   })
 })
 
+//Search posts
 server.post("/countsearchblogs", (req, res) => {
 
   let { tag } = req.body;
+  console.log("tag to search:", tag)
 
   Blog.countDocuments({ draft: false, tags: tag })
   .then(count => {
@@ -287,12 +289,11 @@ server.get('/trendindblogs', (req, res) => {
 server.post('/searchblogs', (req, res) => {
   
   let { tag } = req.body;
-
-  let findQuery = { tags: tag, draft: false };
+  console.log("tag:", tag)
 
   let maxLimit = 5;
 
-  Blog.find({ draft:false, tags: tag })
+  Blog.find({ draft: false, tags: tag })
   .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
   .sort({"publishedAt" : -1 })
   .select("blog_id title des activity tags publishedAt -_id")
