@@ -252,21 +252,6 @@ server.post("/countlatestblogs", (req, res) => {
   })
 })
 
-//Search posts
-server.post("/countsearchblogs", (req, res) => {
-
-  let { tag } = req.body;
-  console.log("tag to search:", tag)
-
-  Blog.countDocuments({ draft: false, tags: tag })
-  .then(count => {
-    return res.status(200).json({ totalDocs: count })
-  })
-  .catch(err => {
-    return res.status(500).json({error: err.message})
-  })
-})
-
 //Trending posts
 server.get('/trendindblogs', (req, res) => {
 
@@ -285,11 +270,24 @@ server.get('/trendindblogs', (req, res) => {
   })
 })
 
+//Search posts
+server.post("/countsearchblogs", (req, res) => {
+
+  let { tag } = req.body;
+
+  Blog.countDocuments({ draft: false, tags: tag })
+  .then(count => {
+    return res.status(200).json({ totalDocs: count })
+  })
+  .catch(err => {
+    return res.status(500).json({error: err.message})
+  })
+})
+
 // Show posts categories & search
 server.post('/searchblogs', (req, res) => {
   
-  let { tag } = req.body;
-  console.log("tag:", tag)
+  let { page, tag } = req.body;
 
   let maxLimit = 5;
 

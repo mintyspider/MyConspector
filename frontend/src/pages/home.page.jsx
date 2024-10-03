@@ -40,13 +40,12 @@ const HomePage = () => {
   }
 
   const fetchBlogsByCategory = ({ page }) => {
-    console.log("page:", pageState)
-    let searchPageState = pageState.toLowerCase();
-    console.log("new page:", searchPageState)
+    const searchPageState = pageState.toLowerCase();
+    console.log("new page:", searchPageState);
+    console.log("page number:", page);
     axios
     .post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", { page, searchPageState})
     .then( async ({ data }) => {
-      console.log("this is some blogs to find:", data.blogs, data.blogs.length)
       let formattedBlogs = await filterPaginationData({ 
         state: blogs, 
         data: data.blogs, 
@@ -54,9 +53,12 @@ const HomePage = () => {
         countRoute: "/countsearchblogs",
         data_to_send: { tag: searchPageState }
       })
-      console.log("dataset:", formattedBlogs)
+      console.log("Fetched blogs:", blogs);
       if (JSON.stringify(formattedBlogs) !== JSON.stringify(blogs)) {
         setBlogs(formattedBlogs);
+      }
+      if (!formattedBlogs.length){
+        <NoDataMessage message="Здесь еще ничего нет （＞人＜；）"/>
       }
       })
     .catch(err => {
@@ -91,15 +93,13 @@ const HomePage = () => {
 
   const loadBlogByCategory = (e) => {
     let category = e.target.innerText.toUpperCase();
-
     setBlogs(null);
-
     if(pageState == category){
       setPageState("Новое");
       return;
     }
-
     setPageState(category);
+
   }
 
   return (
@@ -110,17 +110,23 @@ const HomePage = () => {
                 <InPageNavigation routes={[pageState, "Популярное"]} defaultHidden={["Популярное"]}>
                   <>
                     {
-                      blogs == null 
+                      blogs == null
                       ? <Loader />
-                      : blogs.results.length
+                      : blogs.results.length 
                         ? blogs.results.map((blog, i) => {
                             return <AnimationWrapper transition={{duration: 1, delay: i*.1 }} key={i}>
                               <BlogPostCard content={blog} author={blog.author.personal_info}/>
                             </AnimationWrapper>
                           })
-                        : <NoDataMessage message="Ничего не найдено （＞人＜；）"/>
+                        : pageState === "Новое"
+                          ? <NoDataMessage message="Ничего не найдено（＞人＜；）"/>
+                          : <NoDataMessage message="Здесь пока еще ничего нет（ …人＜）"/>
                     }
-                    <LoadMoreDataBtn state={blogs} fetchDataFun={fetchLatestBlogs} />
+                    {
+                      pageState == "Новое"
+                      ? <LoadMoreDataBtn state={blogs} fetchDataFun={fetchLatestBlogs} />
+                      : <LoadMoreDataBtn state={blogs} fetchDataFun={fetchBlogsByCategory} />
+                    }
                   </>
                   <>
                   {
@@ -146,12 +152,12 @@ const HomePage = () => {
 
                 <div className='flex gap-3 flex-wrap'>{
                   categories.map((category, i) => {
-                    return <button key={i} className={"tag "+ (pageState == category ? "bg-black text-white" : "")} onClick={loadBlogByCategory}>
+                    return <button key={i} className={"tag "+ (pageState === category ? "bg-black text-white" : "")} onClick={loadBlogByCategory} >
                       {category}
                     </button>
                   })}
                 </div>
-                </div>
+              </div>
 
               <div className=''>
                 <h1 className='font-medium text-xl mb-8 gap-2'>
@@ -159,16 +165,15 @@ const HomePage = () => {
                 </h1>
 
                 {
-                      trendingBlogs == null 
-                      ? <Loader />
-                      : !trendingBlogs.length 
-                        ? <NoDataMessage message="Ничего не найдено （＞人＜；）"/>
-                        : trendingBlogs.map((blog, i) => {
-                            return <AnimationWrapper transition={{duration: 1, delay: i*.1 }} key={i}>
-                              <MinimalBlogPost blog={blog} index={i}/>
-                            </AnimationWrapper>
-                          })
-                    }
+                  trendingBlogs == null 
+                    ? <Loader />
+                    : !trendingBlogs.length 
+                      ? <NoDataMessage message="Ничего не найдено （＞人＜；）"/>
+                      : trendingBlogs.map((blog, i) => {
+                          return <AnimationWrapper transition={{duration: 1, delay: i*.1 }} key={i}>
+                            <MinimalBlogPost blog={blog} index={i}/>
+                          </AnimationWrapper>})
+                }
               </div>
           </div>
           </div>
