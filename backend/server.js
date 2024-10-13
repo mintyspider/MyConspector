@@ -273,11 +273,19 @@ server.get('/trendindblogs', (req, res) => {
 // Search posts count
 server.post('/searchblogs', (req, res) => {
 
-  let { tag, page } = req.body;
+  let { tag, query, page } = req.body;
+
+  let findQuery;
+
+  if(tag){
+    findQuery = {tags: tag, draft: false}
+  } else if(query){
+    findQuery = {draft: false, title: new RegExp(query, 'i')}
+  }
 
   let maxLimit = 5;
 
-  Blog.find({ draft: false, tags: tag })
+  Blog.find(findQuery)
   .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
   .sort({"publishedAt" : -1 })
   .select("blog_id title des activity tags publishedAt -_id")
@@ -293,9 +301,17 @@ server.post('/searchblogs', (req, res) => {
 
 server.post('/countsearchblogs', (req, res) => {
 
-  let { tag } = req.body;
+  let {tag, query} = req.body;
 
-  Blog.countDocuments({ draft: false, tags: tag })
+  let findQuery;
+
+  if(tag){
+    findQuery = {tags: tag, draft: false}
+  } else if(query){
+    findQuery = {draft: false, title: new RegExp(query, 'i')}
+  }
+
+  Blog.countDocuments(findQuery)
   .then(count => {
     return res.status(200).json({ totalDocs: count })
   })
