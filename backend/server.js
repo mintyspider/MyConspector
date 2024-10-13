@@ -270,8 +270,28 @@ server.get('/trendindblogs', (req, res) => {
   })
 })
 
-//Search posts
-server.post("/countsearchblogs", (req, res) => {
+// Search posts count
+server.post('/searchblogs', (req, res) => {
+
+  let { tag, page } = req.body;
+
+  let maxLimit = 5;
+
+  Blog.find({ draft: false, tags: tag })
+  .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+  .sort({"publishedAt" : -1 })
+  .select("blog_id title des activity tags publishedAt -_id")
+  .skip((page - 1) * maxLimit)
+  .limit(maxLimit)
+  .then(blogs => {
+    return res.status(200).json({ blogs })
+  })
+  .catch(err => {
+    return res.status(500).json({err: err.message})
+  })
+})
+
+server.post('/countsearchblogs', (req, res) => {
 
   let { tag } = req.body;
 
@@ -284,25 +304,6 @@ server.post("/countsearchblogs", (req, res) => {
   })
 })
 
-// Show posts categories & search
-server.post('/searchblogs', (req, res) => {
-  
-  let { page, tag } = req.body;
-
-  let maxLimit = 5;
-
-  Blog.find({ draft: false, tags: tag })
-  .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
-  .sort({"publishedAt" : -1 })
-  .select("blog_id title des activity tags publishedAt -_id")
-  .limit(maxLimit)
-  .then(blogs => {
-    return res.status(200).json({ blogs: blogs })
-  })
-  .catch(err => {
-    return res.status(500).json({err: err.message})
-  })
-})
 
 //Blog post
 server.post('/createblog', verifyJWT, (req, res) => {

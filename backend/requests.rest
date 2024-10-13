@@ -1,12 +1,8 @@
-POST http://localhost:3000/createpost
+POST http://localhost:3000/searchblogs
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGYxYzc2ZDEwZGVhOWVhOTRiNTZhYSIsImlhdCI6MTcyNTg5Nzg0NiwiYXVkIjoieW91ci1hcHAiLCJpc3MiOiJ5b3VyLWFwcCJ9.NtsjB4k0KwxQF2ThoBWc_6AkJVGmyX_Bj8bnFFkEE5g
 
 {
-    "title" : "Мой блог пост",
-    "des" : "this is my des",
-    "content": {
-        "blocks" : [ 1, 2 ]
-    },
-    "tags" : ["tag1", "tag2"]
+    "page": 1,
+    "tag" : "ми"
 }

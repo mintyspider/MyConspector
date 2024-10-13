@@ -41,24 +41,21 @@ const HomePage = () => {
 
   const fetchBlogsByCategory = ({ page }) => {
     const searchPageState = pageState.toLowerCase();
-    console.log("new page:", searchPageState);
-    console.log("page number:", page);
+    console.log("Отправляемые данные:", { page, searchPageState });
     axios
-    .post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", { page, searchPageState})
+    .post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", { page, tag: searchPageState })
     .then( async ({ data }) => {
+      console.log(data.blogs, data.blogs.length)
       let formattedBlogs = await filterPaginationData({ 
         state: blogs, 
         data: data.blogs, 
         page, 
-        countRoute: "/countsearchblogs",
-        data_to_send: { tag: searchPageState }
+        countRoute: "/countsearchblogs", 
+        data_to_send: {tag: searchPageState}
       })
-      console.log("Fetched blogs:", blogs);
+      console.log("data:", formattedBlogs)
       if (JSON.stringify(formattedBlogs) !== JSON.stringify(blogs)) {
         setBlogs(formattedBlogs);
-      }
-      if (!formattedBlogs.length){
-        <NoDataMessage message="Здесь еще ничего нет （＞人＜；）"/>
       }
       })
     .catch(err => {
@@ -81,9 +78,9 @@ const HomePage = () => {
     activeTabRef.current.click();
 
     if(pageState == "Новое"){
-      fetchLatestBlogs({page : 1});
+      fetchLatestBlogs({page: 1});
     } else {
-      fetchBlogsByCategory({page : 1});
+      fetchBlogsByCategory({page: 1});
     }
 
     if(!trendingBlogs){
@@ -118,15 +115,9 @@ const HomePage = () => {
                               <BlogPostCard content={blog} author={blog.author.personal_info}/>
                             </AnimationWrapper>
                           })
-                        : pageState === "Новое"
-                          ? <NoDataMessage message="Ничего не найдено（＞人＜；）"/>
-                          : <NoDataMessage message="Здесь пока еще ничего нет（ …人＜）"/>
+                        : <NoDataMessage message="Ничего не найдено（＞人＜；）"/>
                     }
-                    {
-                      pageState == "Новое"
-                      ? <LoadMoreDataBtn state={blogs} fetchDataFun={fetchLatestBlogs} />
-                      : <LoadMoreDataBtn state={blogs} fetchDataFun={fetchBlogsByCategory} />
-                    }
+                    <LoadMoreDataBtn state={blogs} fetchDataFun={(pageState == "Новое" ? fetchLatestBlogs : fetchBlogsByCategory)} />
                   </>
                   <>
                   {
