@@ -46,12 +46,23 @@ const SearchPage = () => {
           console.log("num=>", users.data.users.length )
           setUsers(users);
           })
-      }
+    }
+
+    const searchNames = () => {
+        axios
+        .post(import.meta.env.VITE_SERVER_DOMAIN + "/searchfullnames", {query})
+        .then((users) => {
+            console.log("users:", users)
+            console.log("num=>", users.data.users.length )
+            setUsers(users);
+            })
+    }
 
     useEffect(() => {
         resetState();
         searchBlogs({page: 1, create_new_arr: true})
         searchUsers();
+        searchNames();
     }, [query])
 
     const resetState = () => {

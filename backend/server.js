@@ -334,6 +334,33 @@ server.post("/searchusers", (req, res) => {
   })
 })
 
+//find users by username
+server.post("/searchfullnames", (req, res) => {
+  let {query} = req.body;
+  User.find({"personal_info.fullname": new RegExp(query, 'i')})
+  .limit(50)
+  .select("personal_info.fullname personal_info.username personal_info.profile_img -_id")
+  .then(users =>{
+    return res.status(200).json({"users": users})
+  })
+  .catch(err => {
+    return res.status(500).json({error: err.message})
+  })
+})
+
+server.post("/getprofile", (req, res) => {
+  let {username} = req.body;
+
+  User.findOne({"personal_info.username" : username})
+  .select("-personal_info.password -google_auth -updateAt -blogs")
+  .then(user => {
+    return res.status(200).json(user)
+  })
+  .catch(err => {
+    return res.status(500).json(err.message)
+  })
+})
+
 //Blog post
 server.post('/createblog', verifyJWT, (req, res) => {
   let authId = req.user;
