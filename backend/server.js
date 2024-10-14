@@ -320,6 +320,19 @@ server.post('/countsearchblogs', (req, res) => {
   })
 })
 
+//find users by username
+server.post("/searchusers", (req, res) => {
+  let {query} = req.body;
+  User.find({"personal_info.username": new RegExp(query, 'i')})
+  .limit(50)
+  .select("personal_info.fullname personal_info.username personal_info.profile_img -_id")
+  .then(users =>{
+    return res.status(200).json({"users": users})
+  })
+  .catch(err => {
+    return res.status(500).json({error: err.message})
+  })
+})
 
 //Blog post
 server.post('/createblog', verifyJWT, (req, res) => {
