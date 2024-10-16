@@ -13,13 +13,19 @@ export const UserContext = createContext({});
 
 const App = () => {
 
-    const [userAuth, setUserAuth] = useState();
+    const [userAuth, setUserAuth] = useState(null); // Инициализация состояния с null
 
     useEffect(() => {
-        let userInSession = lookInSession("user");
+        const userInSession = lookInSession("user");
 
-        userInSession ? setUserAuth(JSON.parse(userInSession)) : setUserAuth({accessToken: null})
-    }, [])
+        if (userInSession) {
+            const parsedUser = JSON.parse(userInSession);  // Парсим данные пользователя
+            setUserAuth(parsedUser);  // Устанавливаем пользователя в состояние
+            console.log("parsed user", parsedUser);
+        } else {
+            setUserAuth({ accessToken: null });  // Если пользователя нет, устанавливаем значение по умолчанию
+        }
+    }, []);
 
     return (
         <UserContext.Provider value={{userAuth, setUserAuth}}>
@@ -31,7 +37,7 @@ const App = () => {
                         <Route path="signin" element={ <AuthForm type="sign-in" /> } />
                         <Route path="signup" element={ <AuthForm type="sign-up" /> } />
                         <Route path="search/:query" element={<SearchPage />} />
-                        <Route path="users/:id" element={<ProfilePage />} />
+                        <Route path="user/:id" element={<ProfilePage />} />
                         <Route path="*" element={<NotFound/>}/>
                     </Route>
                 </Routes>
