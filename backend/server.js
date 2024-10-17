@@ -272,53 +272,83 @@ server.get('/trendindblogs', (req, res) => {
 
 // Search posts count
 server.post('/searchblogs', (req, res) => {
-
-  let { tag, query, page } = req.body;
-
-  let findQuery;
-
-  if(tag){
-    findQuery = {tags: tag, draft: false}
-  } else if(query){
-    findQuery = {draft: false, title: new RegExp(query, 'i')}
-  }
-
+  let { tag, query, author, page } = req.body;
   let maxLimit = 5;
+  // Назначаем значение по умолчанию для page, если оно не передано
+  page = page || 1;
+  
+  let findQuery; // Начальное условие, чтобы исключить черновики
 
-  Blog.find(findQuery)
-  .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
-  .sort({"publishedAt" : -1 })
-  .select("blog_id title des activity tags publishedAt -_id")
-  .skip((page - 1) * maxLimit)
-  .limit(maxLimit)
-  .then(blogs => {
-    return res.status(200).json({ blogs })
-  })
-  .catch(err => {
-    return res.status(500).json({err: err.message})
-  })
-})
+  // Формируем запрос в зависимости от переданных параметров
+  if (tag) {
+    findQuery = { draft: false, tags: tag };
+  } else if (query) {
+    findQuery = { draft: false, title: new RegExp(query, 'i') } // Поиск по подстроке, игнорируя регистр
+  } else if (author) {
+    User.findOne({ "personal_info.username": author })  // Используем поле username
+      .then(user => {
+        if (!user) {
+          return res.status(404).json({ err: 'User not found' });
+        }
+        findQuery.author = mongoose.Types.ObjectId(user._id); // Преобразуем ID пользователя в ObjectId
+        return Blog.find(findQuery)
+          .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+          .sort({ "publishedAt": -1 })
+          .select("blog_id title des activity tags publishedAt -_id")
+          .skip((page - 1) * maxLimit)
+          .limit(maxLimit);
+      })
+      .then(blogs => {
+        return res.status(200).json({ blogs });
+      })
+      .catch(err => {
+        return res.status(500).json({ err: err.message });
+      });
+  } else {
+    // Если автор не указан, просто выполняем поиск по тегам или запросу
+    Blog.find(findQuery)
+      .populate("author", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+      .sort({ "publishedAt": -1 })
+      .select("blog_id title des activity tags publishedAt -_id")
+      .skip((page - 1) * maxLimit)
+      .limit(maxLimit)
+      .then(blogs => {
+        return res.status(200).json({ blogs });
+      })
+      .catch(err => {
+        return res.status(500).json({ err: err.message });
+      });
+  }
+});
+
 
 server.post('/countsearchblogs', (req, res) => {
+  let { tag, author, query } = req.body;
 
-  let {tag, query} = req.body;
+  let findQuery = { draft: false }; // Изначальное условие, чтобы исключить черновики
 
-  let findQuery;
-
-  if(tag){
-    findQuery = {tags: tag, draft: false}
-  } else if(query){
-    findQuery = {draft: false, title: new RegExp(query, 'i')}
+  // Формируем запрос в зависимости от переданных параметров
+  if (tag) {
+    findQuery.tags = tag;
+  } else if (query) {
+    findQuery.title = new RegExp(query, 'i');
+  } else if (author) {
+    if (mongoose.Types.ObjectId.isValid(author)) {
+      findQuery.author = mongoose.Types.ObjectId(author); // Преобразуем author в ObjectId
+    } else {
+      return res.status(400).json({ err: 'Invalid author ID' });
+    }
   }
 
   Blog.countDocuments(findQuery)
-  .then(count => {
-    return res.status(200).json({ totalDocs: count })
-  })
-  .catch(err => {
-    return res.status(500).json({error: err.message})
-  })
-})
+    .then(count => {
+      return res.status(200).json({ totalDocs: count });
+    })
+    .catch(err => {
+      return res.status(500).json({ error: err.message });
+    });
+});
+
 
 //find users by username
 server.post("/searchusers", (req, res) => {

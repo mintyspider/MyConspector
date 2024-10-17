@@ -7,6 +7,7 @@ import { UserContext } from "../App";
 import {Link} from 'react-router-dom';
 
 import AboutUser from '../components/about.component';
+import { filterPaginationData } from '../common/filter-pagination-data';
 
 export const profileDataStructure = {
   personal_info: {
@@ -37,6 +38,7 @@ const ProfilePage = () => {
       axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/getprofile", {username: profileId})
       .then(({data: user}) => {
         setProfile(user)
+        getBlogs({user_id: user._id})
         setLoading(false)
       })
       .catch(err => {
@@ -45,12 +47,33 @@ const ProfilePage = () => {
       })
     }
 
-    const getBlogs = ({page = 1, user_id}) => {
-        user_id = user_id == undefined ? blog.user_id : user_id;
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", {author: user_id, page})
-        .then()
-        .catch()
-    }
+    const getBlogs = async ({ page = 1, user_id }) => {
+      try {
+          // Если user_id не передан, используем blogs.user_id
+          user_id = user_id === undefined ? blogs.user_id : user_id;
+  
+          // Отправляем запрос на сервер для поиска блогов
+          const { data } = await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", { author: user_id, page });
+  
+          // Форматируем данные блога
+          let formattedBlogs = await filterPaginationData({
+              state: blogs,
+              data: data.blogs,
+              page,
+              countRoute: "/countsearchblogs",
+              data_to_send: { author: user_id }
+          });
+  
+          // Присваиваем user_id в отформатированные данные
+          formattedBlogs.user_id = user_id;
+  
+          // Обновляем состояние blogs
+          setBlogs(formattedBlogs);
+      } catch (error) {
+          console.error("Error fetching blogs:", error);
+      }
+  };
+  
 
     const changeConspect = () => {
       if (total_posts % 10 ===1 && total_posts % 100 !== 11) {
