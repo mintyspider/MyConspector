@@ -3,5 +3,5 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZGYxYzc2ZDEwZGVhOWVhOTRiNTZhYSIsImlhdCI6MTcyNTg5Nzg0NiwiYXVkIjoieW91ci1hcHAiLCJpc3MiOiJ5b3VyLWFwcCJ9.NtsjB4k0KwxQF2ThoBWc_6AkJVGmyX_Bj8bnFFkEE5g
 
 {
-    "author": "m1ntyspider"
+    "author": "66d7564c878a82f36cb550fe"
 }
