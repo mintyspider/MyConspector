@@ -5,9 +5,14 @@ import AnimationWrapper from '../common/page-animation';
 import Loader from '../components/loader.component';
 import { UserContext } from "../App";
 import {Link} from 'react-router-dom';
+import InPageNavigation from '../components/inpage-navigation.component';
 
 import AboutUser from '../components/about.component';
 import { filterPaginationData } from '../common/filter-pagination-data';
+import BlogPostCard from '../components/blog-post.component';
+import LoadMoreDataBtn from '../components/load-more.component';
+import NoDataMessage from '../components/nodata.component';
+import NotFound from './404.page';
 
 export const profileDataStructure = {
   personal_info: {
@@ -30,15 +35,21 @@ const ProfilePage = () => {
     let [profile, setProfile] = useState(profileDataStructure);
     let [loading, setLoading] = useState(true);
     let { userAuth } = useContext(UserContext);
+    let userId = userAuth?._id;
     let [blogs, setBlogs] = useState(null);
+    let [profileLoaded, setProfileLoaded] = useState("");
 
     let {personal_info: {fullname, username: profile_username, profile_img, bio}, account_info: {total_posts, total_reads}, social_links, joinedAt} = profile;
 
     const fetchUserProfile = () => {
       axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/getprofile", {username: profileId})
       .then(({data: user}) => {
-        setProfile(user)
-        getBlogs({user_id: user._id})
+        if(user !== null){
+          setProfile(user)
+          getBlogs({user_id: user._id})
+        }
+        console.log("profile: ", user._id)
+        setProfileLoaded(profileId)
         setLoading(false)
       })
       .catch(err => {
@@ -101,27 +112,33 @@ const ProfilePage = () => {
 
     const resetStates = () => {
       setProfile(profileDataStructure)
+      setProfileLoaded("")
       setLoading(true)
     }
   
   useEffect(() => {
+    if(profileId !== profileLoaded){
+      setBlogs(null)
+    }
+    if(blogs == null){
     resetStates()
-    fetchUserProfile();
-  }, [profileId])
+    fetchUserProfile();}
+  }, [profileId, blogs])
 
   return (
     <AnimationWrapper>
       {
         loading ? <Loader /> : 
+        profile_username.length ?
         <section className='h-cover md:flex flex-row-reverse items-start gap-5 min-[1100px]:gap-12'>
-          <div className="flex flex-col max-md:items-center gap-5 min-w-[250px]">
+          <div className="flex flex-col max-md:items-center gap-5 min-w-[250px] md:w-[50%] md:pl-8 md:border-l border-grey md:sticky md:top-[100px] md:py-10">
             <img src={profile_img} className='w-48 h-48 bg-grey rounded-full md:w-32 md:h-32'/>
             <h1 className='text-2xl font-medium'>{fullname}</h1>
             <p className="text-dark-grey text-xl h-6">"{profile_username}"</p>
             <p>{total_posts.toLocaleString()} {changeConspect()} • {total_reads.toLocaleString()} {changeReads()}</p>
 
             <div className='flex gap-4 mt-2'>
-              {profileId == userAuth.username ?
+              {profileId == userId ?
               <Link to="/settings/editprofile" className='btn-light rounded-md'>Редактировать профиль</Link>
               : ""}
               
@@ -130,7 +147,32 @@ const ProfilePage = () => {
             <AboutUser className="max-md:hidden" bio={bio} social_links={social_links} joinedAt={joinedAt} />  
           </div>
 
+          <div className='max-md:mt-12 w-full '>
+            <InPageNavigation routes={["Собрание конспектов", "Кто я?"]} defaultHidden={["Кто я?"]}>
+              <>
+                {
+                  blogs == null
+                    ? <Loader />
+                    : blogs.results.length 
+                      ? blogs.results.map((blog, i) => {
+                        console.log("blog: ", blog)
+                        return <AnimationWrapper transition={{duration: 1, delay: i*.1 }} key={i}>
+                            <BlogPostCard content={blog} author={blog.author.personal_info}/>
+                          </AnimationWrapper>
+                        })
+                      : <NoDataMessage message="Ничего не найдено（＞人＜；）"/>
+                    }
+                    <LoadMoreDataBtn state={blogs} fetchDataFun={getBlogs} />
+                  </>
+                  
+                  <AboutUser bio={bio} social_links={social_links} joinedAt={joinedAt} />
+                  
+            </InPageNavigation>
+
+          </div>
+
         </section>
+        :<NotFound/>
       }
     </AnimationWrapper> 
   )
