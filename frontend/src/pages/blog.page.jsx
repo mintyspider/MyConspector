@@ -53,7 +53,7 @@ const BlogPage = () => {
                         <img src={profile_img} className='w-12 h-12 rounded-full'/>
                         <p>{fullname} <br /> <Link to={`/user/${author_username}`} className='text-dark-grey underline'>"{author_username}"</Link></p>
                     </div>
-                    <p className='text-dark-grey opacity-75 max-sm:mt-6 max-sm:ml-12 max-sm:pl-5'>Дата публикации {getFullDay(publishedAt)}</p>
+                    <p className='text-dark-grey opacity-75 max-sm:mt-6 max-sm:ml-12 max-sm:pl-5'>Опубликовано {getFullDay(publishedAt)}</p>
                 </div>
             </div>
         }
