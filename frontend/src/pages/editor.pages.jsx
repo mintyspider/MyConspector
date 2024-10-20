@@ -29,7 +29,7 @@ const EditorPage = () => {
         accessToken === null ? 
         <Navigate to="/signin" />
         : editorState == "editor" ? 
-        <BlogEditor />
+          <BlogEditor />
         : <PublishForm />
       }
     </EditorContext.Provider>

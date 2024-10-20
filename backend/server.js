@@ -270,15 +270,15 @@ server.get('/trendindblogs', (req, res) => {
   })
 })
 
-// Search posts count
+// Search posts
 server.post("/searchblogs", (req, res) => {
 
-  let { tag, author, query, page } = req.body;
-  let maxLimit = 5;
+  let { tag, author, query, page, limit, eliminate_blog } = req.body;
+  let maxLimit = limit || 5;
   let findQuery;
 
   if (tag) {
-    findQuery = { tags: tag, draft: false }
+    findQuery = { tags: tag, draft: false, blog_id: { $ne: eliminate_blog } }
   } else if (author) {
     findQuery = { author, draft: false }
   } else if (query) {

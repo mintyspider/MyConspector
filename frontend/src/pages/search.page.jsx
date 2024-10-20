@@ -38,7 +38,7 @@ const SearchPage = () => {
         }
     )}
 
-    // FIXME: search users
+    // ! FIXME: search users
     const searchUsers = () => {
       axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/searchusers", {query})
