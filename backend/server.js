@@ -417,8 +417,8 @@ server.post('/createblog', verifyJWT, (req, res) => {
 });
 
 server.post("/getblog", (req, res) => {
-  let { blog_id } = req.body;
-  let incrementVlue = 1;
+  let { blog_id, draft, mode } = req.body;
+  let incrementVlue = mode !== "edit" ? 1 : 0;
   Blog.findOneAndUpdate({ blog_id }, { $inc: { "activity.total_reads": incrementVlue } })
   .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
   .select("title des content activity tags publishedAt blog_id")
@@ -428,6 +428,9 @@ server.post("/getblog", (req, res) => {
     .catch(err => {
       return res.status(500).json({error: err.message})
     })
+    if (blog.draft && !draft) {
+      return res.status(500).json({error: "No access to edit this blog"})
+    }
     return res.status(200).json({blog})
   })
   .catch(err => {

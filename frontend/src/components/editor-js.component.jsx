@@ -109,7 +109,7 @@ const ContentEditor = () => {
         if (!isReady.current) {
             editorRef.current = new EditorJS({
                 holderId: "textEditor",
-                data: content.blocks,
+                data: Array.isArray(content) ? content[0] : content,
                 tools: tools,
                 placeholder: "Не бойся начать с чистого листа...",
                 onChange: async () => {

@@ -3,6 +3,8 @@ import { UserContext } from '../App'
 import { Navigate, useParams } from 'react-router-dom';
 import BlogEditor from '../components/blog-editor.component';
 import PublishForm from '../components/publish-form.component';
+import Loader from '../components/loader.component';
+import axios from 'axios';
 
 const BlogStructure = {
   title: '',
@@ -30,15 +32,28 @@ const EditorPage = () => {
     useEffect(() => {
 
         if (!blog_id) {
-          setLoading(false);
-    })
+          return setLoading(false);
+        }
+
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/getblog", { blog_id , draft: true, mode: "edit" })
+          .then(({ data }) => {
+            setBlog(data.blog);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            setBlog(null)
+            setLoading(false);
+          });
+    }, []);
 
   return (
     <EditorContext.Provider value={{ blog, setBlog, editorState, setEditorState}}>
       {
         accessToken === null ? 
         <Navigate to="/signin" />
-        : editorState == "editor" ? 
+        : loading ? <Loader /> :
+        editorState == "editor" ? 
           <BlogEditor />
         : <PublishForm />
       }
