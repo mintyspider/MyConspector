@@ -5,12 +5,13 @@ import { EditorContext } from '../pages/editor.pages';
 import Tags from './tags.component';
 import axios from 'axios';
 import { UserContext } from '../App';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const PublishForm = () => {
   const { setEditorState, setBlog, blog, blog:{ title, tags, des, content } } = useContext(EditorContext);
 
   let { userAuth: {accessToken} } = useContext(UserContext);
+  let {blog_id} = useParams();
 
   useEffect(() => {
     console.log('Состояние blog обновлено:', blog);
@@ -104,7 +105,7 @@ const PublishForm = () => {
     
 
     // Отправляем запрос на сервер
-    axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', blogObj, {
+    axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', {...blogObj, id: blog_id}, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }

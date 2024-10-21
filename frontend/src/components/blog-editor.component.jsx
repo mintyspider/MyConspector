@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import logo from "../imgs/logo.png";
 import AnimationWrapper from '../common/page-animation';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -12,6 +12,7 @@ import { UserContext } from '../App';
 
 const BlogEditor = () => {
     const { setEditorState, setBlog, blog, blog:{ title, tags, des, content } } = useContext(EditorContext);
+    let {blog_id} = useParams();
 
     const handleTitleKeyDown = (e) => {
         if (e.keyCode === 13) {
@@ -83,7 +84,7 @@ const BlogEditor = () => {
       };
       
       // Отправляем запрос на сервер
-      axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', blogObj, {
+      axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', {...blogObj, id: blog_id}, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }

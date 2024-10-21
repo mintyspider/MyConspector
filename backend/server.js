@@ -366,7 +366,7 @@ server.post("/getprofile", (req, res) => {
 server.post('/createblog', verifyJWT, (req, res) => {
   let authId = req.user;
 
-  let { title, des, tags, content, draft } = req.body;
+  let { title, des, tags, content, draft, id } = req.body;
 
   if (!title || !title.length) {
       return res.status(403).json({ "error": "there is no title" });
@@ -387,17 +387,26 @@ server.post('/createblog', verifyJWT, (req, res) => {
 
   tags = tags.map(tag => tag.toLowerCase());
   
-  let blog_id = translit(title) + nanoid();
+  let blog_id = id || translit(title).replace(/^a-zA-Z0-9_/g, ' ').replace(/\s/g, '-') + nanoid();
 
-  let blog = new Blog({
-    title,
-    des,
-    content,
-    tags,
-    author: authId,
-    blog_id,
-    draft: Boolean(draft)
-  })
+  if (id) {
+    Blog.findOneAndUpdate({ blog_id }, { title, des, content, tags, author: authId, draft : draft ? draft : false })
+    .then(() => {
+      return res.status(200).json({ id:blog_id });
+    })
+    .catch (err => {
+      return res.status(500).json({ error: 'Failed to update blog post' });
+    })
+  } else {
+    let blog = new Blog({
+      title,
+      des,
+      content,
+      tags,
+      author: authId,
+      blog_id,
+      draft: Boolean(draft)
+    })
 
     blog.save().then((blog) => {
 
@@ -407,13 +416,14 @@ server.post('/createblog', verifyJWT, (req, res) => {
         return res.status(200).json({ "message": "Blog post created successfully", id: blog.blog_id });
       })
       .catch (err => {
-      return res.status(500).json({ error: 'Failed to update total posts number' });
+        return res.status(500).json({ error: 'Failed to update total posts number' });
       })
-      
+        
     })
     .catch (err => {
       return res.status(500).json({ error: 'Internal Server Error' });
     });
+  }
 });
 
 server.post("/getblog", (req, res) => {
