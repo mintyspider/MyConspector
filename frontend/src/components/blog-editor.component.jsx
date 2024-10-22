@@ -2,8 +2,6 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import logo from "../imgs/logo.png";
 import AnimationWrapper from '../common/page-animation';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../common/firebase';
 import { EditorContext } from '../pages/editor.pages';
 import { toast, Toaster } from 'react-hot-toast';
 import ContentEditor from './editor-js.component';

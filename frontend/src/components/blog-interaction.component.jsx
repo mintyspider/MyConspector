@@ -1,21 +1,39 @@
-import React, { useContext } from 'react'
-import { BlogContext } from '../pages/blog.page';
+import React, { useContext, useState } from 'react';
+import { BlogContext, handleSaveAsPDF } from '../pages/blog.page';
 import { Toaster, toast } from "react-hot-toast";
 import { UserContext } from '../App';
 import { Link } from 'react-router-dom';
+import { PdfContext } from '../pages/blog.page';
 
 const BlogInteraction = () => {
+    let { post, post: { blog_id, title, activity, activity: { total_likes, total_comments }, author: { personal_info: { username: author_username } } }, setPost, isLikedByUser, setIsLikedByUser } = useContext(BlogContext);
+    let { userAuth: { username } } = useContext(UserContext);
+    const { savedAsPDF, setSavedAsPDF } = useContext(PdfContext);  
 
-    let {post: {blog_id, activity, activity: {total_likes, total_comments}, author: {personal_info: {username: author_username} } }, setPost } = useContext(BlogContext);
+    // Флаг для контроля уведомления
+    const [notificationShown, setNotificationShown] = useState(false);
 
-    let {userAuth: {username}} = useContext(UserContext);
-    console.log("username:", username, author_username);
+    const handleLike = () => {
+        if (username) {         
+            if (isLikedByUser) {
+                setIsLikedByUser(false);
+                setPost({ ...post, activity: { ...activity, total_likes: total_likes - 1 } });
+            } else {
+                setIsLikedByUser(true);
+                setPost({ ...post, activity: { ...activity, total_likes: total_likes + 1 } });
+            }
+        } else {
+            showAuthErrorNotification();
+        }
+    };
+
+    const Translit = (word) => {
+        const converter = { 'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ь': '', 'ы': 'y', 'ъ': '', 'э': 'e', 'ю': 'yu', 'я': 'ya', ' ': '_' };
+        return word.toLowerCase().split('').map(letter => converter[letter] || letter).join('').replace(/[^-0-9a-z]/g, '-').replace(/[-]+/g, '-').replace(/^\-|-$/g, '');
+    };
 
     const handleShareClick = () => {
         const blogUrl = `${window.location.origin}/blog/${blog_id}`;
-        console.log(blogUrl);
-        
-        // Копирование текста ссылки в буфер обмена
         navigator.clipboard.writeText(blogUrl)
             .then(() => {
                 toast.success('Ссылка скопирована!');
@@ -25,50 +43,78 @@ const BlogInteraction = () => {
             });
     };
 
-    const handleSaveAsPDF = () => {
-        window.print(); // Открывает диалог печати, где можно выбрать "Сохранить как PDF"
+    const handlePrintPDF = () => {
+        if (username) {
+            window.print();
+        } else {
+            showAuthErrorNotification();
+        }
     };
 
-  return (
-    <>
-        <Toaster />
+    const handleSaveClick = () => {
+        if (username) {
+            handleSaveAsPDF(Translit(title), savedAsPDF, setSavedAsPDF, post);
+        } else {
+            showAuthErrorNotification();
+        }
+    };
 
-        <hr className='border-grey my-2'/>
-        <div className='flex gap-6 justify-between'>
-            <div className='flex gap-6 items-center'>
-                <div className='flex gap-3 items-center'>
-                    <button className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                        <i className='fi fi-rr-heart text-xl'></i>
-                        
-                    </button>
-                    <p className=' text-xl text-dark-grey'>{total_likes}</p>
+    // Функция для показа уведомления
+    const showAuthErrorNotification = () => {
+        if (!notificationShown) {
+            toast.error("Для этого действия необходима авторизация");
+            setNotificationShown(true);
+            setTimeout(() => setNotificationShown(false), 1000); // Сброс флага через 1 секунду
+        }
+    };
+
+    return (
+        <>
+            <Toaster />
+            <hr className='border-grey my-2'/>
+            <div className='flex gap-6 justify-between'>
+                <div className='flex gap-6 items-center'>
+                    <div className='flex gap-3 items-center'>
+                        <button 
+                        onClick={handleLike}
+                        className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
+                            <i className='fi fi-rr-heart text-xl'></i>
+                        </button>
+                        <p className=' text-xl text-dark-grey'>{total_likes}</p>
+                    </div>
+                    <div className='flex gap-3 items-center'>
+                        <button className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
+                            <i className='fi fi-rr-comment text-xl'></i>
+                        </button>
+                        <p className=' text-xl text-dark-grey'>{total_comments}</p>
+                    </div>
                 </div>
-                <div className='flex gap-3 items-center'>
-                    <button className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                        <i className='fi fi-rr-comment text-xl'></i>
-                        
+                <div className='flex gap-6 items-center'>
+                    {
+                        username === author_username ? (
+                            <Link to={`/editor/${blog_id}`} className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
+                                <i className='fi fi-rr-edit text-xl hover:text-purple'></i>
+                            </Link>
+                        ) : ""
+                    }
+                    <button className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80' onClick={handleShareClick}>
+                        <i className='fi fi-rr-share text-xl hover:text-purple'></i>
                     </button>
-                    <p className=' text-xl text-dark-grey'>{total_comments}</p>
+                    <button 
+                        onClick={handlePrintPDF} 
+                        className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
+                        <i className='fi fi-rr-print text-xl hover:text-purple'></i>
+                    </button>
+                    <button 
+                        onClick={handleSaveClick} 
+                        className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
+                        <i className='fi fi-rr-file-pdf text-xl hover:text-purple'></i>
+                    </button>
                 </div>
             </div>
-            <div className='flex gap-6 items-center'>
-                {
-                    username === author_username ?
-                    <Link to={`/editor/${blog_id}`} className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                        <i className='fi fi-rr-edit text-xl hover:text-purple'></i>
-                    </Link> : ""
-                }
-                <button className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80' onClick={handleShareClick}>
-                    <i className='fi fi-rr-share text-xl hover:text-purple'></i>
-                </button>
-                <button onClick={handleSaveAsPDF} className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                    <i className='fi fi-rr-file-pdf text-xl hover:text-purple'></i>
-                </button>
-            </div>
-        </div>
-        <hr className='border-grey my-2'/>
-    </>
-  )
-}
+            <hr className='border-grey my-2'/>
+        </>
+    );
+};
 
-export default BlogInteraction
+export default BlogInteraction;
