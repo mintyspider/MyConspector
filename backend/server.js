@@ -11,7 +11,8 @@ import { nanoid } from 'nanoid';
 
 //Schemas
 import User from './Schema/User.js';
-import Blog from './Schema/Blog.js'
+import Blog from './Schema/Blog.js';
+import Notification from './Schema/Notification.js';
 
 
 const server = express();
@@ -448,7 +449,56 @@ server.post("/getblog", (req, res) => {
   })
 })
 
+//liking blogs
+server.post("/likeblog", verifyJWT, (req, res) => {
+  let user_id = req.user;
+  let { _id, isLikedByUser } = req.body;
+  let incrementVlue = isLikedByUser ? -1 : 1;
+  Blog.findOneAndUpdate({ _id }, { $inc : { "activity.total_likes" : incrementVlue } })
+  .then(blog => {
+    if(!isLikedByUser) {
+      let like = new Notification({
+        type: "like",
+        blog: _id,
+        notification_for: blog.author,
+        user: user_id
+      })
+      like.save().then(() => {
+        return res.status(200).json({liked_by_user: true})
+      })
+      .catch(err => {
+        return res.status(500).json({error: err.message})
+      })
+    } else {
+      Notification.findOneAndDelete({ blog: _id, user: user_id, type: "like" })
+      .then(() => {
+        return res.status(200).json({liked_by_user: false})
+      })
+      .catch(err => {
+        return res.status(500).json({error: err.message})
+      })
+    }
+  })
+  .catch(err => {
+    return res.status(500).json({error: err.message})
+  })
+})
+
+
+//checking liking blog
+server.post("/checklike", verifyJWT, (req, res) => {
+  let user_id = req.user;
+  let { _id } = req.body;
+  Notification.exists({ blog: _id, user: user_id, type: "like" })
+  .then(result => {
+    return res.status(200).json({result})
+  })
+  .catch(err => {
+    return res.status(500).json({error: err.message})
+  })
+})
+
 server.listen(PORT, () => {
   console.log('Listening on port => ' + PORT);
   console.log('MongoDB database is connected');
-});
+})

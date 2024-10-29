@@ -35,11 +35,12 @@ const BlogEditor = () => {
 
     const handlePublish = () => {
         console.log("blog: ", blog);
+        let { title, content } = blog;
         // Проверка перед публикацией
-        if (!blog.title.length) {
-            return toast.error("Необходимо озаглавить конспект");
+        if (!title.length) {
+            return toast.error("Озаглавьте конспект");
         }
-        if (!blog.content.blocks.length) {
+        if (!content || !content.blocks || !content.blocks.length) {
             return toast.error("Необходимо заполнить конспект");
         }
         setEditorState("publish");
@@ -63,7 +64,6 @@ const BlogEditor = () => {
   
       // Проверка контента (EditorJS)
       if (!content || !content.blocks || !content.blocks.length) {
-        console.log("=) :", content.blocks)
         return toast.error("Добавьте контент конспекту");
         
       }
@@ -123,7 +123,7 @@ const BlogEditor = () => {
                     <img src={logo} alt="Logo" />
                 </Link>
                 <p className='max-md:hidden text-black line-clamp-1 w-full text-bold text-2xl'>
-                    {blog.title.length ? blog.title : "Новый конспект"}
+                    {blog.title ? blog.title : "Новый конспект"}
                 </p>
 
                 <div className='flex gap-4 ml-auto'>

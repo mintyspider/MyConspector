@@ -170,8 +170,6 @@ const BlogPage = () => {
       });
   };
 
-  console.log("content:", post.content);
-
   const resetStates = () => {
     setPost(blogStructure);
     setSimilarBlogs(null);

@@ -41,9 +41,13 @@ const AuthForm = ({ type }) => {
 
         let { fullname, email, password } = formData;
         // validation
-        if (serverRoute == '/signup'){
+        if (serverRoute === '/signup') {
             if (fullname.length < 3) {
                 return toast.error('Имя должно содержать хотя бы 3 символа');
+            }
+    
+            if (password !== confirmPassword) {
+                return toast.error('Пароли не совпадают');
             }
         }
         if (!email.length) {
@@ -88,24 +92,17 @@ const AuthForm = ({ type }) => {
     <Navigate to='/' />
     :
     <AnimationWrapper key={type}>
-        <section className={'h-cover flex items-center justify-center md:justify-around flex-col ' + ( type=='sign-in' ? 'lg:flex-row' : 'lg:flex-row-reverse')}>
-                <img src={logo} alt="" className="w-[30%] mb-3 lg:w-[49%] md:mb-0 mx-auto" />
+        <section className='h-cover flex items-center justify-center md:justify-around flex-col'>
             <Toaster />
+            <img src={logo} alt="" className="w-[20%] mx-auto" />
+            <h1 className='text-4xl font-gelasio text-center mb-18'>
+                {type == 'sign-in' ? 'Входи и действуй!' : 'Здесь все начинается'}
+            </h1>
+            
             <form id="formAuth" className='w-[80%] max-w-[400px] md:w-[49%]'>
-                <h1 className='text-4xl font-gelasio text-center mb-24'>
-                    {type == 'sign-in' ? 'Входи и действуй!' : 'Здесь все начинается'}
-                </h1>
+                
 
-                {
-                    type == 'sign-up' ? 
-                    <InputBox
-                        name="fullname"
-                        type="text"
-                        placeholder="Ваше имя"
-                        icon="user"
-                    />
-                    : ''
-                }
+                
 
                 <InputBox
                     name="email"
@@ -121,6 +118,26 @@ const AuthForm = ({ type }) => {
                     placeholder="Пароль"
                     required
                 />
+                
+                {
+                    type == 'sign-up' ? 
+                    <>
+                        <InputBox
+                            name="confirmPassword"
+                            type="password"
+                            placeholder="Подтвердите пароль"
+                            required
+                        />
+                        <InputBox
+                            name="fullname"
+                            type="text"
+                            placeholder="Ваше имя"
+                            icon="user"
+                        />
+                    
+                    </>
+                    : ''
+                }
 
                 <button className='btn-dark center mt-14' 
                 type="submit"

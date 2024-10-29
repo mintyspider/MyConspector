@@ -1,31 +1,50 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { BlogContext, handleSaveAsPDF } from '../pages/blog.page';
 import { Toaster, toast } from "react-hot-toast";
 import { UserContext } from '../App';
 import { Link } from 'react-router-dom';
 import { PdfContext } from '../pages/blog.page';
+import axios from 'axios';
 
 const BlogInteraction = () => {
-    let { post, post: { blog_id, title, activity, activity: { total_likes, total_comments }, author: { personal_info: { username: author_username } } }, setPost, isLikedByUser, setIsLikedByUser } = useContext(BlogContext);
-    let { userAuth: { username } } = useContext(UserContext);
+    let { post, post: { _id, blog_id, title, activity, activity: { total_likes, total_comments }, author: { personal_info: { username: author_username } } }, setPost, isLikedByUser, setIsLikedByUser } = useContext(BlogContext);
+    let { userAuth: { username, accessToken } } = useContext(UserContext);
     const { savedAsPDF, setSavedAsPDF } = useContext(PdfContext);  
 
     // Флаг для контроля уведомления
     const [notificationShown, setNotificationShown] = useState(false);
 
+    useEffect(() => {
+        if (username) {
+            axios
+                .post(import.meta.env.VITE_SERVER_DOMAIN + "/checklike", { _id }, {headers: {"Authorization": `Bearer ${accessToken}`}})
+                .then(({ data: {result} }) => {
+                    setIsLikedByUser(Boolean(result));
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+    }, []);
+    
     const handleLike = () => {
-        if (username) {         
-            if (isLikedByUser) {
-                setIsLikedByUser(false);
-                setPost({ ...post, activity: { ...activity, total_likes: total_likes - 1 } });
-            } else {
-                setIsLikedByUser(true);
-                setPost({ ...post, activity: { ...activity, total_likes: total_likes + 1 } });
-            }
+        if (username) {
+            setIsLikedByUser(!isLikedByUser);
+            setPost({ ...post, activity: { ...activity, total_likes: isLikedByUser ? activity.total_likes - 1 : activity.total_likes + 1 } });
+
+            axios
+                .post(import.meta.env.VITE_SERVER_DOMAIN + "/likeblog", { _id, isLikedByUser }, {headers: {"Authorization": `Bearer ${accessToken}`}})
+                .then(({ data }) => {
+                    console.log("Like response:", data);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+            
         } else {
             showAuthErrorNotification();
         }
-    };
+    }
 
     const Translit = (word) => {
         const converter = { 'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ь': '', 'ы': 'y', 'ъ': '', 'э': 'e', 'ю': 'yu', 'я': 'ya', ' ': '_' };
@@ -68,6 +87,10 @@ const BlogInteraction = () => {
         }
     };
 
+    useEffect(() => {
+        setPost(post);
+    }, [post]);
+
     return (
         <>
             <Toaster />
@@ -78,13 +101,13 @@ const BlogInteraction = () => {
                         <button 
                         onClick={handleLike}
                         className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                            <i className='fi fi-rr-heart text-xl'></i>
+                            <i className={`text-xl hover:text-purple ${isLikedByUser ? 'fi fi-sr-heart text-red' : 'fi fi-rr-heart'}`}></i>
                         </button>
                         <p className=' text-xl text-dark-grey'>{total_likes}</p>
                     </div>
                     <div className='flex gap-3 items-center'>
                         <button className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                            <i className='fi fi-rr-comment text-xl'></i>
+                            <i className='fi fi-rr-comment text-xl hover:text-purple'></i>
                         </button>
                         <p className=' text-xl text-dark-grey'>{total_comments}</p>
                     </div>
