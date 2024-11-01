@@ -10,6 +10,7 @@ import { storeInSession } from '../common/session'
 import { UserContext } from '../App'
 import { authWithGoogle } from '../common/firebase'
 
+
 const AuthForm = ({ type }) => {
 
     let { userAuth = {}, setUserAuth } = useContext(UserContext);
@@ -99,7 +100,7 @@ const AuthForm = ({ type }) => {
     <AnimationWrapper key={type}>
         <section className='h-cover flex items-center justify-center md:justify-around flex-col'>
             <Toaster />
-            <img src={logo} alt="" className="w-[20%] mx-auto" />
+            <img src={logo} alt="" className="w-[33%] h-[33%] max-lg:w-[40%] max-lg:h-[40%] max-md:w-[50%] max-md:h-[50%] mx-auto" />
             <h1 className='text-4xl font-gelasio text-center mb-18'>
                 {type == 'sign-in' ? 'Входи и действуй!' : 'Здесь все начинается'}
             </h1>
@@ -146,14 +147,14 @@ const AuthForm = ({ type }) => {
                     : ''
                 }
 
-                <button className='btn-dark center mt-14' 
+                <button className='btn-dark center mt-8' 
                 type="submit"
                 onClick={handleSubmit}
                 >
                     {type == 'sign-in'? 'Войти' : 'Зарегистрироваться'}
                 </button>
 
-                <div className='relative w-full flex items-center gap-2 my-10 opacity-10 text-black font-bold'>
+                <div className='relative w-full flex items-center gap-2 my-4 opacity-10 text-black font-bold'>
                     <hr className='w-1/2 border-black' />
                     <p>или</p>
                     <hr className='w-1/2 border-black' />
@@ -162,16 +163,16 @@ const AuthForm = ({ type }) => {
                 <button onClick={handleGoogleAuth}
                 className='btn-dark flex items-center justify-center gap-4 w-[90%] center'>
                     <img src={google} alt="" className='w-5'/>
-                    Воспользоваться Google
+                    Google
                 </button>
 
                 {
                     type == 'sign-in'?
-                    <p className='text-center mt-6 text-dark-grey text-xl'>
+                    <p className='text-center mt-4 text-dark-grey text-xl'>
                         Нет аккаунта? <Link to="/signup" className='hover:underline text-xl text-dark-grey ml-1'>Зарегистрироваться</Link>
                     </p>
                     :
-                    <p className='text-center mt-6 text-dark-grey text-xl'>
+                    <p className='text-center mt-4 text-dark-grey text-xl'>
                         Уже есть аккаунт? <Link to="/signin" className='hover:underline text-xl text-dark-grey ml-1'>Войти</Link>
                     </p>
                 }
