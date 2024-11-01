@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import logo from '../imgs/full-logo.png'
 import InputBox from '../components/input.component'
 import google from '../imgs/google.png'
@@ -12,17 +12,22 @@ import { authWithGoogle } from '../common/firebase'
 
 const AuthForm = ({ type }) => {
 
-    let { userAuth: { accessToken }, setUserAuth } = useContext(UserContext)
+    let { userAuth = {}, setUserAuth } = useContext(UserContext);
+    if(!userAuth){
+        return <Navigate to="/signup" />
+    }
+    let { accessToken } = userAuth;
+
 
     const userAuthToServer = (serverRoute, formData) => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData).then(({data}) => {
-            storeInSession("user", JSON.stringify(data))
-
-            setUserAuth(data)
+            storeInSession("user", JSON.stringify(data));
+            sessionStorage.setItem("accessToken", data.accessToken);
+            setUserAuth(data);
         }).catch(({ response }) => {
-            toast.error(response.data.error)
-        })
-    }
+            toast.error(response.data.error);
+        });
+    };    
 
     const handleSubmit = (e) => {
 
@@ -39,7 +44,7 @@ const AuthForm = ({ type }) => {
             formData[key] = value;
         }
 
-        let { fullname, email, password } = formData;
+        let { fullname, email, password, confirmPassword } = formData;
         // validation
         if (serverRoute === '/signup') {
             if (fullname.length < 3) {
@@ -81,11 +86,11 @@ const AuthForm = ({ type }) => {
 
             userAuthToServer(serverRoute, formData)
 
-        }).catch(er => {
+        }).catch(err => {
             toast.error("Проблемы с использованием Google")
             return console.log(err)
         })
-    }
+    }  
 
   return (
     accessToken ?
@@ -102,7 +107,16 @@ const AuthForm = ({ type }) => {
             <form id="formAuth" className='w-[80%] max-w-[400px] md:w-[49%]'>
                 
 
-                
+                {
+                    type == 'sign-up' ?
+                        <InputBox
+                            name="fullname"
+                            type="text"
+                            placeholder="Ваше имя"
+                            icon="user"
+                        />
+                    : ''
+                }
 
                 <InputBox
                     name="email"
@@ -128,13 +142,6 @@ const AuthForm = ({ type }) => {
                             placeholder="Подтвердите пароль"
                             required
                         />
-                        <InputBox
-                            name="fullname"
-                            type="text"
-                            placeholder="Ваше имя"
-                            icon="user"
-                        />
-                    
                     </>
                     : ''
                 }
