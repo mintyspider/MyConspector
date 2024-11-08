@@ -7,6 +7,12 @@ import Header from '@editorjs/header';
 import Quote from '@editorjs/quote';
 import Marker from '@editorjs/marker';
 import InlineCode from '@editorjs/inline-code';
+import Checklist from '@editorjs/checklist';
+import Warning from '@editorjs/warning';
+import CodeTool from '@editorjs/code';
+import Table from '@editorjs/table';
+import Delimiter from '@editorjs/delimiter';
+import NestedList from '@editorjs/nested-list';
 import { toast } from 'react-hot-toast';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../common/firebase';
@@ -49,6 +55,10 @@ const ContentEditor = () => {
             class: List,
             inlineToolbar: true
         },
+        checklist: {
+            class: Checklist,
+            inlineToolbar: true,
+        },
         image: {
             class: Image,
             config: {
@@ -85,12 +95,39 @@ const ContentEditor = () => {
                 defaultLevel: 2
             }
         },
+        // ? Что добавить в таблицу?
+        table: {
+            class: Table,
+            inlineToolbar: true,
+            config: {
+                rows: 2,
+                cols: 3,
+                maxRows: 20,
+                maxCols: 10,
+                stretched: true,
+                withHeadings: true,
+            },
+        },
         quote: {
             class: Quote,
             inlineToolbar: true,
         },
+        warning: {
+            class: Warning,
+            inlineToolbar: true,
+            config: {
+                titlePlaceholder: 'Title',
+                messagePlaceholder: 'Message',
+            },
+        },
+        delimiter: Delimiter,
         marker: Marker,
-        inlineCode: InlineCode
+        code: CodeTool,
+        inlineCode: InlineCode,
+        nestedList: {
+            class: NestedList,
+            inlineToolbar: true,
+        }
     };
 
     const saveData = async () => {

@@ -5,9 +5,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import admin from 'firebase-admin';
-import serviceAccountKey from './myconspector-firebase-adminsdk-ashvx-82f1ab0443.json' assert { type: 'json' };
 import { getAuth } from 'firebase-admin/auth';
 import { nanoid } from 'nanoid';
+
+import fs from 'fs';
+const serviceAccountKey = JSON.parse(fs.readFileSync('./myconspector-firebase-adminsdk-ashvx-82f1ab0443.json', 'utf-8'));
 
 //Schemas
 import User from './Schema/User.js';
