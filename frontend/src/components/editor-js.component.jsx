@@ -165,10 +165,15 @@ const ContentEditor = () => {
     <div>
         {/* Панель инструментов */}
         <div className="toolbar">
-            <button onClick={() => editorRef.current.blocks.insert('header')}>Заголовок</button>
-            <button onClick={() => editorRef.current.blocks.insert('list')}>Список</button>
-            <button onClick={() => editorRef.current.blocks.insert('quote')}>Цитата</button>
-            <button onClick={() => editorRef.current.blocks.insert('image')}>Изображение</button>
+            <button onClick={() => editorRef.current.blocks.insert('header')}><i className="fi fi-rr-square-h"></i></button>
+            <button onClick={() => editorRef.current.blocks.insert('list')}><i className="fi fi-rr-rectangle-list"></i></button>
+            <button onClick={() => editorRef.current.blocks.insert('quote')}><i className="fi fi-rr-comment-quote"></i></button>
+            <button onClick={() => editorRef.current.blocks.insert('image')}><i className="fi fi-rr-comment-image"></i></button>
+            <button onClick={() => editorRef.current.blocks.insert('warning')}><i className="fi fi-rr-exclamation"></i></button>
+            <button onClick={() => editorRef.current.blocks.insert('code')}><i className="fi fi-rr-terminal"></i></button>
+            <button onClick={() => editorRef.current.blocks.insert('delimiter')}><i className="fi fi-rr-grid-dividers"></i></button>
+            <button onClick={() => editorRef.current.blocks.insert('table')}><i className="fi fi-rr-table-list"></i></button>
+            <button onClick={() => editorRef.current.blocks.insert('checklist')}><i className="fi fi-rr-list-check"></i></button>
         </div>
         {/* Контейнер редактора */}
         <div id="textEditor" className="editor-container"></div>
