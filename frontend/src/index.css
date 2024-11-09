@@ -102,10 +102,6 @@
         @apply text-purple underline hover:opacity-50;
     }
 
-    #textEditor delimiter{
-        @apply border-gray-300 my-4;
-    }
-
     .tag{
         @apply p-3 bg-grey rounded-full px-6 capitalize;
     }
@@ -151,6 +147,3 @@
 .ce-block__content, .ce-toolbar__content{
     max-width: 900px;
 }
-
-.cdx-settings-button[data-tune='withBorder'],
-.cdx-settings-button[data-tune='withBackgr
