@@ -7,8 +7,8 @@ import { PdfContext } from '../pages/blog.page';
 import axios from 'axios';
 
 const BlogInteraction = () => {
-    let { post, post: { _id, blog_id, title, activity, activity: { total_likes, total_comments }, author: { personal_info: { username: author_username } } }, setPost, isLikedByUser, setIsLikedByUser } = useContext(BlogContext);
-    let { userAuth: { username, accessToken } } = useContext(UserContext);
+    let { post, post: { _id, blog_id, title, activity, activity: { total_likes, total_comments }, author: { personal_info: { username: author_username } } }, setPost, isLikedByUser, setIsLikedByUser, commentsWrapper, setCommentsWrapper } = useContext(BlogContext);
+    let { userAuth: { accessToken, username } } = useContext(UserContext);
     const { savedAsPDF, setSavedAsPDF } = useContext(PdfContext);  
 
     // Флаг для контроля уведомления
@@ -28,7 +28,7 @@ const BlogInteraction = () => {
     }, []);
     
     const handleLike = () => {
-        if (username) {
+        if (accessToken) {
             setIsLikedByUser(!isLikedByUser);
             setPost({ ...post, activity: { ...activity, total_likes: isLikedByUser ? activity.total_likes - 1 : activity.total_likes + 1 } });
 
@@ -106,8 +106,9 @@ const BlogInteraction = () => {
                         <p className=' text-xl text-dark-grey'>{total_likes}</p>
                     </div>
                     <div className='flex gap-3 items-center'>
-                        <button className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                            <i className='fi fi-rr-comment text-xl hover:text-purple'></i>
+                        <button onClick={() => setCommentsWrapper(prev => !prev)} 
+                        className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
+                            <i className={'fi fi-rr-comment text-xl hover:text-purple ' + (commentsWrapper ? 'text-purple' : '')}></i>
                         </button>
                         <p className=' text-xl text-dark-grey'>{total_comments}</p>
                     </div>

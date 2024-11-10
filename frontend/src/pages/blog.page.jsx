@@ -10,6 +10,7 @@ import BlogContent from "../components/blog-content.component";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import toast from "react-hot-toast";
+import CommentsContainer from "../components/comments.component";
 
 export const blogStructure = {
   title: "",
@@ -134,6 +135,8 @@ const BlogPage = () => {
   const [similarBlogs, setSimilarBlogs] = useState(null);
   const [isLikedByUser, setIsLikedByUser] = useState(false);
   const [savedAsPDF, setSavedAsPDF] = useState(false);
+  const [commentsWrapper, setCommentsWrapper] = useState(0);
+  const [totalParentCommentsLoaded, setTotalParentCommentsLoaded] = useState(0);
 
   let {
     title,
@@ -174,6 +177,9 @@ const BlogPage = () => {
     setPost(blogStructure);
     setSimilarBlogs(null);
     setLoading(true);
+    setIsLikedByUser(false);
+    setCommentsWrapper(false);
+    setTotalParentCommentsLoaded(0);
   };
 
   useEffect(() => {
@@ -187,11 +193,13 @@ const BlogPage = () => {
         <Loader />
       ) : (
         <BlogContext.Provider
-          value={{ post, setPost, isLikedByUser, setIsLikedByUser }}
+          value={{ post, setPost, isLikedByUser, setIsLikedByUser, commentsWrapper, setCommentsWrapper, totalParentCommentsLoaded, setTotalParentCommentsLoaded }}
         >
+          <CommentsContainer /> 
           <PdfContext.Provider value={{ savedAsPDF, setSavedAsPDF }}>
             <div className="max-w-[900px] center py-10 max-lg:px-[5vw]"
             >
+
               <div id="blog-page-content">
               {/* header */}
               <h2 className="text-center">{title}</h2>
