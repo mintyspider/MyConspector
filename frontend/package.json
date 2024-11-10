@@ -27,6 +27,7 @@
     "@editorjs/warning": "^1.4.0",
     "@flaticon/flaticon-uicons": "^2.2.0",
     "axios": "^1.4.0",
+    "editorjs-latex": "^1.0.5",
     "firebase": "^10.1.0",
     "framer-motion": "^10.13.0",
     "html2canvas": "^1.4.1",

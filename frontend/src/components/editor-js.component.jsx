@@ -13,6 +13,7 @@ import CodeTool from '@editorjs/code';
 import Table from '@editorjs/table';
 import Delimiter from '@editorjs/delimiter';
 import NestedList from '@editorjs/nested-list';
+import EJLaTeX from 'editorjs-latex';
 import { toast } from 'react-hot-toast';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../common/firebase';
@@ -119,6 +120,12 @@ const ContentEditor = () => {
                 titlePlaceholder: 'Title',
                 messagePlaceholder: 'Message',
             },
+        },
+        Math: {
+            class: EJLaTeX,
+            config: {
+                renderOnPaste: false,
+            }
         },
         delimiter: Delimiter,
         marker: Marker,

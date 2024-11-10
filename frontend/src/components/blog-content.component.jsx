@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 const Img = ({src, caption}) => {
     return (
@@ -12,7 +14,6 @@ const Img = ({src, caption}) => {
     )
 }
 
-// ! TODO: add showing
 const Quote = ({quote, caption}) => {
     return (
         <div className='bg-purple/10 p-3 pl-5 botder-l-4 border-purple'>
@@ -111,6 +112,26 @@ const Checklist = ({ data }) => {
     );
 };
 
+const MathRenderer = ({ expression }) => {
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        if (expression && containerRef.current) {
+            try {
+                katex.render(expression, containerRef.current, {
+                    throwOnError: false,
+                    displayMode: true, // Используется для блочного отображения
+                });
+            } catch (error) {
+                console.error("Ошибка при рендеринге математического выражения:", error);
+                containerRef.current.innerHTML = "Ошибка рендеринга";
+            }
+        }
+    }, [expression]);
+
+    return <span ref={containerRef}></span>;
+};
+
 
 function BlogContent({ block }) {
     let { type, data } = block
@@ -158,6 +179,9 @@ function BlogContent({ block }) {
     }
     if (type == "delimiter") {
         return <div className='w-full h-1 text-3xl text-center'>***</div>
+    }
+    if (type == "Math"){
+        return <MathRenderer expression={data.math} />
     }
 }
 
