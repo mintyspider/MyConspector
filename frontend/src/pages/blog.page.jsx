@@ -10,7 +10,7 @@ import BlogContent from "../components/blog-content.component";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import toast from "react-hot-toast";
-import CommentsContainer from "../components/comments.component";
+import CommentsContainer, { fetchComments } from "../components/comments.component";
 
 export const blogStructure = {
   title: "",
@@ -151,7 +151,19 @@ const BlogPage = () => {
   const fetchBlog = () => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/getblog", { blog_id })
-      .then(({ data: { blog } }) => {
+      .then(async ({ data: { blog } }) => {
+        console.log("post before => ", blog.comments);
+        
+        // Подгружаем комментарии
+        blog.comments = await fetchComments({
+          blog_id: blog._id,
+          setParentCommentCountFun: setTotalParentCommentsLoaded
+        });
+        
+        // Устанавливаем обновленный blog в состояние post
+        setPost(blog);
+
+        // Подгружаем похожие блоги
         axios
           .post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", {
             tag: blog.tags[0],
@@ -165,13 +177,22 @@ const BlogPage = () => {
           .catch((err) => {
             console.log(err);
           });
-        setPost(blog);
+
         setLoading(false);
       })
       .catch((err) => {
         console.log(err);
       });
-  };
+};
+
+// Используем useEffect для отслеживания изменений post
+useEffect(() => {
+  if (post) {
+    console.log("Updated post => ", post);
+    console.log("Updated post comments => ", post.comments);
+  }
+}, [post]);
+
 
   const resetStates = () => {
     setPost(blogStructure);
@@ -196,6 +217,7 @@ const BlogPage = () => {
           value={{ post, setPost, isLikedByUser, setIsLikedByUser, commentsWrapper, setCommentsWrapper, totalParentCommentsLoaded, setTotalParentCommentsLoaded }}
         >
           <CommentsContainer /> 
+
           <PdfContext.Provider value={{ savedAsPDF, setSavedAsPDF }}>
             <div className="max-w-[900px] center py-10 max-lg:px-[5vw]"
             >

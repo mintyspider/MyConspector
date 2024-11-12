@@ -487,71 +487,6 @@ server.post("/likeblog", verifyJWT, (req, res) => {
   })
 })
 
-server.post("/addcomment", verifyJWT, (req, res) => {
-  let user_id = req.user;
-  let { _id, message, blog_author } = req.body;
-  
-  // Установка времени комментария
-  let commentedAt = new Date();
-
-  // Создание нового комментария
-  let commentFile = new Comment({
-    blog_id: _id,
-    blog_author,
-    comment: message,
-    commented_by: user_id,
-    commentedAt
-  });
-
-  // Сохранение комментария
-  commentFile.save()
-    .then(() => {
-      console.log("New comment created");
-
-      // Обновление записи блога с новым комментарием
-      return Blog.findOneAndUpdate(
-        { _id },
-        {
-          $push: { "comments": commentFile._id },
-          $inc: { "activity.total_comments": 1, "activity.total_parent_comments": 1 }
-        }
-      );
-    })
-    .then(() => {
-      console.log('New comment added to blog');
-
-      // Создание уведомления
-      let notificationObj = new Notification({
-        type: "comment",
-        blog: _id,
-        notification_for: blog_author,
-        user: user_id,
-        comment: commentFile._id
-      });
-
-      // Сохранение уведомления
-      return notificationObj.save();
-    })
-    .then(() => {
-      console.log("New notification created");
-
-      // Отправка успешного ответа
-      res.status(200).json({
-        comment: commentFile.comment,
-        commentedAt: commentFile.commentedAt,
-        _id: commentFile._id,
-        user_id,
-        children: commentFile.children
-      });
-    })
-    .catch(err => {
-      // Обработка ошибок
-      console.error("Error:", err.message);
-      res.status(500).json({ error: err.message });
-    });
-});
-
-
 //checking liking blog
 server.post("/checklike", verifyJWT, (req, res) => {
   let user_id = req.user;
@@ -564,6 +499,87 @@ server.post("/checklike", verifyJWT, (req, res) => {
     return res.status(500).json({error: err.message})
   })
 })
+
+//commenting on blog
+server.post("/addcomment", verifyJWT, (req, res) => {
+  let user_id = req.user;
+  let { _id, message, blog_author } = req.body;
+
+  let commentedAt = new Date();
+
+  let commentFile = new Comment({
+    blog_id: _id,
+    blog_author,
+    comment: message,
+    commented_by: user_id,
+    commentedAt
+  });
+
+  commentFile.save()
+    .then(() => {
+      console.log("New comment created");
+
+      return Blog.findOneAndUpdate(
+        { _id },
+        {
+          $push: { "comments": commentFile._id },
+          $inc: { "activity.total_comments": 1, "activity.total_parent_comments": 1 }
+        }
+      );
+    })
+    .then(() => {
+      console.log('New comment added to blog');
+
+      let notificationObj = new Notification({
+        type: "comment",
+        blog: _id,
+        notification_for: blog_author,
+        user: user_id,
+        comment: commentFile._id
+      });
+
+      return notificationObj.save();
+    })
+    .then(() => {
+      console.log("New notification created");
+
+      res.status(200).json({
+        comment: commentFile.comment,
+        commentedAt: commentFile.commentedAt,
+        _id: commentFile._id,
+        user_id,
+        children: commentFile.children
+      });
+    })
+    .catch(err => {
+      console.error("Error:", err.message);
+      res.status(500).json({ error: err.message });
+    });
+});
+
+server.post("/getcomments", (req, res) => {
+  let { blog_id, skip } = req.body;
+  console.log("server blog_id:", blog_id);
+  console.log("server skip:", skip);
+  let maxLimit = 5;
+  Comment.find({ blog_id, isReply: false })
+  .populate("commented_by", "personal_info.profile_img personal_info.username personal_info.fullname -_id")
+  .skip(skip)
+  .limit(maxLimit)
+  .sort({"commentedAt" : -1 })
+  .then(comments => {
+    if (comments.length === 0) {
+      console.log("No comments found.");
+    } else {
+      console.log("server comments:", comments);
+    }
+    return res.status(200).json(comments);
+  })
+  .catch(err => {
+    console.log("Error fetching comments:", err.message);
+    return res.status(500).json({ error: err.message });
+  });
+});
 
 server.listen(PORT, () => {
   console.log('Listening on port => ' + PORT);

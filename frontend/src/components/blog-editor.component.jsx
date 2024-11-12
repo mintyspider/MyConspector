@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import logo from "../imgs/logo.png";
 import AnimationWrapper from '../common/page-animation';
@@ -7,10 +7,17 @@ import { toast, Toaster } from 'react-hot-toast';
 import ContentEditor from './editor-js.component';
 import axios from 'axios';
 import { UserContext } from '../App';
+import { blogStructure } from '../pages/blog.page';
 
 const BlogEditor = () => {
     const { setEditorState, setBlog, blog, blog:{ title, tags, des, content } } = useContext(EditorContext);
     let {blog_id} = useParams();
+
+    useEffect(() => {
+      if (!blog_id) {
+          setBlog(blogStructure);
+      }
+  }, [blog_id, setBlog]);
 
     const handleTitleKeyDown = (e) => {
         if (e.keyCode === 13) {

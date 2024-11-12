@@ -6,8 +6,8 @@ import { BlogContext } from '../pages/blog.page';
 
 const CommentField = ({action}) => {
     const [comment, setComment] = useState("");
-    let {userAuth: {accessToken}} = useContext(UserContext);
-    let {post: {_id, author: {_id: blog_author }}} = useContext(BlogContext);
+    let {userAuth: {accessToken, username, fullname, profile_img}} = useContext(UserContext);
+    let {post, post: {_id, author: {_id: blog_author }, comments, comments: {results: commentsArr}, activity, activity: {total_comments, total_parent_comments}}, setPost, setTotalParentCommentsLoaded} = useContext(BlogContext);
 
     const handleComment = () => {
         console.log(accessToken);
@@ -20,7 +20,16 @@ const CommentField = ({action}) => {
         console.log(comment);
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/addcomment", {_id, blog_author, message: comment}, {headers: {"Authorization": `Bearer ${accessToken}`}})
         .then(({data}) => {
-            console.log(data);
+            setComment("");
+            data.commented_by = {
+                personal_info: { username, fullname, profile_img },
+            }
+            let newCommentArr;
+            data.childrenLevel = 0;
+            newCommentArr = [data, ...commentsArr];
+            let parentCommentIncrement = 1;
+            setPost({...post, comments:{...comments, results: newCommentArr}, activity: {...activity, total_comments: total_comments + 1, total_parent_comments: total_parent_comments + parentCommentIncrement}});
+            setTotalParentCommentsLoaded(prev => prev+parentCommentIncrement);
         })
         .catch(err => {
             console.log(err);
