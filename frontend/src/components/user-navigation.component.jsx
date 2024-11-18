@@ -37,7 +37,7 @@ const UserNavigation = () => {
                 Конспекты
             </Link>
 
-            <Link to='/settings/edit-profile' className='flex gap-2 pl-8 py-4 link'>
+            <Link to='/settings/editprofile' className='flex gap-2 pl-8 py-4 link'>
                 <i className="fi fi-rr-settings-sliders text-dark-grey"></i>
                 Настройки
             </Link>
