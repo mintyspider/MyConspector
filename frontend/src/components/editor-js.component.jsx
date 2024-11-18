@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useContext } from 'react';
 import EditorJS from '@editorjs/editorjs';
 import Embed from '@editorjs/embed';
 import List from '@editorjs/list';
-import Image from '@editorjs/image';
 import Header from '@editorjs/header';
 import Quote from '@editorjs/quote';
 import Marker from '@editorjs/marker';
@@ -18,6 +17,7 @@ import { toast } from 'react-hot-toast';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../common/firebase';
 import { EditorContext } from '../pages/editor.pages';
+import ImageTool from '@editorjs/image';
 
 const ContentEditor = () => {
     const { blog, setBlog, blog : { content } } = useContext(EditorContext);
@@ -61,7 +61,7 @@ const ContentEditor = () => {
             inlineToolbar: true,
         },
         image: {
-            class: Image,
+            class: ImageTool,
             config: {
                 uploader: {
                     uploadByUrl: async (url) => {
@@ -96,7 +96,6 @@ const ContentEditor = () => {
                 defaultLevel: 2
             }
         },
-        // ? Что добавить в таблицу?
         table: {
             class: Table,
             inlineToolbar: true,
@@ -112,13 +111,17 @@ const ContentEditor = () => {
         quote: {
             class: Quote,
             inlineToolbar: true,
+            config: {
+                titlePlaceholder: 'Заголовок',
+                messagePlaceholder: 'Заметка',
+            },
         },
         warning: {
             class: Warning,
             inlineToolbar: true,
             config: {
-                titlePlaceholder: 'Title',
-                messagePlaceholder: 'Message',
+                titlePlaceholder: 'Заголовок',
+                messagePlaceholder: 'Заметка',
             },
         },
         Math: {

@@ -501,60 +501,80 @@ server.post("/checklike", verifyJWT, (req, res) => {
 })
 
 //commenting on blog
-server.post("/addcomment", verifyJWT, (req, res) => {
-  let user_id = req.user;
-  let { _id, message, blog_author } = req.body;
+server.post("/addcomment", verifyJWT, async (req, res) => {
+  const user_id = req.user;
+  const { _id, message, blog_author, replying_to } = req.body;
 
-  let commentedAt = new Date();
+  if (!_id || !message) {
+    return res.status(400).json({ error: "Blog ID and message are required" });
+  }
 
-  let commentFile = new Comment({
+  if (replying_to && !mongoose.Types.ObjectId.isValid(replying_to)) {
+    return res.status(400).json({ error: "Invalid parent comment ID" });
+  }
+
+  const commentedAt = new Date();
+
+  let commentFile = {
     blog_id: _id,
     blog_author,
     comment: message,
     commented_by: user_id,
-    commentedAt
-  });
+    commentedAt,
+    isReply: replying_to ? true : false,
+    children: []
+  };
 
-  commentFile.save()
-    .then(() => {
-      console.log("New comment created");
+  if (replying_to) {
+    commentFile.parent = replying_to;
+    commentFile.isReply = true;
+  }
 
-      return Blog.findOneAndUpdate(
-        { _id },
-        {
-          $push: { "comments": commentFile._id },
-          $inc: { "activity.total_comments": 1, "activity.total_parent_comments": 1 }
-        }
+  try {
+    // Сохранение комментария
+    const newComment = await new Comment(commentFile).save();
+
+    // Обновление блога
+    await Blog.findOneAndUpdate(
+      { _id },
+      {
+        $push: { comments: newComment._id },
+        $inc: { "activity.total_comments": 1, "activity.total_parent_comments": replying_to ? 0 : 1 }
+      }
+    );
+
+    let notificationObj = {
+      type: replying_to ? "reply" : "comment",
+      blog: _id,
+      notification_for: blog_author,
+      user: user_id,
+      comment: newComment._id
+    };
+
+    if (replying_to) {
+      const replyingToCommentDoc = await Comment.findOneAndUpdate(
+        { _id: replying_to },
+        { $push: { children: newComment._id } }
       );
-    })
-    .then(() => {
-      console.log('New comment added to blog');
+      notificationObj.notification_for = replyingToCommentDoc?.commented_by;
+    }
 
-      let notificationObj = new Notification({
-        type: "comment",
-        blog: _id,
-        notification_for: blog_author,
-        user: user_id,
-        comment: commentFile._id
-      });
+    // Создание уведомления
+    await new Notification(notificationObj).save();
 
-      return notificationObj.save();
-    })
-    .then(() => {
-      console.log("New notification created");
+    console.log("New notification created");
 
-      res.status(200).json({
-        comment: commentFile.comment,
-        commentedAt: commentFile.commentedAt,
-        _id: commentFile._id,
-        user_id,
-        children: commentFile.children
-      });
-    })
-    .catch(err => {
-      console.error("Error:", err.message);
-      res.status(500).json({ error: err.message });
+    res.status(200).json({
+      comment: newComment.comment,
+      commentedAt: newComment.commentedAt,
+      _id: newComment._id,
+      user_id,
+      children: newComment.children
     });
+  } catch (err) {
+    console.error("Error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 server.post("/getcomments", (req, res) => {
@@ -580,6 +600,77 @@ server.post("/getcomments", (req, res) => {
     return res.status(500).json({ error: err.message });
   });
 });
+
+server.post("/getreplies", (req, res) => {
+  let {_id, skip} = req.body;
+  let maxLimit = 5;
+  Comment.findOne({_id})
+  .populate({
+    path:"children",
+    option:{
+      limit: maxLimit,
+      skip: skip,
+      sort: {'commentedAt': -1}
+    },
+    populate:{
+      path: 'commented_by',
+      select: "personal_info.profile_img personal_info.fullname personal_info.username"
+    },
+    select: "-blog_id -updatedAt"
+  })
+  .select("children")
+  .then(doc => {
+    return res.status(200).json({replies: doc.children})
+  })
+  .catch(err => {
+    return res.status(500).json({error: err.message})
+  })
+})
+const deleteComment = (_id) => {
+  Comment.findOneAndDelete({ _id })
+  .then(comment => {
+    if (comment.parent) {
+      Comment.findOneAndUpdate(
+        { _id: comment.parent },
+        { $pull: { children: comment._id } }
+      )
+      .then(() => {
+        console.log("Comment deleted successfully")
+      })
+      }
+    Notification.findOneAndDelete({ comment: _id})
+      .then(() => {
+        () => console.log("Comment notification deleted successfully");
+      })
+    Notification.findOneAndDelete({ reply: _id}).then(() => {
+      () => console.log("Comment reply notification deleted successfully");
+    })
+    Blog.findOneAndUpdate({ _id: comment.blog_id }, { $pull: { comments: comment._id }, $inc: { "activity.total_comments": -1, "activity.total_parent_comments": comment.parent ? 0 : -1 } })
+    .then(() => {
+      if(comment.children.length){
+        comment.children.forEach(child => {
+          deleteComment(child);
+        })
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  })
+}
+server.post("/deletecomment", verifyJWT, (req, res) => {
+  let user_id = req.user;
+  let { _id, blog_id } = req.body;
+  Comment.findOne({ _id })
+  .then(doc => {
+    if(doc.commented_by.toString() === user_id || doc.blog_author.toString() === user_id) {
+      deleteComment(_id);
+      return res.status(200).json({ message: "Comment deleted successfully" });
+    } else {
+      return res.status(403).json({ error: "You are not allowed to delete this comment" });
+    }
+  })
+})
 
 server.listen(PORT, () => {
   console.log('Listening on port => ' + PORT);
