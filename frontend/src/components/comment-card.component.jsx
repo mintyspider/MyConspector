@@ -55,16 +55,16 @@ const CommentCard = ({index, leftVal, commentData}) => {
         setPost({ ...post, comments: { results: commentsArr }, activity: {...activity, total_parent_comments: total_parent_comments - (commentData.childrenLevel == 0 && isDelete ? 1 : 0)} });
     };
     
-    const showReplies = ({ skip = 0 }) => {
-        if (children.length) {
+    const showReplies = ({ skip = 0, currentIndex = index }) => {
+        if (commentsArr[currentIndex].children.length) {
             hideReplies(); // Сначала скрываем предыдущие ответы
             axios
-                .post(import.meta.env.VITE_SERVER_DOMAIN + "/getreplies", { _id, skip })
+                .post(import.meta.env.VITE_SERVER_DOMAIN + "/getreplies", { _id: commentsArr[currentIndex]._id, skip })
                 .then(({ data: { replies } }) => {
-                    commentData.isReplyLoaded = true;
+                    commentsArr[currentIndex].isReplyLoaded = true;
                     replies.forEach((reply, i) => {
-                        reply.childrenLevel = (commentData.childrenLevel || 0) + 1; // Увеличиваем уровень
-                        commentsArr.splice(index + i + 1 + skip, 0, reply);
+                        reply.childrenLevel = (commentsArr[currentIndex].childrenLevel || 0) + 1; // Увеличиваем уровень
+                        commentsArr.splice(currentIndex + i + 1 + skip, 0, reply);
                     });
                     setPost({ ...post, comments: { ...comments, results: commentsArr } });
                 })
@@ -89,6 +89,26 @@ const CommentCard = ({index, leftVal, commentData}) => {
             console.log(err);
         })
     }
+
+    const LoadMoreRepliesButon = () => {
+        let parentIndex = getParentIndex();
+        let button = <button className='text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2' onClick={() => showReplies({ skip: index-parentIndex, currentIndex: parentIndex })}>Еще комментарии ╰(*°▽°*)╯</button>
+        if (commentsArr[index + 1]){
+            if (commentsArr[index + 1].childrenLevel < commentsArr[index].childrenLevel) {
+                if((index-parentIndex) < commentsArr[parentIndex].children.length) {
+                    return button;
+                }
+            }
+        } else {
+            console.log(parentIndex)
+            if(parentIndex >= 0){
+                if((index-parentIndex) < commentsArr[parentIndex].children.length) {
+                    return button;
+                }
+            }
+        }
+    }
+
     return (
         <div className='w-full' style={{paddingLeft : `${leftVal * 10}px`}}>
             <div className='my-5 p-6 rounded-md border border-grey'>
@@ -99,6 +119,10 @@ const CommentCard = ({index, leftVal, commentData}) => {
                 </div>
                 <p className='font-gelasio text-xl ml-3'>{comment}</p>
                 <div className='flex gap-5 items-center mt-5'>
+                    <button className='underline text-dark-grey'
+                    onClick={handleReplyClick}>
+                        Ответить (●ˇ∀ˇ●)
+                    </button>
                     {
                         commentData.isReplyLoaded? 
                         <button className='text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2' onClick={hideReplies}>
@@ -109,10 +133,6 @@ const CommentCard = ({index, leftVal, commentData}) => {
                             <i className='fi fi-rr-arrow-down'></i>{children.length} (ง •_•)ง
                         </button> : null
                     }
-                    <button className='underline text-dark-grey'
-                    onClick={handleReplyClick}>
-                        Ответить (●ˇ∀ˇ●)
-                    </button>
                     {
                         username === currentuser || currentuser === blog_author ?
                         <button className='text-dark-grey p-2 px-3 hover:bg-grey/30 rounded-md flex items-center gap-2 ml-auto hover:bg-red/30 hover:text-red'
@@ -129,6 +149,7 @@ const CommentCard = ({index, leftVal, commentData}) => {
                     : null
                 }
             </div>
+            <LoadMoreRepliesButon />
         </div>
     )
 }
