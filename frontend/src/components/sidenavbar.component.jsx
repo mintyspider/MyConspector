@@ -35,7 +35,7 @@ const SideNav = () => {
                         <h1 className='text-xl font-bold text-dark-grey'>{page}</h1>
                     </div>
                     
-                    <div className={`min-w-[200px] h:[calc(100vh-80px)] md:h-cover md:sticky top-24 overflow-y-auto p-8 md:pr-0 max-md:${showMenu ? "block" : "hidden"}`}>
+                    <div className={`min-w-[200px] h:[calc(100vh-80px-50px)] md:h-cover md:sticky top-24 overflow-y-auto p-8 md:pr-0 max-md:${showMenu ? "block" : "hidden"}`}>
                         <h1 className='text-xl font-bold text-dark-grey mb-3 gap-2 flex justify-center items-center'>
                             <i className="fi fi-rr-house-blank text-xl"></i>
                             Мое пространство
