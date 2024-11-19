@@ -1,11 +1,23 @@
-import React, { useContext, useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react';
+import { NavLink, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { UserContext } from '../App';
 
 const SideNav = () => {
     let { userAuth: {accessToken, username: currentuser} } = useContext(UserContext);
 
     let [page, setPage] = useState();
+    const [showMenu, setShowMenu] = useState(false); // Состояние для управления видимостью меню
+    const location = useLocation();  // Получаем объект location
+    const currentPath = location.pathname;  // Доступ к текущему пути
+    const pageState = currentPath.split("/")[2];
+    page = pageState === "changepassword" ? "Сменить пароль" : pageState === "editprofile" ? "Редактировать профиль" : pageState === "blogs" ? "Мои конспекты" : pageState === "notification" ? "Оповещения" : "Мое пространство";
+    const toggleMenu = (e) => {
+        setShowMenu(prevState => !prevState);
+    };
+    useEffect(() => {
+        setShowMenu(false); // Сбрасываем состояние меню при изменении пути
+    }, [currentPath]);
+
     return (
         accessToken === null ?
         <Navigate to="/signin" />
@@ -13,14 +25,23 @@ const SideNav = () => {
         <>
             <section className='relative flex gap-10 py-0 m-0 max-md:flex-col'>
                 <div className='sticky top-[80px] z-30'>
-                    <div className='min-w-[200px] h-cover md:sticky top-24 overflow-y-auto p-8 md:pr-0'>
-
+                    <div className='md:hidden flex gap-2 justify-start items-center border-b border-grey'>
+                        <button 
+                        className="p-5 text-2xl"
+                        onClick={toggleMenu}
+                        >
+                            <i className="fi fi-rr-bars-staggered"></i>
+                        </button>
+                        <h1 className='text-xl font-bold text-dark-grey'>{page}</h1>
+                    </div>
+                    
+                    <div className={`min-w-[200px] h:[calc(100vh-80px)] md:h-cover md:sticky top-24 overflow-y-auto p-8 md:pr-0 max-md:${showMenu ? "block" : "hidden"}`}>
                         <h1 className='text-xl font-bold text-dark-grey mb-3 gap-2 flex justify-center items-center'>
                             <i className="fi fi-rr-house-blank text-xl"></i>
                             Мое пространство
                         </h1>
 
-                        <hr className='border-grey -ml-6 mb-8 mr-6'/>
+                        <hr className='border-grey -ml-6 mb-8 mr-6' />
 
                         <NavLink to="/dashboard/blogs" onClick={(e) => setPage(e.target.innerText)} className="sidebar-link"> 
                             <i className='fi fi-rr-document'></i> 
@@ -42,7 +63,7 @@ const SideNav = () => {
                             Настройки
                         </h1>
 
-                        <hr className='border-grey -ml-6 mb-8 mr-6'/>
+                        <hr className='border-grey -ml-6 mb-8 mr-6' />
 
                         <NavLink to="/settings/editprofile" onClick={(e) => setPage(e.target.innerText)} className="sidebar-link"> 
                             <i className="fi fi-rr-user"></i>
@@ -53,7 +74,6 @@ const SideNav = () => {
                             <i className='fi fi-rr-lock'></i> 
                             Сменить пароль
                         </NavLink>
-
                     </div>
                 </div>
 
@@ -61,9 +81,8 @@ const SideNav = () => {
                     <Outlet />
                 </div>
             </section>
-            
         </>
-    )
-}
+    );
+};
 
-export default SideNav
+export default SideNav;
