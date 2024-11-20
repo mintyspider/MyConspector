@@ -50,7 +50,7 @@ const ChangePassword = () => {
         <AnimationWrapper>
             <Toaster/>
             <form autoComplete="off" ref={changePasswordForm}>
-                <h1 className='max-md:hidden text-2xl font-medium text-dark-grey text-center'>Сменить пароль</h1>
+                <h1 className='max-md:hidden text-2xl lg:text-3xl font-medium text-dark-grey text-center'>Сменить пароль</h1>
 
                 <div className='w-full md:max-w-[400px] mx-auto py-10'>
                     <h4 className='mt-5 mb-2 text-dark-grey text-center md:text-left text-xl'>Старый пароль</h4>

@@ -271,6 +271,20 @@ server.post('/changepassword', verifyJWT, async (req, res) => {
   })
 })
 
+//new avatar
+server.post('/newavatar', verifyJWT, async (req, res) => {
+  const { profileImg } = req.body;
+  const userId = req.user;
+  try {
+      // Сохраняем ссылку на изображение в базе данных
+      await User.findOneAndUpdate({ _id: userId }, { $set: { 'personal_info.profile_img': profileImg } });
+      returnres.status(200).json({ message: 'Аватар обновлен' });
+  } catch (error) {
+      console.error('Ошибка при сохранении аватара:', error);
+      return res.status(500).json({ message: 'Ошибка сервера' });
+  }
+})
+
 //Newest posts
 server.post('/latestblogs', (req, res) => {
 

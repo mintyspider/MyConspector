@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const InputBox = ({ name, type, id, value, placeholder, icon }) => {
+const InputBox = ({ name, type, id, value, placeholder, icon, disable = false }) => {
 
     const [passwordVisible, setPasswordVisible] = useState(false);
     
@@ -16,6 +16,7 @@ const InputBox = ({ name, type, id, value, placeholder, icon }) => {
                 placeholder={placeholder}
                 id={id}
                 defaultValue={value}
+                disabled={disable}
                 className='input-box'
             />
             
@@ -27,9 +28,9 @@ const InputBox = ({ name, type, id, value, placeholder, icon }) => {
                 ></i>
                 ) 
 
-            :   (
-                <i className={`fi fi-rr-${icon} input-icon`}></i>
-                )
+            : icon.slice(0, 6) == "brands" 
+                ? (<i className={`fi fi-${icon} input-icon`}></i>) 
+                : (<i className={`fi fi-rr-${icon} input-icon`}></i>)
             }
         </div>
     )
