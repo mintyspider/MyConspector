@@ -225,6 +225,52 @@ server.post('/google-auth', async (req, res) => {
   }
 });
 
+//Changing password
+server.post('/changepassword', verifyJWT, async (req, res) => {
+  let { oldpassword, newpassword } = req.body;
+
+  if (!oldpassword || !newpassword) {
+    return res.status(403).json({ error: 'Old password and new password are required' });
+  }
+
+  if (!passwordRegex.test(oldpassword) || !passwordRegex.test(newpassword)) {
+    return res.status(403).json({
+      error: 'Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, and one number',
+    });
+  }
+
+  if (oldpassword === newpassword) {
+    return res.status(403).json({ error: 'Old password and new password are the same' });
+  }
+  User.findOneAndUpdate({_id: req.user})
+  .then(user => {
+    if(user.google_auth){
+      return res.status(403).json({ error: 'Your account was created using Google. Try to continue with Google' });
+    } else {
+      bcrypt.compare(oldpassword, user.personal_info.password)
+      .then(isMatch => {
+        if (isMatch) {
+          bcrypt.hash(newpassword, 10)
+          .then(hashedPassword => {
+            user.personal_info.password = hashedPassword;
+            user.save()
+            .then(() => {
+              return res.status(200).json({ message: 'Password changed successfully' });
+            })
+            .catch(err => {
+              return res.status(500).json({ error: err.message });
+            });
+          })
+          .catch(err => {
+            return res.status(500).json({ error: err.message });
+          });
+        } else {
+          return res.status(403).json({ error: 'Old password is incorrect' });
+        }
+    })}
+  })
+})
+
 //Newest posts
 server.post('/latestblogs', (req, res) => {
 
