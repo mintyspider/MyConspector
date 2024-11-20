@@ -31,9 +31,15 @@ const ChangePassword = () => {
             return toast.error("Пароли не совпадают");
         }
 
+        e.target.setAttribute("disabled", true);
+
+        let loadingToast = toast.loading("Изменение пароля...");
+
         let data = { oldpassword, newpassword };
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/changepassword", data, { headers: { Authorization: `Bearer ${accessToken}` } }).then(({ data }) => {
+            toast.dismiss(loadingToast);
             toast.success("Пароль успешно изменен o(*^＠^*)o");
+            e.target.removeAttribute("disabled");
         })
         .catch(({ response }) => {
             toast.error("Произошла ошибка o.O");
