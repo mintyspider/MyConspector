@@ -43,13 +43,22 @@ const BlogEditor = () => {
     const handlePublish = () => {
         console.log("blog: ", blog);
         let { title, content } = blog;
+        console.log("title:", title, "content:", content[0].blocks);
         // Проверка перед публикацией
         if (!title.length) {
             return toast.error("Озаглавьте конспект");
         }
-        if (!content || !content.blocks || !content.blocks.length) {
-            return toast.error("Необходимо заполнить конспект");
+        if (content){
+          if(!content[0].blocks.length){
+            return toast.error("Добавьте содержание конспекту");
+          }
+        } else {
+          if (!content.blocks.length) {
+            return toast.error("Добавьте контент конспекту");
+            
+          }
         }
+        
         setEditorState("publish");
     }
 
@@ -69,12 +78,6 @@ const BlogEditor = () => {
         return toast.error("Озаглавьте конспект");
       }
   
-      // Проверка контента (EditorJS)
-      if (!content || !content.blocks || !content.blocks.length) {
-        return toast.error("Добавьте контент конспекту");
-        
-      }
-  
       let loadingToast = toast.loading("Сохранение черновика...");
   
       // Блокируем кнопку
@@ -83,7 +86,7 @@ const BlogEditor = () => {
       let blogObj = { 
         title,  
         des, 
-        content: { blocks: content.blocks }, // Оборачиваем в объект с ключом `blocks`
+        content: content ? {content: content[0].blocks} : { blocks: content.blocks }, // Оборачиваем в объект с ключом `blocks`
         tags, 
         draft: true 
       };

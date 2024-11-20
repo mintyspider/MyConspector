@@ -83,13 +83,6 @@ const PublishForm = () => {
       return toast.error(`Добавьте хотя бы одну метку конспекту (не более ${tagLimit})`);
     }
 
-    // Проверка контента (EditorJS)
-    if (!content || !content.blocks || !content.blocks.length) {
-      console.log("=) :", content.blocks)
-      return toast.error("Добавьте контент конспекту");
-      
-    }
-
     let loadingToast = toast.loading("Публикация...");
 
     // Блокируем кнопку
