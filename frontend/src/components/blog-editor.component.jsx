@@ -15,7 +15,7 @@ const BlogEditor = () => {
 
     useEffect(() => {
       if (!blog_id) {
-          setBlog(blogStructure);
+        setBlog(blogStructure);
       }
   }, [blog_id, setBlog]);
 
@@ -43,12 +43,12 @@ const BlogEditor = () => {
     const handlePublish = () => {
         console.log("blog: ", blog);
         let { title, content } = blog;
-        console.log("title:", title, "content:", content[0].blocks);
+        console.log("title:", title, "content:", content[0] ? content[0].blocks : content.blocks);
         // Проверка перед публикацией
         if (!title.length) {
             return toast.error("Озаглавьте конспект");
         }
-        if (content){
+        if (content[0]){
           if(!content[0].blocks.length){
             return toast.error("Добавьте содержание конспекту");
           }

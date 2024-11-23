@@ -275,15 +275,43 @@ server.post('/changepassword', verifyJWT, async (req, res) => {
 server.post('/newavatar', verifyJWT, async (req, res) => {
   const { profileImg } = req.body;
   const userId = req.user;
+
+  // Проверяем наличие данных
+  if (!profileImg || typeof profileImg !== 'string') {
+      return res.status(400).json({ message: 'Некорректный URL аватара' });
+  }
+
   try {
       // Сохраняем ссылку на изображение в базе данных
-      await User.findOneAndUpdate({ _id: userId }, { $set: { 'personal_info.profile_img': profileImg } });
-      returnres.status(200).json({ message: 'Аватар обновлен' });
+      const updatedUser = await User.findOneAndUpdate(
+          { _id: userId },
+          { $set: { 'personal_info.profile_img': profileImg } },
+          { new: true } // Возвращает обновленного пользователя
+      );
+
+      if (!updatedUser) {
+          return res.status(404).json({ message: 'Пользователь не найден' });
+      }
+      console.log('Аватар обновлен:', updatedUser);
+      return res.status(200).json({ message: 'Аватар обновлен', profileImg });
   } catch (error) {
       console.error('Ошибка при сохранении аватара:', error);
       return res.status(500).json({ message: 'Ошибка сервера' });
   }
-})
+});
+
+server.post("/updateprofile", verifyJWT, async (req, res) => {
+  const { profile } = req.body;
+  const { personal_info, social_links } = profile;
+  const userId = req.user;
+  try {
+      await User.findOneAndUpdate({ _id: userId }, { personal_info, social_links });
+      res.json({ message: "Profile updated" });
+  } catch (error) {
+      res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 //Newest posts
 server.post('/latestblogs', (req, res) => {

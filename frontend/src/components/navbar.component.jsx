@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import logo from "../imgs/logo.png";
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
@@ -12,10 +12,11 @@ const Navbar = () => {
     const { userAuth } = useContext(UserContext);
     const accessToken = userAuth?.accessToken;
     const profile_img = userAuth?.profile_img;
-
+    console.log("image=>", profile_img);
     const [ menu, setMenu ] = useState(false);
 
     let navigate = useNavigate();
+
 
     const handleMenu = () => {
         setMenu(cur => !cur)
@@ -33,6 +34,9 @@ const Navbar = () => {
             navigate(`/search/${query}`)
         }
     }
+    useEffect(() => {
+        console.log("UserAuth from context:", userAuth);
+    }, [userAuth]);
 
   return (
     <>
