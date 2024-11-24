@@ -302,15 +302,41 @@ server.post('/newavatar', verifyJWT, async (req, res) => {
 
 server.post("/updateprofile", verifyJWT, async (req, res) => {
   const { profile } = req.body;
-  const { personal_info, social_links } = profile;
-  const userId = req.user;
+
+  if (!profile) {
+    return res.status(400).json({ error: "Invalid profile data" });
+  }
+  console.log("profile=>" ,profile);
+  // Destructure profile details
+  const { personal_info: { fullname, bio } = {}, social_links } = profile;
+  const userId = req.user; // Obtained from verifyJWT middleware
+
   try {
-      await User.findOneAndUpdate({ _id: userId }, { personal_info, social_links });
-      res.json({ message: "Profile updated" });
+    // Update only the provided fields in the database
+    const updatedFields = {};
+    if (fullname) updatedFields["personal_info.fullname"] = fullname;
+    if (bio) updatedFields["personal_info.bio"] = bio;
+    if (social_links) updatedFields["social_links"] = social_links;
+
+    // Ensure the user exists and update the document
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: updatedFields }, // Use `$set` to avoid overwriting undefined fields
+      { new: true, runValidators: true } // Return the updated document and validate the fields
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Success response
+    res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
   } catch (error) {
-      res.status(500).json({ error: "Server error" });
+    console.error("Error updating profile:", error); // Log the error for debugging
+    res.status(500).json({ error: "Server error" });
   }
 });
+
 
 
 //Newest posts
@@ -447,7 +473,7 @@ server.post("/getprofile", (req, res) => {
   User.findOne({"personal_info.username" : username})
   .select("-personal_info.password -google_auth -updatedAt -blogs")
   .then(user => {
-    return res.status(200).json(user)
+    return res.json(user)
   })
   .catch(err => {
     return res.status(500).json(err.message)
@@ -757,6 +783,21 @@ server.post("/deletecomment", verifyJWT, (req, res) => {
     } else {
       return res.status(403).json({ error: "You are not allowed to delete this comment" });
     }
+  })
+})
+
+server.get("/newnotification", verifyJWT, (req, res) => {
+  let user_id = req.user;
+  Notification.exists({ notification_for: user_id, seen: false, user: {$ne : user_id} })
+  .then(notifications => {
+    if(notifications) {
+      return res.status(200).json({new_notification_available : true});
+    } else {
+      return res.status(200).json({new_notification_available : false});
+    }
+  })
+  .catch(err => {
+    return res.status(500).json({ error: err.message });
   })
 })
 

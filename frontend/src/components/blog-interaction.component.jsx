@@ -1,15 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { BlogContext, handleSaveAsPDF } from '../pages/blog.page';
+import { BlogContext } from '../pages/blog.page';
 import { Toaster, toast } from "react-hot-toast";
 import { UserContext } from '../App';
 import { Link } from 'react-router-dom';
-import { PdfContext } from '../pages/blog.page';
 import axios from 'axios';
 
 const BlogInteraction = () => {
     let { post, post: { _id, blog_id, title, activity, activity: { total_likes, total_comments }, author: { personal_info: { username: author_username } } }, setPost, isLikedByUser, setIsLikedByUser, commentsWrapper, setCommentsWrapper } = useContext(BlogContext);
-    let { userAuth: { accessToken, username } } = useContext(UserContext);
-    const { savedAsPDF, setSavedAsPDF } = useContext(PdfContext);  
+    let { userAuth: { accessToken, username } } = useContext(UserContext); 
 
     // Флаг для контроля уведомления
     const [notificationShown, setNotificationShown] = useState(false);
@@ -70,14 +68,6 @@ const BlogInteraction = () => {
         }
     };
 
-    const handleSaveClick = () => {
-        if (username) {
-            handleSaveAsPDF(Translit(title), savedAsPDF, setSavedAsPDF, post);
-        } else {
-            showAuthErrorNotification();
-        }
-    };
-
     // Функция для показа уведомления
     const showAuthErrorNotification = () => {
         if (!notificationShown) {
@@ -128,11 +118,6 @@ const BlogInteraction = () => {
                         onClick={handlePrintPDF} 
                         className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
                         <i className='fi fi-rr-print text-xl hover:text-purple'></i>
-                    </button>
-                    <button 
-                        onClick={handleSaveClick} 
-                        className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                        <i className='fi fi-rr-file-pdf text-xl hover:text-purple'></i>
                     </button>
                 </div>
             </div>

@@ -33,7 +33,6 @@ const EditProfile = () => {
     };
 
     const [avatar, setAvatar] = useState(profile_img);
-    console.log("avatar=>", avatar);
 
     const handleAvatarChange = async (e) => {
         const file = e.target.files[0];
@@ -73,19 +72,32 @@ const EditProfile = () => {
         }
     };
 
-    const handleUsername = (e) => {
-        let input = e.target;
+    const handleFullnameChange = (e) => {
+        const inputValue = e.target.value;
+    
+        // Логирование для отладки
+        console.log("Новое значение fullname:", inputValue);
+    
+        // Обновляем состояние только если значение отличается
         setProfile((prev) => ({
             ...prev,
-            personal_info: { ...prev.personal_info, username: input.value },
+            personal_info: {
+                ...prev.personal_info,
+                fullname: inputValue,
+            },
         }));
-    };
+    };    
+    
     
     const handleSocialLinkChange = (e) => {
         const { name, value } = e.target;
+        console.log("name=>", name, "value=>", value)
         setProfile((prev) => ({
             ...prev,
-            social_links: { ...prev.social_links, [name]: value },
+            social_links: {
+                ...prev.social_links,
+                [name]: value,
+            },
         }));
     };
 
@@ -95,9 +107,8 @@ const EditProfile = () => {
         console.log("Submitting Profile:", profile); // Ensure this is the latest profile state
     
         try {
-            await axios.post(
-                `${import.meta.env.VITE_SERVER_DOMAIN}/updateprofile`,
-                profile,  // Send the updated profile
+            await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/updateprofile",
+                {profile},  // Send the updated profile
                 { headers: { Authorization: `Bearer ${accessToken}` } }
             );
             toast.success("Профиль обновлён!", { id: toastId });
@@ -142,7 +153,7 @@ const EditProfile = () => {
                                     <i className="fi fi-rr-upload cursor-pointer"></i>
                                     <span>Загрузить</span>
                                 </div>
-                                <img src={avatar} ref={profileImg} alt="Аватар" />
+                                <img src={avatar || profile_img} ref={profileImg} alt="Аватар" />
                             </label>
                             <input
                                 type="file"
@@ -159,27 +170,27 @@ const EditProfile = () => {
                         <div className='w-full'>
                             <div className='grid grid-cols-1 md:grid-cols-2 md:gap-5'>
                                 <div>
-                                    <InputBox name="fullname" type="text" id="fullname" value={fullname} placeholder="Ваше имя" icon="user" disable={true} />
+                                    <InputBox name="username" type="text" id="username" value={username} icon="at" disable={true} />
                                 </div>
                                 <div>
-                                    <InputBox name="email" type="email" id="email" value={email} placeholder="Email" icon="envelope" disable={true} />
+                                    <InputBox name="email" type="email" id="email" value={email} icon="envelope" disable={true} />
                                 </div>
                             </div>
                             <div className="relative group">
                                 <InputBox
-                                    name="username"
+                                    name="fullname"
                                     type="text"
-                                    id="username"
-                                    value={profile_username}
-                                    placeholder="Псевдоним"
-                                    icon="at"
+                                    id="fullname"
+                                    value={fullname}
+                                    placeholder="Имя или псевдоним"
+                                    icon="user"
                                     className="focus:outline-none"
-                                    onChange={handleUsername}
+                                    onChange={handleFullnameChange}
                                 />
                                 <div className="absolute top-full left-0 w-full mt-2 hidden p-4 text-sm text-white bg-dark-grey rounded shadow-lg group-hover:block group-hover:z-10">
                                     Псевдоним используется для упрощения поиска пользователей и отображается для всех пользователей.
                                     Псевдоним можно изменять неограниченное количество раз.
-                                    Пожалуйста, не используйте кириллический алфавит, пробелы и специальные символы,
+                                    Пожалуйста, не используйте специальные символы,
                                     которые могут повлиять на функциональность сайта, а также остерегайтесь нецензурных выражений.
                                     <br />Спасибо за понимание （づ￣3￣）づ╭❤️～
                                 </div>
@@ -192,7 +203,7 @@ const EditProfile = () => {
                             <div className='grid grid-cols-1 md:grid-cols-2 md:gap-3'>
                                 {
                                     Object.keys(social_links).map((key) => {
-                                        let link = social_links[key];
+                                        const link = social_links[key];
                                         return (
                                             <InputBox
                                                 key={key}
