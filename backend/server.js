@@ -168,60 +168,10 @@ server.post('/signin', async (req, res) => {
     if (!user) {
       return res.status(403).json({ error: 'Email not found' });
     }
-
-    if(!user.google_auth){
-      const isMatch = await bcrypt.compare(password, user.personal_info.password);
-    if (!isMatch) {
-      return res.status(403).json({ error: 'Password is incorrect. Please try again' });
-    }
-
     return res.status(200).json(formatData(user));
-    } else {
-      return res.status(403).json({"error":"Your account was created using Google. Try to continue with Google"})
-    }
-
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Google Auth
-server.post('/google-auth', async (req, res) => {
-  try {
-    const { accessToken } = req.body;
-    const decodedUser = await getAuth().verifyIdToken(accessToken);
-    const { email, name } = decodedUser;
-
-    let user = await User.findOne({ 'personal_info.email': email }).select(
-      'personal_info.fullname personal_info.username google_auth'
-    );
-
-    if (user) {
-      if (!user.google_auth) {
-        return res.status(403).json({ error: 'Log in with email and password because this email was signed up without Google' });
-      }
-    } else {
-      const username = await generateUsername(email);
-
-      user = new User({
-        personal_info: {
-          fullname: name,
-          email,
-          username,
-        },
-        google_auth: true,
-      });
-
-      await user.save();
-    }
-
-    return res.status(200).json(formatData(user));
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'Authentication failed. Try another Google account or log in with email and password',
-    });
   }
 });
 
@@ -244,9 +194,6 @@ server.post('/changepassword', verifyJWT, async (req, res) => {
   }
   User.findOneAndUpdate({_id: req.user})
   .then(user => {
-    if(user.google_auth){
-      return res.status(403).json({ error: 'Your account was created using Google. Try to continue with Google' });
-    } else {
       bcrypt.compare(oldpassword, user.personal_info.password)
       .then(isMatch => {
         if (isMatch) {
@@ -267,8 +214,7 @@ server.post('/changepassword', verifyJWT, async (req, res) => {
         } else {
           return res.status(403).json({ error: 'Old password is incorrect' });
         }
-    })}
-  })
+    })})
 })
 
 //new avatar
@@ -471,7 +417,7 @@ server.post("/getprofile", (req, res) => {
   let {username} = req.body;
 
   User.findOne({"personal_info.username" : username})
-  .select("-personal_info.password -google_auth -updatedAt -blogs")
+  .select("-personal_info.password -updatedAt -blogs")
   .then(user => {
     return res.json(user)
   })

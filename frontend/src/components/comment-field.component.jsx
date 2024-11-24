@@ -16,8 +16,6 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
         setTotalParentCommentsLoaded 
     } = useContext(BlogContext);
 
-    console.log("replyingTo:", replyingTo);
-
     const handleComment = () => {
         if (!accessToken) {
             return toast.error("Сначала войдите в аккаунт");

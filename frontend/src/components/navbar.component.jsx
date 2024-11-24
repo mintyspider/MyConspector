@@ -3,16 +3,17 @@ import logo from "../imgs/logo.png";
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
 import UserNavigation from './user-navigation.component';
+import axios from 'axios';
 
 const Navbar = () => {
 
     // toggle search bar
     const [searchBoxVisibility, setSearchBoxVisibility] = useState(false);
 
-    const { userAuth } = useContext(UserContext);
+    const { userAuth, setUserAuth } = useContext(UserContext);
     const accessToken = userAuth?.accessToken;
     const profile_img = userAuth?.profile_img;
-    console.log("image=>", profile_img);
+    const new_notification_available = userAuth?.new_notification_available;
     const [ menu, setMenu ] = useState(false);
 
     let navigate = useNavigate();
@@ -35,8 +36,15 @@ const Navbar = () => {
         }
     }
     useEffect(() => {
-        console.log("UserAuth from context:", userAuth);
-    }, [userAuth]);
+        if(accessToken){
+            axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/newnotification", { headers: { Authorization: `Bearer ${accessToken}` } })
+            .then(({data}) => {
+                setUserAuth({
+                    ...userAuth, ...data})
+            })
+            .catch(err => console.log(err))
+        }
+    }, [accessToken]);
 
   return (
     <>
@@ -81,6 +89,12 @@ const Navbar = () => {
                         <Link to="/dashboard/notification">
                             <button className='w-12 h-12 rounded-full bg-grey relative hover:bg-black/10'>
                                 <i className="fi fi-rr-bell text-2xl block mt-2 text-dark-grey"></i>
+                                {
+                                    new_notification_available ?
+                                    <span className='bg-red h-2.5 w-2.5 rounded-full absolute z-10 top-2.5 right-2.5'></span>
+                                    :""
+                                }
+                                
                             </button>
                         </Link>
 
