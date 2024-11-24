@@ -3,7 +3,7 @@ import { NavLink, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { UserContext } from '../App';
 
 const SideNav = () => {
-    let { userAuth: {accessToken, username: currentuser} } = useContext(UserContext);
+    let { userAuth: {accessToken, new_notification_available, username: currentuser} } = useContext(UserContext);
 
     let [page, setPage] = useState();
     const [showMenu, setShowMenu] = useState(false); // Состояние для управления видимостью меню
@@ -49,7 +49,14 @@ const SideNav = () => {
                         </NavLink>
 
                         <NavLink to="/dashboard/notification" onClick={(e) => setPage(e.target.innerText)} className="sidebar-link"> 
-                            <i className='fi fi-rr-bell'></i> 
+                            <div className="relative">
+                                <i className='fi fi-rr-bell'></i>
+                                {
+                                    new_notification_available ?
+                                    <span className='bg-red h-1.5 w-1.5 rounded-full absolute z-10 top-0 right-0'></span>
+                                    :""
+                                }
+                            </div> 
                             Оповещения
                         </NavLink>
 
