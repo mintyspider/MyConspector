@@ -54,14 +54,17 @@ const ContentEditor = () => {
         embed: Embed,
         list: {
             class: List,
+            shortcut: 'CMD+SHIFT+L',
             inlineToolbar: true
         },
         checklist: {
             class: Checklist,
+            shortcut: 'CMD+SHIFT+X',
             inlineToolbar: true,
         },
         image: {
             class: ImageTool,
+            shortcut: 'CMD+SHIFT+I',
             config: {
                 uploader: {
                     uploadByUrl: async (url) => {
@@ -90,6 +93,7 @@ const ContentEditor = () => {
         header: {
             class: Header,
             inlineToolbar: true,
+            shortcut: 'CMD+SHIFT+H',
             config: {
                 placeholder: "Место для заголовка...",
                 levels: [2, 3],
@@ -99,6 +103,7 @@ const ContentEditor = () => {
         table: {
             class: Table,
             inlineToolbar: true,
+            shortcut: 'CMD+SHIFT+T',
             config: {
                 rows: 2,
                 cols: 3,
@@ -110,14 +115,16 @@ const ContentEditor = () => {
         },
         quote: {
             class: Quote,
+            shortcut: 'CMD+SHIFT+Q',
             inlineToolbar: true,
             config: {
                 titlePlaceholder: 'Заголовок',
-                messagePlaceholder: 'Заметка',
+                messagePlaceholder: 'Цитата',
             },
         },
         warning: {
             class: Warning,
+            shortcut: 'CMD+SHIFT+W',
             inlineToolbar: true,
             config: {
                 titlePlaceholder: 'Заголовок',
@@ -126,17 +133,25 @@ const ContentEditor = () => {
         },
         Math: {
             class: EJLaTeX,
+            shortcut: 'CMD+SHIFT+M',
             config: {
                 renderOnPaste: false,
             }
         },
         delimiter: Delimiter,
         marker: Marker,
-        code: CodeTool,
+        code: {
+            class: CodeTool,
+            shortcut: 'CMD+SHIFT+C',
+            config: {
+                placeholder: "Место для кода...",
+            }
+        },
         inlineCode: InlineCode,
         nestedList: {
             class: NestedList,
             inlineToolbar: true,
+            shortcut: 'CMD+SHIFT+N',
         }
     };
 
@@ -174,7 +189,7 @@ const ContentEditor = () => {
     return (
     <div>
         {/* Панель инструментов */}
-        <div className="toolbar">
+        <div className="toolbar max-md:hidden">
             <button onClick={() => editorRef.current.blocks.insert('header')}><i className="fi fi-rr-square-h"></i></button>
             <button onClick={() => editorRef.current.blocks.insert('list')}><i className="fi fi-rr-rectangle-list"></i></button>
             <button onClick={() => editorRef.current.blocks.insert('quote')}><i className="fi fi-rr-comment-quote"></i></button>

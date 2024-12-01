@@ -563,7 +563,7 @@ server.post("/checklike", verifyJWT, (req, res) => {
 //commenting on blog
 server.post("/addcomment", verifyJWT, async (req, res) => {
   const user_id = req.user;
-  const { _id, message, blog_author, replying_to } = req.body;
+  const { _id, message, blog_author, replying_to, notification_id = undefined } = req.body;
 
   if (!_id || !message) {
     return res.status(400).json({ error: "Blog ID and message are required" });
@@ -573,8 +573,11 @@ server.post("/addcomment", verifyJWT, async (req, res) => {
     return res.status(400).json({ error: "Invalid parent comment ID" });
   }
 
-  const commentedAt = new Date();
+  if (notification_id && !mongoose.Types.ObjectId.isValid(notification_id)) {
+    return res.status(400).json({ error: "Invalid notification ID" });
+  }
 
+  const commentedAt = new Date();
   let commentFile = {
     blog_id: _id,
     blog_author,
@@ -587,14 +590,18 @@ server.post("/addcomment", verifyJWT, async (req, res) => {
 
   if (replying_to) {
     commentFile.parent = replying_to;
-    commentFile.isReply = true;
   }
 
   try {
-    // Сохранение комментария
     const newComment = await new Comment(commentFile).save();
 
-    // Обновление блога
+    // Проверяем существование блога
+    const blogExists = await Blog.exists({ _id });
+    if (!blogExists) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
+
+    // Обновляем блог
     await Blog.findOneAndUpdate(
       { _id },
       {
@@ -616,12 +623,25 @@ server.post("/addcomment", verifyJWT, async (req, res) => {
         { _id: replying_to },
         { $push: { children: newComment._id } }
       );
-      notificationObj.notification_for = replyingToCommentDoc?.commented_by;
+
+      if (replyingToCommentDoc) {
+        notificationObj.notification_for = replyingToCommentDoc.commented_by;
+        notificationObj.replied_on_comment = replyingToCommentDoc._id;
+      }
+
+      if (notification_id) {
+        const updatedNotification = await Notification.findOneAndUpdate(
+          { _id: notification_id },
+          { reply: commentFile._id }
+        );
+
+        if (!updatedNotification) {
+          console.log("Notification not found.");
+        }
+      }
     }
 
-    // Создание уведомления
     await new Notification(notificationObj).save();
-
     console.log("New notification created");
 
     res.status(200).json({
@@ -695,42 +715,80 @@ const deleteComment = (_id) => {
         { $pull: { children: comment._id } }
       )
       .then(() => {
-        console.log("Comment deleted successfully")
+        console.log("Comment deleted successfully");
       })
-      }
-    Notification.findOneAndDelete({ comment: _id})
+      .catch(err => {
+        console.error("Error updating parent comment:", err);
+      });
+    }
+
+    // Удаляем уведомление, связанное с комментарием
+    Notification.findOneAndDelete({ comment: _id })
       .then(() => {
-        () => console.log("Comment notification deleted successfully");
+        console.log("Comment notification deleted successfully");
       })
-    Notification.findOneAndDelete({ reply: _id}).then(() => {
-      () => console.log("Comment reply notification deleted successfully");
-    })
-    Blog.findOneAndUpdate({ _id: comment.blog_id }, { $pull: { comments: comment._id }, $inc: { "activity.total_comments": -1, "activity.total_parent_comments": comment.parent ? 0 : -1 } })
-    .then(() => {
-      if(comment.children.length){
-        comment.children.forEach(child => {
-          deleteComment(child);
-        })
-      }
-    })
-    .catch(err => {
-      console.log(err);
-    })
+      .catch(err => {
+        console.error("Error deleting notification:", err);
+      });
+
+    // Удаляем уведомление на ответ, если оно существует
+    Notification.findOneAndDelete({ reply: _id })
+      .then(() => {
+        console.log("Comment reply notification deleted successfully");
+      })
+      .catch(err => {
+        console.error("Error deleting reply notification:", err);
+      });
+
+    // Обновляем блог, удаляя комментарий из списка и корректируя активность
+    Blog.findOneAndUpdate({ _id: comment.blog_id }, 
+      { 
+        $pull: { comments: comment._id },
+        $inc: { "activity.total_comments": -1, "activity.total_parent_comments": comment.parent ? 0 : -1 }
+      })
+      .then(() => {
+        // Если у комментария есть дочерние комментарии, удаляем их рекурсивно
+        if (comment.children.length) {
+          comment.children.forEach(child => {
+            deleteComment(child);
+          });
+        }
+      })
+      .catch(err => {
+        console.error("Error updating blog:", err);
+      });
   })
-}
+  .catch(err => {
+    console.error("Error deleting comment:", err);
+  });
+};
+
 server.post("/deletecomment", verifyJWT, (req, res) => {
   let user_id = req.user;
-  let { _id, blog_id } = req.body;
+  let { _id, blog_id, isReply = false } = req.body;
+
   Comment.findOne({ _id })
   .then(doc => {
-    if(doc.commented_by.toString() === user_id || doc.blog_author.toString() === user_id) {
+    // Проверяем, что комментарий был написан этим пользователем или владельцем блога
+    if (doc.commented_by.toString() === user_id || doc.blog_author.toString() === user_id) {
+      // Если это ответ на комментарий (isReply true), то удаляем ответ
+      if (isReply) {
+        deleteComment(_id);
+        return res.status(200).json({ message: "Reply deleted successfully" });
+      }
+
+      // Если это основной комментарий, просто удаляем
       deleteComment(_id);
       return res.status(200).json({ message: "Comment deleted successfully" });
     } else {
       return res.status(403).json({ error: "You are not allowed to delete this comment" });
     }
   })
-})
+  .catch(err => {
+    console.error("Error finding comment:", err);
+    return res.status(500).json({ error: "Failed to find comment" });
+  });
+});
 
 server.get("/newnotification", verifyJWT, (req, res) => {
   let user_id = req.user;
@@ -743,6 +801,54 @@ server.get("/newnotification", verifyJWT, (req, res) => {
     }
   })
   .catch(err => {
+    return res.status(500).json({ error: err.message });
+  })
+})
+
+server.post("/notification", verifyJWT, (req, res) => {
+  let user_id = req.user;
+  let { page, filterOption, deletedDocCount } = req.body;
+  let maxLimit = 10;
+  let findQuery = { notification_for: user_id, user: {$ne : user_id} };
+  let skipDocs = (page - 1) * maxLimit;
+  if(filterOption !== "all") {
+    findQuery.type = filterOption;
+  }
+  if(deletedDocCount) {
+    skipDocs -= deletedDocCount;
+  }
+  Notification.find(findQuery)
+  .skip(skipDocs)
+  .limit(maxLimit)
+  .populate("blog", "title blog_id")
+  .populate("comment", "comment")
+  .populate("replied_on_comment", "comment")
+  .populate("reply", "comment")
+  .populate("user", "personal_info.profile_img personal_info.fullname personal_info.username")
+  .sort({"createdAt" : -1 })
+  .select("createdAt type seen reply")
+  .then(notifications => {
+    return res.status(200).json({ notifications });
+  })
+  .catch(err => {
+    console.log(err.message);
+    return res.status(500).json({ error: err.message });
+  })
+})
+
+server.post("/allnotificationscount", verifyJWT, (req, res) => {
+  let user_id = req.user;
+  let {filterOption} = req.body;
+  let findQuery = { notification_for: user_id, user: {$ne : user_id} };
+  if(filterOption !== "all") {
+    findQuery.type = filterOption;
+  }
+  Notification.countDocuments(findQuery)
+  .then(count => {
+    return res.status(200).json({ totalDocs: count });
+  })
+  .catch(err => {
+    console.log(err.message);
     return res.status(500).json({ error: err.message });
   })
 })
