@@ -10,8 +10,8 @@ export default {
             'dark-grey': '#6B6B6B',
             'red': '#FF4E4E',
             'transparent': 'transparent',
-            'twitter': '#1DA1F2',
-            'purple': '#8B46FF'
+            'purple': '#8B46FF',
+            'orange': '#ff9245'
         },
 
         fontSize: {

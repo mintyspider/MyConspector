@@ -828,6 +828,10 @@ server.post("/notification", verifyJWT, (req, res) => {
   .sort({"createdAt" : -1 })
   .select("createdAt type seen reply")
   .then(notifications => {
+    Notification.updateMany(findQuery, {seen: true})
+    .skip(skipDocs)
+    .limit(maxLimit)
+    .then(() => console.log("notification seen"))
     return res.status(200).json({ notifications });
   })
   .catch(err => {
@@ -852,6 +856,20 @@ server.post("/allnotificationscount", verifyJWT, (req, res) => {
     return res.status(500).json({ error: err.message });
   })
 })
+
+server.post("/deletenotification", verifyJWT, (req, res) => {
+  let user_id = req.user;
+  let { _id } = req.body;
+
+  Notification.findOneAndDelete({ _id })
+  .then(doc => {
+        return res.status(200).json({ message: "Notification deleted successfully" });
+      })
+  .catch(err => {
+    console.error("Error finding notification:", err);
+    return res.status(500).json({ error: "Failed to find" });
+  });
+});
 
 server.listen(PORT, () => {
   console.log('Listening on port => ' + PORT);

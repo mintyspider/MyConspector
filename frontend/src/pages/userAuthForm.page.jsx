@@ -1,155 +1,153 @@
-import React, { useContext, useEffect } from 'react'
-import logo from '../imgs/full-logo.png'
-import InputBox from '../components/input.component'
-import { Link, Navigate } from 'react-router-dom'
-import AnimationWrapper from '../common/page-animation'
+import React, { useContext } from 'react';
+import logo from '../imgs/full-logo.png';
+import InputBox from '../components/input.component';
+import { Link, Navigate } from 'react-router-dom';
+import AnimationWrapper from '../common/page-animation';
 import { Toaster, toast } from "react-hot-toast";
 import axios from 'axios';
-import { storeInSession } from '../common/session'
-import { UserContext } from '../App'
-
+import { storeInSession } from '../common/session';
+import { UserContext } from '../App';
 
 const AuthForm = ({ type }) => {
+    const { userAuth = {}, setUserAuth } = useContext(UserContext);
 
-    let { userAuth = {}, setUserAuth } = useContext(UserContext);
-    if(!userAuth){
-        return <Navigate to="/signup" />
+    if (!userAuth) {
+        return <Navigate to="/signup" />;
     }
-    let { accessToken } = userAuth;
 
+    const { accessToken } = userAuth;
 
     const userAuthToServer = (serverRoute, formData) => {
-        axios.post(import.meta.env.VITE_SERVER_DOMAIN + serverRoute, formData).then(({data}) => {
-            storeInSession("user", JSON.stringify(data));
-            sessionStorage.setItem("accessToken", data.accessToken);
-            setUserAuth(data);
-        }).catch(({ response }) => {
-            toast.error(response.data.error);
-        });
-    };    
+        axios
+            .post(`${import.meta.env.VITE_SERVER_DOMAIN}${serverRoute}`, formData)
+            .then(({ data }) => {
+                storeInSession("user", JSON.stringify(data));
+                sessionStorage.setItem("accessToken", data.accessToken);
+                setUserAuth(data);
+            })
+            .catch(({ response }) => {
+                toast.error(response?.data?.error || "Произошла ошибка");
+            });
+    };
 
     const handleSubmit = (e) => {
-
         e.preventDefault();
 
-        let serverRoute = type == "sign-in" ? "/signin" : "/signup";
+        const serverRoute = type === "sign-in" ? "/signin" : "/signup";
+        const form = new FormData(document.getElementById("formAuth"));
+        const formData = Object.fromEntries(form.entries());
+        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
 
-        //form data
-        let form = new FormData(formAuth);
-        let formData = {};
-        let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
-        let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
-        for(let [key, value] of form.entries()){
-            formData[key] = value;
-        }
+        const { fullname, email, password, confirmPassword } = formData;
 
-        let { fullname, email, password, confirmPassword } = formData;
-        // validation
-        if (serverRoute === '/signup') {
-            if (fullname.length < 3) {
-                return toast.error('Имя должно содержать хотя бы 3 символа');
+        if (serverRoute === "/signup") {
+            if (!fullname || fullname.length < 3) {
+                return toast.error("Имя должно содержать хотя бы 3 символа");
             }
-    
+
             if (password !== confirmPassword) {
-                return toast.error('Пароли не совпадают');
+                return toast.error("Пароли не совпадают");
             }
         }
-        if (!email.length) {
-            return toast.error('Введите электронную почту');
+
+        if (!email || !emailRegex.test(email)) {
+            return toast.error("Введите корректный адрес электронной почты");
         }
 
-        if (!emailRegex.test(email)) {
-            return toast.error('Неверный формат электронной почты');
+        if (!password || !passwordRegex.test(password)) {
+            return toast.error(
+                "Пароль должен быть длиной не менее 6 символов, содержать одну заглавную букву, одну строчную букву и одну цифру"
+            );
         }
 
-        if (!password.length) {
-            return toast.error('Введите пароль');
-        }
-
-        if (!passwordRegex.test(password)) {
-            return toast.error('Пароль должен состоять не менее чем из 6 символов и содержать как минимум одну заглавную букву, одну строчную букву и одну цифру');
-        }
-
-        //sending to backend
         userAuthToServer(serverRoute, formData);
-    }
+    };
 
-  return (
-    accessToken ?
-    <Navigate to='/' />
-    :
-    <AnimationWrapper key={type}>
-        <section className='h-cover flex items-center justify-center md:justify-around flex-col'>
-            <Toaster />
-            <img src={logo} alt="logo" className="md:w-[25%] md:h-[25%] max-sm:h-[50%] max-sm:w-[50%] mx-auto" />
-            <h1 className='text-4xl font-gelasio text-center mb-18'>
-                {type == 'sign-in' ? 'Входи и действуй!' : 'Здесь все начинается'}
-            </h1>
-            
-            <form id="formAuth" className='w-[80%] max-w-[400px] md:w-[49%]'>
+    return accessToken ? (
+        <Navigate to="/" />
+    ) : (
+        <AnimationWrapper key={type}>
+            <section className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-200 p-4">
+                <Toaster />
+                <img
+                    src={logo}
+                    alt="logo"
+                    className="w-[35%] mb-6"
+                />
                 
-
-                {
-                    type == 'sign-up' ?
+                <form id="formAuth" className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+                    <h1 className="text-3xl md:text-4xl font-gelasio text-center text-gray-800 mb-6">
+                        {type === "sign-in" ? "Входи и действуй!" : "Здесь все начинается"}
+                    </h1>
+                    {type === "sign-up" && (
                         <InputBox
                             name="fullname"
                             type="text"
                             placeholder="Ваше имя"
                             icon="user"
                         />
-                    : ''
-                }
+                    )}
 
-                <InputBox
-                    name="email"
-                    type="email"
-                    placeholder="Электронная почта"
-                    icon="envelope"
-                    required
-                />
+                    <InputBox
+                        name="email"
+                        type="email"
+                        placeholder="Электронная почта"
+                        icon="envelope"
+                        required
+                    />
 
-                <InputBox
-                    name="password"
-                    type="password"
-                    placeholder="Пароль"
-                    required
-                />
-                
-                {
-                    type == 'sign-up' ? 
-                    <>
+                    <InputBox
+                        name="password"
+                        type="password"
+                        placeholder="Пароль"
+                        required
+                    />
+
+                    {type === "sign-up" && (
                         <InputBox
                             name="confirmPassword"
                             type="password"
                             placeholder="Подтвердите пароль"
                             required
                         />
-                    </>
-                    : ''
-                }
+                    )}
 
-                <button className='btn-dark center mt-8' 
-                type="submit"
-                onClick={handleSubmit}
-                >
-                    {type == 'sign-in'? 'Войти' : 'Зарегистрироваться'}
-                </button>
+                    <button
+                        className="btn-light center hover:bg-orange hover:text-white rounded-full my-4 transition"
+                        type="submit"
+                        onClick={handleSubmit}
+                    >
+                        {type === "sign-in" ? "Войти" : "Зарегистрироваться"}
+                    </button>
 
-                {
-                    type == 'sign-in'?
-                    <p className='text-center mt-8 text-dark-grey text-xl'>
-                        Нет аккаунта? <Link to="/signup" className='hover:underline text-xl text-dark-grey ml-1'>Зарегистрироваться</Link>
+                    <p className="text-center mt-4 text-dark-grey text-sm">
+                        {type === "sign-in" ? (
+                            <>
+                                Нет аккаунта?{" "}
+                                <Link
+                                    to="/signup"
+                                    className="text-purple hover:underline"
+                                >
+                                    Зарегистрироваться
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                Уже есть аккаунт?{" "}
+                                <Link
+                                    to="/signin"
+                                    className="text-purple hover:underline"
+                                >
+                                    Войти
+                                </Link>
+                            </>
+                        )}
                     </p>
-                    :
-                    <p className='text-center mt-8 text-dark-grey text-xl'>
-                        Уже есть аккаунт? <Link to="/signin" className='hover:underline text-xl text-dark-grey ml-1'>Войти</Link>
-                    </p>
-                }
+                </form>
+            </section>
+        </AnimationWrapper>
+    );
+};
 
-            </form>
-        </section>
-    </AnimationWrapper>
-  )
-}
-
-export default AuthForm
+export default AuthForm;

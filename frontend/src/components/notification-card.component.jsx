@@ -8,7 +8,7 @@ import axios from 'axios';
 const NotificationCard = ({ data, index, notificationState }) => {
     let [isReplying, setReplying] = useState(false);
     let {userAuth: {accessToken, username: author_username, profile_img: author_profile_img, fullname: author_fullname}} = useContext(UserContext);
-    let {type, reply, createdAt, user, user: {personal_info: {profile_img, fullname, username}}} = data;
+    let {type, seen, reply, createdAt, user, user: {personal_info: {profile_img, fullname, username}}} = data;
     let {notifications, notifications: {results, totalDocs}, setNotifications} = notificationState;
     const handleReplyClick = () => {
         setReplying(prev => !prev)
@@ -27,8 +27,19 @@ const NotificationCard = ({ data, index, notificationState }) => {
             setNotifications({...notifications, results, totalDocs: totalDocs - 1, deleteDocCount: notifications.deleteDocCount + 1})
         })
     }
+    const DeleteNotification = (id, target) => {
+        target.setAttribute("disabled", true);
+        console.log("clicked")
+        axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/deletenotification", {_id: id}, {headers: {'Authorization': `Bearer ${accessToken}`}
+        })
+        .then(() => {
+            delete results[index];
+            target.removeAttribute("disabled");
+            setNotifications({...notifications, results, totalDocs: totalDocs - 1, deleteDocCount: notifications.deleteDocCount + 1})
+        })
+    }
     return (
-        <div className='p-6 border-b border-grey border-l-black'>
+        <div className={'p-6 border-b border-grey border-l-black ' +(!seen ? 'border-l-2' : 'border-l-0')}>
             <div className='flex gap-5 mb-3'>
                 <img src={profile_img} className='w-14 h-14 flex-none rounded-full'/>
                 <div className='w-full'>
@@ -80,11 +91,20 @@ const NotificationCard = ({ data, index, notificationState }) => {
                 {
                     type != "like" ? 
                     <>
-                        {!reply ? <button className='underline hover:text-black' onClick={handleReplyClick}>Ответить</button> : ""}
-                        <button className='underline hover:text-red' onClick={(e) => handleDelete(data.comment._id, 'comment', e.target)}>Удалить комментарий</button>
+                        <button className='underline hover:text-red' onClick={(e) => handleDelete(data.comment._id, 'comment', e.target)}>Убрать</button>
+                        {
+                            !reply 
+                            ? <button className='underline hover:text-black' onClick={handleReplyClick}>Ответить</button> 
+                            : ""
+                        }
+                        
                     </>
                     : ""
                 }
+                <button className='hover:text-red flex gap-2' onClick={(e) => DeleteNotification(data._id, e.target)}>
+                    <i className="fi fi-rr-trash"></i>
+                    Удалить
+                </button>
             </div>
             {
                 isReplying ? 
@@ -93,7 +113,7 @@ const NotificationCard = ({ data, index, notificationState }) => {
                 </div>
                 : ""
             }
-            {/*Тут нихрена не работает */}
+            {/*Тут ничего не работает */}
             {
                 reply ?
                 <div className='ml-20 p-5 bg-grey mt-5 rounded-md'>

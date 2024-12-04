@@ -129,7 +129,7 @@ const Navbar = () => {
                             <p className='pl-2'>Вход</p>
                         </Link>
 
-                        <Link to='/signup' className='btn-light py-2 hidden md:flex'>
+                        <Link to='/signup' className='btn-light py-2 hidden lg:flex'>
                             <i className="fi fi-rr-user-add"></i>
                             <p className='pl-2'>Регистрация</p>
                         </Link>

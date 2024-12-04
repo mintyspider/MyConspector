@@ -24,8 +24,8 @@ const SideNav = () => {
         :
         <>
             <section className='relative flex gap-10 py-0 m-0 max-md:flex-col'>
-                <div className='sticky top-[80px] z-30'>
-                    <div className='md:hidden flex gap-2 justify-start items-center border-b border-grey'>
+                <div className='sticky top-[80px] max-md:bg-white z-30'>
+                    <div className='md:hidden max-md:bg-white flex gap-2 justify-start items-center border-b border-grey'>
                         <button 
                         className="p-5 text-2xl"
                         onClick={toggleMenu}
