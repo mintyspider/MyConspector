@@ -16,6 +16,7 @@ import User from './Schema/User.js';
 import Blog from './Schema/Blog.js';
 import Notification from './Schema/Notification.js';
 import Comment from './Schema/Comment.js';
+import { error } from 'console';
 
 
 const server = express();
@@ -870,6 +871,39 @@ server.post("/deletenotification", verifyJWT, (req, res) => {
     return res.status(500).json({ error: "Failed to find" });
   });
 });
+
+//for dashboard/blogs
+server.post("/userwrittenblogs", verifyJWT, (req, res) => {
+  let user_id = req.user;
+  let { page, draft, query, deletedDocCount } = req.body;
+  let maxLimit = 2;
+  let skipDocs = (page - 1) * maxLimit;
+  if(deletedDocCount){
+    skipDocs -= deletedDocCount;
+  }
+  Blog.find({author: user_id, draft, title: new RegExp(query, 'i')})
+  .skip(skipDocs)
+  .sort({publishedAt : -1})
+  .select("title publishedAt blog_id activity des draft -_id")
+  .then(blogs => {
+    return res.status(200).json({blogs})
+  })
+  .catch(err => {
+    return res.status(500).json({error : err.message})
+  })
+})
+
+server.post("/userwrittenblogscount", verifyJWT, (req, res) => {
+  let user_id = req.user;
+  let {draft, query} = req.body;
+  Blog.countDocuments({author: user_id, draft, title: new RegExp(query, 'i')})
+  .then(count => {
+    return res.status(200).json({totalDocs : count})
+  })
+  .catch(err => {
+    return res.status(500).json({error: err.message})
+  })
+})
 
 server.listen(PORT, () => {
   console.log('Listening on port => ' + PORT);

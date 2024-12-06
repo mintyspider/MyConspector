@@ -69,7 +69,7 @@ const BlogEditor = () => {
     const handleSave = (e) => {
         // Блокируем кнопку, если она уже нажата
     if (e.target.classList.contains('disable')){
-        e.target.classList.add('bg-dark-grey');
+        e.target.classList.add('bg-grey');
         return;
       }
   
@@ -86,7 +86,7 @@ const BlogEditor = () => {
       let blogObj = { 
         title,  
         des, 
-        content: content ? {content: content[0].blocks} : { blocks: content.blocks }, // Оборачиваем в объект с ключом `blocks`
+        content: content[0] ? {content: content[0].blocks} : { content: content.blocks }, // Оборачиваем в объект с ключом `blocks`
         tags, 
         draft: true 
       };
@@ -94,7 +94,7 @@ const BlogEditor = () => {
       // Отправляем запрос на сервер
       axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', {...blogObj, id: blog_id}, {
         headers: {
-          'Authorization': `Bearer ${accessToken}`
+          Authorization: `Bearer ${accessToken}`
         }
       }).then(() => {
         // Разблокируем кнопку

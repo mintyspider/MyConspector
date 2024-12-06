@@ -73,7 +73,7 @@ const AuthForm = ({ type }) => {
                 <img
                     src={logo}
                     alt="logo"
-                    className="w-[35%] mb-6"
+                    className="w-[33%] mb-6"
                 />
                 
                 <form id="formAuth" className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
