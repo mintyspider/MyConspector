@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { getFullDay } from '../common/date';
+import axios from 'axios';
+import { UserContext } from '../App';
+import toast from 'react-hot-toast';
 
 const BlogStats = ({stats}) => {
     let {total_likes, total_comments, total_reads} = stats;
@@ -22,9 +25,11 @@ const BlogStats = ({stats}) => {
     )
 }
 
-export const ManageBlogCard = ({blog, index}) => {
-    let {blog_id, title, publishedAt, activity} = blog;
+export const ManageBlogCard = ({blog}) => {
+    let {blog_id, title, publishedAt, activity, index, setStateFunc} = blog;
+    index++;
     let [showStat, setShowStat] = useState(false);
+    let {userAuth: {accessToken}} = useContext(UserContext);
     return (
         <>
             <div className='flex gap-10 border-b mb-6 max-mb:px-4 border-grey pb-6 items-center'>
@@ -44,7 +49,7 @@ export const ManageBlogCard = ({blog, index}) => {
                     <div className='hidden md:flex gap-6'>
                         <Link to={`/editor/${blog_id}`} className='pr-4 py-2 hover:underline'>Переписать</Link>
                         <button className='lg:hidden pr-4 py-2 text-purple hover:underline' onClick={()=>setShowStat(prev => !prev)}>Статистика</button>
-                        <button className='pr-4 py-2 text-red'>Удалить</button>
+                        <button className='pr-4 py-2 text-red' onClick={(e) => DeleteBlog(blog, accessToken, e.target)}>Удалить</button>
                     </div>
                     <div className='md:hidden flex gap-8 mt-3'>
                         <Link to={`/editor/${blog_id}`} className='pr-4 py-2 hover:underline'>
@@ -52,7 +57,7 @@ export const ManageBlogCard = ({blog, index}) => {
                         <button className='lg:hidden pr-4 py-2 text-purple hover:underline' onClick={()=>setShowStat(prev => !prev)}>
                             <i className='fi fi-rr-stats text-2xl'></i>
                         </button>
-                        <button className='pr-4 py-2 text-red'>
+                        <button className='pr-4 py-2 text-red' onClick={(e) => DeleteBlog(blog, accessToken, e.target)}>
                             <i className='fi fi-rr-trash text-2xl'></i>
                         </button>
                     </div>
@@ -65,8 +70,11 @@ export const ManageBlogCard = ({blog, index}) => {
     )
 }
 
-export const ManageDraftCard = ({blog, index}) => {
-    let {blog_id, title, des, publishedAt, activity} = blog;
+export const ManageDraftCard = ({blog}) => {
+    console.log("_id", blog._id)
+    let {blog_id, title, des, publishedAt, activity, index, setStateFunc} = blog;
+    index++;
+    let {userAuth: {accessToken}} = useContext(UserContext);
     return (
         <>
             <div className='flex gap-10 border-b mb-6 max-mb:px-4 border-grey pb-6 items-center'>
@@ -79,12 +87,12 @@ export const ManageDraftCard = ({blog, index}) => {
                     </div>
                     <div className='hidden md:flex gap-6'>
                         <Link to={`/editor/${blog_id}`} className='pr-4 py-2 hover:underline'>Переписать</Link>
-                        <button className='pr-4 py-2 text-red'>Удалить</button>
+                        <button className='pr-4 py-2 text-red' onClick={(e) => DeleteBlog(blog, accessToken, e.target)}>Удалить</button>
                     </div>
                     <div className='md:hidden flex gap-8 mt-3'>
                         <Link to={`/editor/${blog_id}`} className='pr-4 py-2 hover:underline'>
                         <i className='fi fi-rr-edit text-2xl'></i></Link>
-                        <button className='pr-4 py-2 text-red'>
+                        <button className='pr-4 py-2 text-red' onClick={(e) => DeleteBlog(blog, accessToken, e.target)}>
                             <i className='fi fi-rr-trash text-2xl'></i>
                         </button>
                     </div>
@@ -97,3 +105,50 @@ export const ManageDraftCard = ({blog, index}) => {
         </>
     )
 }
+
+const DeleteBlog = async (blog, accessToken, target) => {
+    let { index, blog_id, setStateFunc } = blog;
+
+    // Блокируем кнопку
+    target.setAttribute("disabled", true);
+
+    try {
+        // Отправляем запрос на сервер
+        const { data } = await axios.post(
+            `${import.meta.env.VITE_SERVER_DOMAIN}/deleteblog`,
+            { blog_id },
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+        );
+
+        // Разблокируем кнопку
+        target.removeAttribute("disabled");
+
+        // Обновляем состояние
+        setStateFunc(prev => {
+            let { deletedDocCount, totalDocs, results } = prev;
+
+            // Создаем новый массив вместо модификации существующего
+            const updatedResults = [...results];
+            updatedResults.splice(index, 1);
+
+            // Проверяем, если после удаления массив пуст, возвращаем `null` при наличии других документов
+            if (!updatedResults.length && totalDocs - 1 > 0) {
+                return null;
+            }
+            toast.success("Конспект успешно удален")
+            return {
+                ...prev,
+                totalDocs: totalDocs - 1,
+                deletedDocCount: deletedDocCount + 1,
+                results: updatedResults, // Устанавливаем новый массив
+            };
+        });
+    } catch (err) {
+        // Разблокируем кнопку при ошибке
+        target.removeAttribute("disabled");
+
+        // Логируем ошибку и добавляем пользовательский фидбек
+        console.error("Error deleting blog:", err);
+        toast.error("Возникла ошибка при удалении контекста");
+    }
+};

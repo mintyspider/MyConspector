@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import logo from '../imgs/full-logo.png';
 import InputBox from '../components/input.component';
 import { Link, Navigate } from 'react-router-dom';
@@ -26,7 +26,8 @@ const AuthForm = ({ type }) => {
                 setUserAuth(data);
             })
             .catch(({ response }) => {
-                toast.error(response?.data?.error || "Произошла ошибка");
+                console.log(response);
+                toast.error("Произошла ошибка");
             });
     };
 
@@ -64,12 +65,21 @@ const AuthForm = ({ type }) => {
         userAuthToServer(serverRoute, formData);
     };
 
-    return accessToken ? (
-        <Navigate to="/" />
-    ) : (
+    const [toastShown, setToastShown] = useState(false);
+
+    if (accessToken) {
+        if (!toastShown) {
+            toast.dismiss();
+            toast.success("Добро пожаловать домой");
+            setToastShown(true); // Устанавливаем, что уведомление уже показано
+        }
+        
+        return <Navigate to={type === "sign-in" ? "/" : "/welcome"} />;
+    }
+
+    return (
         <AnimationWrapper key={type}>
-            <section className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-200 p-4">
-                <Toaster />
+            <section className="max-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-200 p-4">
                 <img
                     src={logo}
                     alt="logo"
@@ -88,7 +98,7 @@ const AuthForm = ({ type }) => {
                             icon="user"
                         />
                     )}
-
+    
                     <InputBox
                         name="email"
                         type="email"
@@ -96,14 +106,14 @@ const AuthForm = ({ type }) => {
                         icon="envelope"
                         required
                     />
-
+    
                     <InputBox
                         name="password"
                         type="password"
                         placeholder="Пароль"
                         required
                     />
-
+    
                     {type === "sign-up" && (
                         <InputBox
                             name="confirmPassword"
@@ -112,7 +122,7 @@ const AuthForm = ({ type }) => {
                             required
                         />
                     )}
-
+    
                     <button
                         className="btn-light center hover:bg-orange hover:text-white rounded-full my-4 transition"
                         type="submit"
@@ -120,7 +130,7 @@ const AuthForm = ({ type }) => {
                     >
                         {type === "sign-in" ? "Войти" : "Зарегистрироваться"}
                     </button>
-
+    
                     <p className="text-center mt-4 text-dark-grey text-sm">
                         {type === "sign-in" ? (
                             <>
@@ -148,6 +158,6 @@ const AuthForm = ({ type }) => {
             </section>
         </AnimationWrapper>
     );
-};
+}
 
 export default AuthForm;

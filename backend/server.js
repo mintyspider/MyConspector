@@ -884,7 +884,7 @@ server.post("/userwrittenblogs", verifyJWT, (req, res) => {
   Blog.find({author: user_id, draft, title: new RegExp(query, 'i')})
   .skip(skipDocs)
   .sort({publishedAt : -1})
-  .select("title publishedAt blog_id activity des draft -_id")
+  .select("title publishedAt blog_id activity des draft _id")
   .then(blogs => {
     return res.status(200).json({blogs})
   })
@@ -904,6 +904,46 @@ server.post("/userwrittenblogscount", verifyJWT, (req, res) => {
     return res.status(500).json({error: err.message})
   })
 })
+
+server.post("/deleteblog", verifyJWT, async (req, res) => {
+  try {
+    let user_id = req.user; // ID пользователя из токена
+    let { blog_id } = req.body;
+
+    // Найти и удалить блог
+    const blog = await Blog.findOneAndDelete({ _id: blog_id });
+
+    if (!blog) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
+
+    // Удалить уведомления, связанные с этим блогом
+    await Notification.deleteMany({ blog: blog._id });
+
+    // Удалить комментарии, связанные с этим блогом
+    await Comment.deleteMany({ blog: blog._id });
+
+    // Обновить пользователя
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: user_id },
+      {
+        $pull: { blogs: blog._id }, // Удалить блог из массива blogs
+        $inc: { "account_info.total_posts": -1 }, // Уменьшить счетчик постов
+      },
+      { new: true } // Возвратить обновленный документ
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json({ status: "done" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 
 server.listen(PORT, () => {
   console.log('Listening on port => ' + PORT);

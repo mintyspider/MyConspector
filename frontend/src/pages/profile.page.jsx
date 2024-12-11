@@ -87,7 +87,8 @@ const ProfilePage = () => {
   
 
     const changeConspect = () => {
-      if (total_posts % 10 ===1 && total_posts % 100 !== 11) {
+      console.log("total posts =>: ", total_posts);
+      if (total_posts % 10 === 1 && total_posts % 100 !== 11) {
         return 'конспект';
       }
       else if (total_posts % 10 >= 2 && total_posts % 10 <= 4 && (total_posts % 100 < 10 || total_posts % 100 >= 20)) {

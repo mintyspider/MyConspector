@@ -14,6 +14,8 @@ import ChangePassword from "./pages/change-password.page";
 import EditProfile from "./pages/edit-profile.page";
 import Notification from "./pages/notifications.page";
 import ManageBlogs from "./pages/manage-blogs.page";
+import WelcomePage from "./pages/welcome.page";
+import { Toaster } from "react-hot-toast";
 
 export const UserContext = createContext({});
 
@@ -35,6 +37,7 @@ const App = () => {
 
     return (
         <UserContext.Provider value={{userAuth, setUserAuth}}>
+            <Toaster position="top-center" reverseOrder={false} />
             <Router>
                 <Routes>
                     <Route path="/editor" element={<EditorPage/>} />
@@ -54,6 +57,8 @@ const App = () => {
                         <Route path="search/:query" element={<SearchPage />} />
                         <Route path="user/:id" element={<ProfilePage />} />
                         <Route path="blog/:blog_id" element={<BlogPage />} />
+                        <Route path="welcome" element={<WelcomePage/>}/>
+                        <Route path="tour" element={<h1>Here is tour</h1>} />
                         <Route path="*" element={<NotFound/>}/>
                     </Route>
                 </Routes>

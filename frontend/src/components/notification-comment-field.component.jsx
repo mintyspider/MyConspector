@@ -37,7 +37,6 @@ const NotificationCommentField = ({_id, blog_author, index = undefined, replying
     }
     return (
         <>
-            <Toaster />
             <textarea 
                 value={comment} 
                 placeholder='Поделитесь своей контекстурой...' 

@@ -86,7 +86,6 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
 
     return (
         <>
-            <Toaster />
             <textarea 
                 value={comment} 
                 placeholder='Поделитесь своей контекстурой...' 

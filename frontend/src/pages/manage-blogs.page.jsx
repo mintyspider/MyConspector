@@ -73,7 +73,6 @@ const ManageBlogs = () => {
     return (
         <>
             <h1 className='max-md:hidden text-2xl lg:text-3xl font-medium text-dark-grey text-center'>Мои конспекты</h1>
-            <Toaster />
             <div className='relative max-md:mt-5 md:mt-8 mb-10'>
                 <input type="search" 
                 className='w-full bg-grey p-4 pl-12 rounded-full placeholder:text-dark-grey'
@@ -90,7 +89,7 @@ const ManageBlogs = () => {
                         {
                             blogs.results.map((blog, i)=>{
                                 return <AnimationWrapper key={i} transition={{delay: i*0.04}}>
-                                    <ManageBlogCard blog={blog} index={i+1}/>
+                                    <ManageBlogCard blog={{...blog, index: i, setStateFunc: setBlogs}}/>
                                 </AnimationWrapper>
                             })
                         }
@@ -104,7 +103,7 @@ const ManageBlogs = () => {
                         {
                             drafts.results.map((draft, i)=>{
                                 return <AnimationWrapper key={i} transition={{delay: i*0.04}}>
-                                    <ManageDraftCard blog={draft} index={i+1}/>
+                                    <ManageDraftCard blog={{...draft, index: i, setStateFunc: setDrafts}}/>
                                 </AnimationWrapper>
                             })
                         }

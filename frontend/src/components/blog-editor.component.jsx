@@ -127,7 +127,6 @@ const BlogEditor = () => {
 
     return (
         <>
-            <Toaster />
             <nav className='navbar'>
                 <Link to="/" className='flex-none w-12'>
                     <img src={logo} alt="Logo" />

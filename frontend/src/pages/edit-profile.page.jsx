@@ -144,7 +144,6 @@ const EditProfile = () => {
             {loading ? <Loader /> :
 
                 <form onSubmit={handleSaveProfile}>
-                    <Toaster />
                     <h1 className='max-md:hidden text-2xl lg:text-3xl font-medium text-dark-grey text-center'>Редактировать профиль</h1>
                     <div className='flex flex-col lg:flex-row items-start py-10 gap-8 lg:gap-10'>
                         <div className='max-lg:center mb-5'>
