@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import logo from "../imgs/logo.png";
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { UserContext } from '../App';
+import { ThemeContext, UserContext } from '../App';
 import UserNavigation from './user-navigation.component';
 import axios from 'axios';
+import { storeInSession } from '../common/session';
 
 const Navbar = () => {
 
@@ -11,6 +12,7 @@ const Navbar = () => {
     const [searchBoxVisibility, setSearchBoxVisibility] = useState(false);
 
     const { userAuth, setUserAuth } = useContext(UserContext);
+    const { theme, setTheme } = useContext(ThemeContext);
     const accessToken = userAuth?.accessToken;
     const profile_img = userAuth?.profile_img;
     const new_notification_available = userAuth?.new_notification_available;
@@ -35,6 +37,15 @@ const Navbar = () => {
             navigate(`/search/${query}`)
         }
     }
+
+    const changeTheme = () => {
+        console.log("clicked")
+        let newTheme = theme == "light" ? "dark" : "light";
+        setTheme(newTheme);
+        document.body.setAttribute("data-theme", newTheme);
+        storeInSession("theme", newTheme);
+    }
+
     useEffect(() => {
         if(accessToken){
             axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/newnotification", { headers: { Authorization: `Bearer ${accessToken}` } })
@@ -53,6 +64,13 @@ const Navbar = () => {
             <Link to="/" className='w-12 flex-none'>
                 <img src={logo} alt="logo" className='w-full' />
             </Link>
+
+            <button className='bg-grey w-12 h-12 rounded-full flex items-center justify-center' onClick={changeTheme}>
+                    { theme == 'light' ?
+                    <i className="fi fi-rr-moon-stars block text-dark-grey text-2xl mt-2"></i>
+                    : <i className="fi fi-rr-sun block mt-2 text-dark-grey text-2xl"></i>
+                    }
+            </button>
 
             <div className={'absolute bg-white w-full left-0 top-full mt-0.5 border-b border-grey py-4 px-[5vw] md:border-0 md:block md:relative md:inset-0 md:p-0 md:w-auto md:show ' + (searchBoxVisibility ? 'show' : 'hide')}>
 

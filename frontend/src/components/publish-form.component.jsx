@@ -112,7 +112,7 @@ const PublishForm = () => {
 
       // Перенаправление через 500 мс
       setTimeout(() => {
-        navigate("/");
+        navigate("/dashboard/blogs");
       }, 500);
     }).catch(({ response }) => {
       // Разблокируем кнопку при ошибке

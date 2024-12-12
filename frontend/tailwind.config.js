@@ -1,19 +1,9 @@
+import { createThemes } from 'tw-colors';
+
 /** @type {import('tailwindcss').Config} */
 export default {
     content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
     theme: {
-        
-        colors: {
-            'white': '#FFFFFF',
-            'black': '#242424',
-            'grey': '#F3F3F3',
-            'dark-grey': '#6B6B6B',
-            'red': '#FF4E4E',
-            'transparent': 'transparent',
-            'purple': '#8B46FF',
-            'orange': '#ff9245'
-        },
-
         fontSize: {
             'sm': '12px',
             'base': '14px',
@@ -26,11 +16,34 @@ export default {
 
         extend: {
             fontFamily: {
-              inter: ["'Inter'", "sans-serif"],
-              gelasio: ["'Gelasio'", "serif"]
+                inter: ["'Inter'", "sans-serif"],
+                gelasio: ["'Gelasio'", "serif"]
             },
         },
 
     },
-    plugins: [],
+    plugins: [
+        createThemes({
+            light: {
+                'white': '#FFFFFF', // Белый
+                'black': '#242424', // Глубокий чёрный
+                'grey': '#F3F3F3',  // Светлый серый
+                'dark-grey': '#6B6B6B', // Тёмно-серый
+                'red': '#FF4E4E',   // Ярко-красный
+                'transparent': 'transparent', // Прозрачный
+                'purple': '#8B46FF', // Насыщенный фиолетовый
+                'orange': '#FF9245'  // Ярко-оранжевый
+            },
+            dark: {
+                'white': '#000000',  // Чёрный вместо белого
+                'black': '#FFFFFF',  // Белый вместо чёрного
+                'grey': '#2A2A2A',   // Тёмный серый заменён светлым серым
+                'dark-grey': '#E7E7E7', // Светло-серый вместо тёмно-серого
+                'red': '#FF6B6B',    // Более мягкий красный (немного светлее)
+                'transparent': 'transparent', // Прозрачный остаётся неизменным
+                'purple': '#D6B3FF', // Светлый фиолетовый
+                'orange': '#FFB678'  // Светло-оранжевый для баланса
+            }
+        })
+    ],
 };

@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../App';
 import { filterPaginationData } from '../common/filter-pagination-data';
-import { Toaster } from 'react-hot-toast';
 import InPageNavigation from './../components/inpage-navigation.component';
 import Loader from '../components/loader.component';
 import NoDataMessage from '../components/nodata.component';

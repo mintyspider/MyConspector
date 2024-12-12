@@ -69,7 +69,7 @@ const Table = ({ data }) => {
     const rows = data.content.slice(1);
 
     return (
-        <table className="table-auto border-collapse border border-gray-300 w-full">
+        <table className="table-auto border-collapse border border-grey w-full">
             <thead>
                 <tr>
                     {headers.map((header, index) => (
@@ -100,9 +100,9 @@ const Checklist = ({ data }) => {
                 <li key={index} className="my-4 flex items-center">
                     <span className="mr-2">
                         {item.checked ? (
-                            <span className="text-green-500">✔️</span> // Checked
+                            <span className="text-grey">✔️</span> // Checked
                         ) : (
-                            <span className="text-gray-500">⬜</span> // Unchecked
+                            <span className="text-dark-grey">⬜</span> // Unchecked
                         )}
                     </span>
                     <span dangerouslySetInnerHTML={{ __html: item.text }}></span>

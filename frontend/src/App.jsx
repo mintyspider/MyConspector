@@ -19,51 +19,59 @@ import { Toaster } from "react-hot-toast";
 
 export const UserContext = createContext({});
 
+export const ThemeContext = createContext({});
+
 const App = () => {
 
-    const [userAuth, setUserAuth] = useState(null); // Инициализация состояния с null
+    const [userAuth, setUserAuth] = useState(null);
+
+    const [theme, setTheme ] = useState("light");
 
     useEffect(() => {
         const userInSession = lookInSession("user");
 
         if (userInSession) {
-            const parsedUser = JSON.parse(userInSession);  // Парсим данные пользователя
-            setUserAuth(parsedUser);  // Устанавливаем пользователя в состояние
+            const parsedUser = JSON.parse(userInSession);  
+            setUserAuth(parsedUser);  
             console.log("parsed user", parsedUser);
         } else {
-            setUserAuth({ accessToken: null });  // Если пользователя нет, устанавливаем значение по умолчанию
+            setUserAuth({ accessToken: null });
         }
+        document.body.setAttribute('data-theme', theme);
+
     }, []);
 
     return (
-        <UserContext.Provider value={{userAuth, setUserAuth}}>
-            <Toaster position="top-center" reverseOrder={false} />
-            <Router>
-                <Routes>
-                    <Route path="/editor" element={<EditorPage/>} />
-                    <Route path="/editor/:blog_id" element={<EditorPage/>} />
-                    <Route path="/" element={<Navbar />}>
-                        <Route index element={<HomePage />}/>
-                        <Route path="settings" element={<SideNav />}>
-                            <Route path="editprofile" element={<EditProfile />}/>
-                            <Route path="changepassword" element={<ChangePassword />}/>
+        <ThemeContext.Provider value={{theme, setTheme}}>
+            <UserContext.Provider value={{userAuth, setUserAuth}}>
+                <Toaster position="top-center" reverseOrder={false} />
+                <Router>
+                    <Routes>
+                        <Route path="/editor" element={<EditorPage/>} />
+                        <Route path="/editor/:blog_id" element={<EditorPage/>} />
+                        <Route path="/" element={<Navbar />}>
+                            <Route index element={<HomePage />}/>
+                            <Route path="settings" element={<SideNav />}>
+                                <Route path="editprofile" element={<EditProfile />}/>
+                                <Route path="changepassword" element={<ChangePassword />}/>
+                            </Route>
+                            <Route path="dashboard" element={<SideNav />}>
+                                <Route path="notification" element={<Notification />}/>
+                                <Route path="blogs" element={<ManageBlogs />}/>
+                            </Route>
+                            <Route path="signin" element={ <AuthForm type="sign-in" /> } />
+                            <Route path="signup" element={ <AuthForm type="sign-up" /> } />
+                            <Route path="search/:query" element={<SearchPage />} />
+                            <Route path="user/:id" element={<ProfilePage />} />
+                            <Route path="blog/:blog_id" element={<BlogPage />} />
+                            <Route path="welcome" element={<WelcomePage/>}/>
+                            <Route path="tour" element={<h1>Here is tour</h1>} />
+                            <Route path="*" element={<NotFound/>}/>
                         </Route>
-                        <Route path="dashboard" element={<SideNav />}>
-                            <Route path="notification" element={<Notification />}/>
-                            <Route path="blogs" element={<ManageBlogs />}/>
-                        </Route>
-                        <Route path="signin" element={ <AuthForm type="sign-in" /> } />
-                        <Route path="signup" element={ <AuthForm type="sign-up" /> } />
-                        <Route path="search/:query" element={<SearchPage />} />
-                        <Route path="user/:id" element={<ProfilePage />} />
-                        <Route path="blog/:blog_id" element={<BlogPage />} />
-                        <Route path="welcome" element={<WelcomePage/>}/>
-                        <Route path="tour" element={<h1>Here is tour</h1>} />
-                        <Route path="*" element={<NotFound/>}/>
-                    </Route>
-                </Routes>
-            </Router>
-        </UserContext.Provider>
+                    </Routes>
+                </Router>
+            </UserContext.Provider>
+        </ThemeContext.Provider>
     );
 
 }

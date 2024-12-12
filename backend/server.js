@@ -876,7 +876,7 @@ server.post("/deletenotification", verifyJWT, (req, res) => {
 server.post("/userwrittenblogs", verifyJWT, (req, res) => {
   let user_id = req.user;
   let { page, draft, query, deletedDocCount } = req.body;
-  let maxLimit = 2;
+  let maxLimit = 3;
   let skipDocs = (page - 1) * maxLimit;
   if(deletedDocCount){
     skipDocs -= deletedDocCount;

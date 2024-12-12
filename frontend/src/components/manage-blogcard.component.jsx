@@ -113,29 +113,29 @@ const DeleteBlog = async (blog, accessToken, target) => {
     target.setAttribute("disabled", true);
 
     try {
-        // Отправляем запрос на сервер
         const { data } = await axios.post(
             `${import.meta.env.VITE_SERVER_DOMAIN}/deleteblog`,
             { blog_id },
             { headers: { Authorization: `Bearer ${accessToken}` } }
         );
 
-        // Разблокируем кнопку
         target.removeAttribute("disabled");
 
-        // Обновляем состояние
         setStateFunc(prev => {
             let { deletedDocCount, totalDocs, results } = prev;
 
-            // Создаем новый массив вместо модификации существующего
             const updatedResults = [...results];
             updatedResults.splice(index, 1);
 
-            // Проверяем, если после удаления массив пуст, возвращаем `null` при наличии других документов
             if (!updatedResults.length && totalDocs - 1 > 0) {
                 return null;
             }
-            toast.success("Конспект успешно удален")
+            
+            if(!deletedDocCount){
+                deletedDocCount = 0;
+            }
+
+            toast.success("Конспект успешно удален (*/ω＼*)");
             return {
                 ...prev,
                 totalDocs: totalDocs - 1,

@@ -1,15 +1,17 @@
 import React, { useContext, useState } from 'react';
 import logo from '../imgs/full-logo.png';
+import logo_dark from '../imgs/logo-dark.png';
 import InputBox from '../components/input.component';
 import { Link, Navigate } from 'react-router-dom';
 import AnimationWrapper from '../common/page-animation';
 import { Toaster, toast } from "react-hot-toast";
 import axios from 'axios';
 import { storeInSession } from '../common/session';
-import { UserContext } from '../App';
+import { ThemeContext, UserContext } from '../App';
 
 const AuthForm = ({ type }) => {
     const { userAuth = {}, setUserAuth } = useContext(UserContext);
+    const {theme} = useContext(ThemeContext);
 
     if (!userAuth) {
         return <Navigate to="/signup" />;
@@ -79,15 +81,23 @@ const AuthForm = ({ type }) => {
 
     return (
         <AnimationWrapper key={type}>
-            <section className="max-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-200 p-4">
-                <img
-                    src={logo}
-                    alt="logo"
-                    className="w-[33%] mb-6"
-                />
+            <section className="max-h-screen flex flex-col items-center justify-center p-4">
+                { 
+                    theme == 'light' ?
+                    <img
+                        src={logo}
+                        alt="logo"
+                        className="w-[33%] mb-6"
+                    />
+                    : <img
+                        src={logo_dark}
+                        alt="logo"
+                        className='w-[33%] mb-6'
+                    />
+                }
                 
                 <form id="formAuth" className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-                    <h1 className="text-3xl md:text-4xl font-gelasio text-center text-gray-800 mb-6">
+                    <h1 className="text-3xl md:text-4xl font-gelasio text-center text-dark-grey mb-6">
                         {type === "sign-in" ? "Входи и действуй!" : "Здесь все начинается"}
                     </h1>
                     {type === "sign-up" && (

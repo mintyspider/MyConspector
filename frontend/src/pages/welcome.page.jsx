@@ -20,7 +20,7 @@ const WelcomePage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="min-h-screen flex flex-col items-center justify-between bg-gradient-to-b from-purple-100 to-blue-50 text-gray-800 px-6"
+            className="min-h-screen flex flex-col items-center justify-between text-dark-grey px-6"
         >
             {/* Верхняя секция */}
             <div className="flex flex-col items-center mt-12">
@@ -44,7 +44,7 @@ const WelcomePage = () => {
                 </motion.h1>
                 {/* Подзаголовок */}
                 <motion.p
-                    className="text-lg md:text-xl text-center max-w-2xl mb-8 text-gray-700"
+                    className="text-lg md:text-xl text-center max-w-2xl mb-8 text-dark-grey"
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3, duration: 0.8 }}
@@ -79,7 +79,7 @@ const WelcomePage = () => {
                         <h2 className="text-lg md:text-xl font-semibold mb-2 text-purple-600">
                             {item.title}
                         </h2>
-                        <p className="text-gray-600">{item.description}</p>
+                        <p className="text-dark-grey">{item.description}</p>
                     </motion.div>
                 ))}
             </div>
@@ -94,7 +94,7 @@ const WelcomePage = () => {
                 </button>
                 <button
                     onClick={handleSkip}
-                    className="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg text-md md:text-lg font-semibold shadow-md hover:bg-gray-400 transition"
+                    className="px-6 py-3 bg-grey text-dark-grey rounded-lg text-md md:text-lg font-semibold shadow-md transition"
                 >
                     Пропустить
                 </button>
