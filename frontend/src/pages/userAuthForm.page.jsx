@@ -87,18 +87,18 @@ const AuthForm = ({ type }) => {
                     <img
                         src={logo}
                         alt="logo"
-                        className="w-[33%] mb-6"
+                        className="w-[20%] mb-2"
                     />
                     : <img
                         src={logo_dark}
                         alt="logo"
-                        className='w-[33%] mb-6'
+                        className='w-[18%]'
                     />
                 }
                 
-                <form id="formAuth" className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+                <form id="formAuth" className="bg-white shadow-lg shadow-grey rounded-lg p-6 w-full max-w-md">
                     <h1 className="text-3xl md:text-4xl font-gelasio text-center text-dark-grey mb-6">
-                        {type === "sign-in" ? "Входи и действуй!" : "Здесь все начинается"}
+                        {type === "sign-in" ? "С возвращением!" : "Здесь все начинается"}
                     </h1>
                     {type === "sign-up" && (
                         <InputBox

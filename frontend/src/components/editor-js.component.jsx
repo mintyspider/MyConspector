@@ -18,10 +18,12 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../common/firebase';
 import { EditorContext } from '../pages/editor.pages';
 import ImageTool from '@editorjs/image';
+import { ThemeContext } from '../App';
 
 const ContentEditor = () => {
     const { blog, setBlog, blog : { content } } = useContext(EditorContext);
-
+    let { theme } = useContext(ThemeContext);
+    const currentTheme = theme;
     const editorRef = useRef(null);
 
     const uploadImageByFile = async (file) => {
@@ -138,7 +140,10 @@ const ContentEditor = () => {
                 renderOnPaste: false,
             }
         },
-        delimiter: Delimiter,
+        delimiter: {
+            class: Delimiter,
+            shortcut: 'CMD+SHIFT+D',
+        },
         marker: Marker,
         code: {
             class: CodeTool,

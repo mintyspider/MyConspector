@@ -5,6 +5,7 @@ import BlogEditor from '../components/blog-editor.component';
 import PublishForm from '../components/publish-form.component';
 import Loader from '../components/loader.component';
 import axios from 'axios';
+import { blogStructure } from './blog.page';
 
 const BlogStructure = {
   title: '',
@@ -32,9 +33,9 @@ const EditorPage = () => {
     useEffect(() => {
 
         if (!blog_id) {
+          setBlog(blogStructure);
           return setLoading(false);
-        }
-
+        } else {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/getblog", { blog_id , draft: true, mode: "edit" })
           .then(({ data }) => {
             setBlog(data.blog);
@@ -45,6 +46,7 @@ const EditorPage = () => {
             setBlog(null)
             setLoading(false);
           });
+        }
     }, []);
 
   return (

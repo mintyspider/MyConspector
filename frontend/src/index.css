@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Gelasio&family=Inter:wght@400;500&display=swap');
 @import "@flaticon/flaticon-uicons/css/all/all";
+@import "./editor-theme.css";
 
 @tailwind base;
 @tailwind components;
@@ -119,7 +120,7 @@
         bottom: 0;
         left: 0;
         width: 100%;
-        background-color: #fff;
+        background-color: white;
         border-bottom: 1px solid #ddd;
         padding: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -146,4 +147,17 @@
 
 .ce-block__content, .ce-toolbar__content{
     max-width: 900px;
+}
+
+[data-theme="dark"] .w-full {
+    background-color: black;
+}
+[data-theme="dark"] .toolbar{
+    background-color: black;
+}
+[data-theme="dark"] .toolbar button {
+    @apply btn-dark
+}
+[data-theme="dark"] .toolbar button:hover {
+    @apply btn-light
 }

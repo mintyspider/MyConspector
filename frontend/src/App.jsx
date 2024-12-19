@@ -29,6 +29,7 @@ const App = () => {
 
     useEffect(() => {
         const userInSession = lookInSession("user");
+        const themeInSession = lookInSession("theme");
 
         if (userInSession) {
             const parsedUser = JSON.parse(userInSession);  
@@ -37,7 +38,14 @@ const App = () => {
         } else {
             setUserAuth({ accessToken: null });
         }
-        document.body.setAttribute('data-theme', theme);
+        if(themeInSession){
+            setTheme(()=> {
+                document.body.setAttribute('data-theme', themeInSession);
+                return themeInSession
+            })   
+        } else {
+            document.body.setAttribute('data-theme', theme);
+        }
 
     }, []);
 
