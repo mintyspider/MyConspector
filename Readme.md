@@ -1,6 +1,6 @@
-# Fullstack MERN Blogging Website
+# Fullstack MERN Conspecting Website
 
-## This is gonna be my first site =)
+## This is gonna be my first fullstack site =)
 It uses latest tech like 
 + reactjs,
 + nodejs,
