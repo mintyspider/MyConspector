@@ -6,7 +6,7 @@ import { EditorContext } from '../pages/editor.pages';
 import { toast, Toaster } from 'react-hot-toast';
 import ContentEditor from './editor-js.component';
 import axios from 'axios';
-import { UserContext } from '../App';
+import { ThemeContext, UserContext } from '../App';
 import { blogStructure } from '../pages/blog.page';
 
 const BlogEditor = () => {
@@ -63,6 +63,15 @@ const BlogEditor = () => {
     }
 
     let { userAuth: {accessToken} } = useContext(UserContext);
+    const { theme, setTheme } = useContext(ThemeContext);
+
+    const changeTheme = () => {
+        console.log("clicked")
+        let newTheme = theme == "light" ? "dark" : "light";
+        setTheme(newTheme);
+        document.body.setAttribute("data-theme", newTheme);
+        storeInSession("theme", newTheme);
+    }
 
     let navigate = useNavigate();
 
@@ -131,6 +140,12 @@ const BlogEditor = () => {
                 <Link to="/" className='flex-none w-12'>
                     <img src={logo} alt="Logo" />
                 </Link>
+                <button className='w-12 h-12 rounded-full flex items-center justify-center' onClick={changeTheme}>
+                    { theme == 'light' ?
+                    <i className="fi fi-rr-moon-stars block text-dark-grey text-2xl mt-2"></i>
+                    : <i className="fi fi-rr-sun block mt-2 text-dark-grey text-2xl"></i>
+                    }
+                </button>
                 <p className='max-md:hidden text-black line-clamp-1 w-full text-bold text-2xl'>
                     {blog.title ? blog.title : "Новый конспект"}
                 </p>

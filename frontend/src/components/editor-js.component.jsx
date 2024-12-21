@@ -206,7 +206,7 @@ const ContentEditor = () => {
             <button onClick={() => editorRef.current.blocks.insert('checklist')}><i className="fi fi-rr-list-check"></i></button>
         </div>
         {/* Контейнер редактора */}
-        <div id="textEditor" className="editor-container"></div>
+        <div id="textEditor" className={"editor-container" + (currentTheme == "dark" ? "-dark" : "")}></div>
     </div>
 )};
 

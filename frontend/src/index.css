@@ -155,9 +155,3 @@
 [data-theme="dark"] .toolbar{
     background-color: black;
 }
-[data-theme="dark"] .toolbar button {
-    @apply btn-dark
-}
-[data-theme="dark"] .toolbar button:hover {
-    @apply btn-light
-}
