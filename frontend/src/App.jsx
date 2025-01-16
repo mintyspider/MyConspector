@@ -80,7 +80,6 @@ const App = () => {
                             <Route path="user/:id" element={<ProfilePage />} />
                             <Route path="blog/:blog_id" element={<BlogPage />} />
                             <Route path="welcome" element={<WelcomePage/>}/>
-                            <Route path="tour" element={<h1>Here is tour</h1>} />
                             <Route path="*" element={<NotFound/>}/>
                         </Route>
                     </Routes>

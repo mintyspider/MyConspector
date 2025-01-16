@@ -1,18 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import logo from '../imgs/full-logo.png';
 
 const WelcomePage = () => {
     const navigate = useNavigate();
 
-    const handleExplore = () => {
-        localStorage.setItem('tourCompleted', false);
-        navigate('/tour');
-    };
-
     const handleSkip = () => {
-        localStorage.setItem('tourCompleted', true);
         navigate('/');
     };
 
@@ -40,22 +33,16 @@ const WelcomePage = () => {
             
             {/* Cекция: кнопки */}
             <motion.div
-                className="flex flex-row gap-4 lg:gap-6 my-8"
+                className="center my-8"
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.8 }}
             >
                 <button
-                    onClick={handleExplore}
+                    onClick={handleSkip}
                     className="px-6 py-3 md:px-8 md:py-4 border-purple border-2 text-black rounded-full font-semibold text-sm md:text-lg shadow-md hover:bg-orange transition duration-300"
                 >
                     Исследовать
-                </button>
-                <button
-                    onClick={handleSkip}
-                    className="px-6 py-3 md:px-8 md:py-4 bg-white text-black rounded-full font-semibold text-sm md:text-lg shadow-md hover:bg-orange transition duration-300"
-                >
-                    Пропустить
                 </button>
             </motion.div>
 
