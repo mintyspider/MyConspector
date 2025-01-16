@@ -30,24 +30,31 @@ const App = () => {
     useEffect(() => {
         const userInSession = lookInSession("user");
         const themeInSession = lookInSession("theme");
-
+    
         if (userInSession) {
-            const parsedUser = JSON.parse(userInSession);  
-            setUserAuth(parsedUser);  
-            console.log("parsed user", parsedUser);
+            try {
+                const parsedUser = JSON.parse(userInSession);  
+                setUserAuth(parsedUser);  
+                console.log("parsed user", parsedUser);
+            } catch (error) {
+                console.error("Ошибка парсинга userInSession:", error);
+                sessionStorage.removeItem("user"); // Очистка некорректных данных
+                setUserAuth({ accessToken: null });
+            }
         } else {
             setUserAuth({ accessToken: null });
         }
-        if(themeInSession){
-            setTheme(()=> {
-                document.body.setAttribute('data-theme', themeInSession);
-                return themeInSession
-            })   
+    
+        if (themeInSession) {
+            setTheme(() => {
+                document.body.setAttribute("data-theme", themeInSession);
+                return themeInSession;
+            });
         } else {
-            document.body.setAttribute('data-theme', theme);
+            document.body.setAttribute("data-theme", theme);
         }
-
     }, []);
+    
 
     return (
         <ThemeContext.Provider value={{theme, setTheme}}>

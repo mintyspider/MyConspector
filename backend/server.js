@@ -116,24 +116,32 @@ const generateUsername = async (email) => {
 // Signing up
 server.post('/signup', async (req, res) => {
   try {
+    if (!req.body) {
+      return res.status(400).json({ error: 'Request body is missing' });
+    }
+
     const { fullname, email, password } = req.body;
 
     // Validation
-    if (fullname.length < 3) {
-      return res.status(403).json({ error: 'Fullname must be at least 3 characters long' });
+    if (!fullname || fullname.length < 3) {
+      return res.status(422).json({ error: 'Fullname must be at least 3 characters long' });
     }
 
     if (!email || !emailRegex.test(email)) {
-      return res.status(403).json({ error: 'Invalid email format' });
+      return res.status(422).json({ error: 'Invalid email format' });
     }
 
     if (!password || !passwordRegex.test(password)) {
-      return res.status(403).json({
+      return res.status(422).json({
         error: 'Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, and one number',
       });
     }
 
     const username = await generateUsername(email);
+    if (!username) {
+      return res.status(500).json({ error: 'Failed to generate username' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
@@ -147,14 +155,15 @@ server.post('/signup', async (req, res) => {
 
     await user.save();
 
-    return res.status(200).json({ user: formatData(user) });
+    return res.status(201).json({ user: formatData(user) });
   } catch (err) {
-    if (err.code === 11000) {
-      return res.status(500).json({ error: 'Email already exists' });
+    if (err.code === 11000 && err.keyValue?.email) {
+      return res.status(409).json({ error: 'Email already exists' });
     }
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 // Signing in
 server.post('/signin', async (req, res) => {

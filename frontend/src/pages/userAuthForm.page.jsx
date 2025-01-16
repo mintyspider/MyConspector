@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import logo from '../imgs/full-logo.png';
 import logo_dark from '../imgs/logo-dark.png';
 import InputBox from '../components/input.component';
@@ -23,12 +23,16 @@ const AuthForm = ({ type }) => {
         axios
             .post(`${import.meta.env.VITE_SERVER_DOMAIN}${serverRoute}`, formData)
             .then(({ data }) => {
+                if(type == "sign-up"){
+                    data = data.user
+                }
+                console.log('Response from server:', data); // Логируем ответ сервер
                 storeInSession("user", JSON.stringify(data));
                 sessionStorage.setItem("accessToken", data.accessToken);
                 setUserAuth(data);
             })
             .catch(({ response }) => {
-                console.log(response);
+                console.log("это бред:", response);
                 toast.error("Произошла ошибка");
             });
     };
@@ -66,6 +70,8 @@ const AuthForm = ({ type }) => {
 
         userAuthToServer(serverRoute, formData);
     };
+
+    console.log("User Auth: ", userAuth);
 
     const [toastShown, setToastShown] = useState(false);
 

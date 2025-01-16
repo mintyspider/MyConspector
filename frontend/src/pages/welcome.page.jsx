@@ -1,10 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import logo from '../imgs/full-logo.png';
 
 const WelcomePage = () => {
     const navigate = useNavigate();
-    
+
     const handleExplore = () => {
         localStorage.setItem('tourCompleted', false);
         navigate('/tour');
@@ -20,85 +21,78 @@ const WelcomePage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="min-h-screen flex flex-col items-center justify-between text-dark-grey px-6"
+            className="max-h-screen top-[80px] flex flex-col items-center justify-between bg-white text-black px-4 md:px-8"
         >
             {/* Верхняя секция */}
-            <div className="flex flex-col items-center mt-12">
-                {/* Логотип */}
-                <motion.img
-                    src="/path-to-logo.png" // Укажите путь к вашему логотипу
-                    alt="Platform Logo"
-                    className="w-24 h-24 mb-4"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.6 }}
-                />
-                {/* Заголовок */}
-                <motion.h1
-                    className="text-3xl md:text-4xl font-bold text-center mb-4 text-purple-700"
-                    initial={{ y: -30, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.8 }}
+            <motion.div
+                className="text-center mt-8 md:mt-16"
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8 }}
+            >
+                <h1 className="text-3xl lg:text-5xl font-extrabold mb-4">
+                    Добро пожаловать!
+                </h1>
+                <p className="text-base lg:text-lg max-w-3xl mx-auto">
+                    Присоединяйтесь к нашей платформе, чтобы учиться, делиться и вдохновляться. Здесь ваши знания становятся настоящей силой!
+                </p>
+            </motion.div>
+            
+            {/* Cекция: кнопки */}
+            <motion.div
+                className="flex flex-row gap-4 lg:gap-6 my-8"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+            >
+                <button
+                    onClick={handleExplore}
+                    className="px-6 py-3 md:px-8 md:py-4 border-purple border-2 text-black rounded-full font-semibold text-sm md:text-lg shadow-md hover:bg-orange transition duration-300"
                 >
-                    Добро пожаловать на платформу знаний!
-                </motion.h1>
-                {/* Подзаголовок */}
-                <motion.p
-                    className="text-lg md:text-xl text-center max-w-2xl mb-8 text-dark-grey"
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.8 }}
+                    Исследовать
+                </button>
+                <button
+                    onClick={handleSkip}
+                    className="px-6 py-3 md:px-8 md:py-4 bg-white text-black rounded-full font-semibold text-sm md:text-lg shadow-md hover:bg-orange transition duration-300"
                 >
-                    Создавайте, делитесь и вдохновляйтесь. Это место, где идеи обретают форму, а знания становятся силой!
-                </motion.p>
-            </div>
+                    Пропустить
+                </button>
+            </motion.div>
 
             {/* Карточки преимуществ */}
-            <div className="flex flex-wrap gap-6 justify-center mb-10 max-w-4xl">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 my-3 lg:my-20 max-w-6xl lg:w-full max-lg:w-[80%] max-lg:mx-auto px-4">
                 {[
                     {
-                        title: 'Создавайте уникальные конспекты',
-                        description: 'Структурируйте знания и создавайте вдохновляющий контент.',
+                        title: 'Создавайте контент',
+                        description: 'Создавайте уникальные конспекты и структурируйте свои идеи.',
+                        icon: '✍️',
                     },
                     {
-                        title: 'Делитесь с сообществом',
-                        description: 'Обменивайтесь идеями и находите единомышленников.',
+                        title: 'Делитесь знаниями',
+                        description: 'Обменивайтесь своими работами и находите единомышленников.',
+                        icon: '🤝',
                     },
                     {
-                        title: 'Развивайте себя',
-                        description: 'Находите вдохновение и поддерживайте постоянный рост.',
+                        title: 'Развивайтесь',
+                        description: 'Исследуйте новые горизонты и становитесь лучше каждый день.',
+                        icon: '🚀',
                     },
                 ].map((item, i) => (
                     <motion.div
                         key={i}
-                        className="bg-white p-6 rounded-lg shadow-lg max-w-xs text-center"
-                        initial={{ opacity: 0, y: 20 }}
+                        className="bg-white bg-opacity-10 backdrop-blur-md p-6 rounded-xl shadow-lg hover:shadow-xl hover:shadow-black shadow-dark-grey transition duration-300 text-center"
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.2 }}
                     >
-                        <h2 className="text-lg md:text-xl font-semibold mb-2 text-purple-600">
-                            {item.title}
-                        </h2>
-                        <p className="text-dark-grey">{item.description}</p>
+                        <div className="text-2xl lg:text-5xl mb-4">{item.icon}</div>
+                        <h2 className="text-lg lg:text-xl font-bold mb-2">{item.title}</h2>
+                        <p className="text-sm lg:text-base">{item.description}</p>
                     </motion.div>
                 ))}
             </div>
 
-            {/* Нижняя секция: кнопки */}
-            <div className="flex gap-6 mb-12">
-                <button
-                    onClick={handleExplore}
-                    className="px-6 py-3 bg-purple-600 text-white rounded-lg text-md md:text-lg font-semibold shadow-md hover:bg-purple-700 transition"
-                >
-                    Посмотреть возможности
-                </button>
-                <button
-                    onClick={handleSkip}
-                    className="px-6 py-3 bg-grey text-dark-grey rounded-lg text-md md:text-lg font-semibold shadow-md transition"
-                >
-                    Пропустить
-                </button>
-            </div>
+            
         </motion.div>
     );
 };
