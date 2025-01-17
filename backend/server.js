@@ -185,47 +185,53 @@ server.post('/signin', async (req, res) => {
   }
 });
 
-//Changing password
+// Changing password
 server.post('/changepassword', verifyJWT, async (req, res) => {
-  let { oldpassword, newpassword } = req.body;
+  try {
+    const { oldpassword, newpassword } = req.body;
 
-  if (!oldpassword || !newpassword) {
-    return res.status(403).json({ error: 'Old password and new password are required' });
-  }
+    // Проверка наличия полей
+    if (!oldpassword || !newpassword) {
+      return res.status(400).json({ error: 'Старый и новый пароли обязательны (⊙_☉)' });
+    }
 
-  if (!passwordRegex.test(oldpassword) || !passwordRegex.test(newpassword)) {
-    return res.status(403).json({
-      error: 'Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, and one number',
-    });
-  }
+    // Проверка соответствия формату паролей
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
+    if (!passwordRegex.test(oldpassword) || !passwordRegex.test(newpassword)) {
+      return res.status(400).json({
+        error: 'Пароль должен содержать 6-20 символов, включая хотя бы одну цифру, одну заглавную и одну строчную букву (╯°□°）╯︵ ┻━┻',
+      });
+    }
 
-  if (oldpassword === newpassword) {
-    return res.status(403).json({ error: 'Old password and new password are the same' });
+    // Проверка на совпадение старого и нового паролей
+    if (oldpassword === newpassword) {
+      return res.status(400).json({ error: 'Новый пароль не должен совпадать со старым (¬_¬)' });
+    }
+
+    // Поиск пользователя в базе
+    const user = await User.findOne({ _id: req.user });
+    if (!user) {
+      return res.status(404).json({ error: 'Пользователь не найден (ಥ﹏ಥ)' });
+    }
+
+    // Проверка старого пароля
+    const isMatch = await bcrypt.compare(oldpassword, user.personal_info.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Старый пароль неверен ¯\\_(ツ)_/¯' });
+    }
+
+    // Хэширование нового пароля
+    const hashedPassword = await bcrypt.hash(newpassword, 10);
+    user.personal_info.password = hashedPassword;
+
+    // Сохранение нового пароля
+    await user.save();
+    return res.status(200).json({ message: 'Пароль успешно изменен (ノ・∀・)ノ' });
+  } catch (err) {
+    // Обработка непредвиденных ошибок
+    return res.status(500).json({ error: `Ошибка сервера: ${err.message} o.O` });
   }
-  User.findOneAndUpdate({_id: req.user})
-  .then(user => {
-      bcrypt.compare(oldpassword, user.personal_info.password)
-      .then(isMatch => {
-        if (isMatch) {
-          bcrypt.hash(newpassword, 10)
-          .then(hashedPassword => {
-            user.personal_info.password = hashedPassword;
-            user.save()
-            .then(() => {
-              return res.status(200).json({ message: 'Password changed successfully' });
-            })
-            .catch(err => {
-              return res.status(500).json({ error: err.message });
-            });
-          })
-          .catch(err => {
-            return res.status(500).json({ error: err.message });
-          });
-        } else {
-          return res.status(403).json({ error: 'Old password is incorrect' });
-        }
-    })})
-})
+});
 
 //new avatar
 server.post('/newavatar', verifyJWT, async (req, res) => {
@@ -395,33 +401,30 @@ server.post("/countsearchblogs", (req, res) => {
   })
 })
 
-//find users by username
+// Unified search for users by username or fullname
 server.post("/searchusers", (req, res) => {
-  let {query} = req.body;
-  User.find({"personal_info.username": new RegExp(query, 'i')})
-  .limit(50)
-  .select("personal_info.fullname personal_info.username personal_info.profile_img -_id")
-  .then(users =>{
-    return res.status(200).json({"users": users})
-  })
-  .catch(err => {
-    return res.status(500).json({error: err.message})
-  })
-})
+  const { query } = req.body;
 
-//find users by username
-server.post("/searchfullnames", (req, res) => {
-  let {query} = req.body;
-  User.find({"personal_info.fullname": new RegExp(query, 'i')})
-  .limit(50)
-  .select("personal_info.fullname personal_info.username personal_info.profile_img -_id")
-  .then(users =>{
-    return res.status(200).json({"users": users})
+  if (!query) {
+    return res.status(400).json({ error: "Search query is required" });
+  }
+
+  User.find({
+    $or: [
+      { "personal_info.username": new RegExp(query, "i") },
+      { "personal_info.fullname": new RegExp(query, "i") }
+    ]
   })
-  .catch(err => {
-    return res.status(500).json({error: err.message})
-  })
-})
+    .limit(50)
+    .select("personal_info.fullname personal_info.username personal_info.profile_img -_id")
+    .then(users => {
+      return res.status(200).json({ users });
+    })
+    .catch(err => {
+      return res.status(500).json({ error: err.message });
+    });
+});
+
 
 server.post("/getprofile", (req, res) => {
   let {username} = req.body;
