@@ -2,21 +2,28 @@ import React, { useContext, useEffect, useState } from 'react';
 import { BlogContext } from '../pages/blog.page';
 import { Toaster, toast } from "react-hot-toast";
 import { UserContext } from '../App';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const BlogInteraction = () => {
-    let { post, post: { _id, blog_id, title, activity, activity: { total_likes, total_comments }, author: { personal_info: { username: author_username } } }, setPost, isLikedByUser, setIsLikedByUser, commentsWrapper, setCommentsWrapper } = useContext(BlogContext);
-    let { userAuth: { accessToken, username } } = useContext(UserContext); 
+    let { 
+        post, 
+        post: { _id, blog_id, activity: { total_likes, total_comments }, author: { personal_info: { username: author_username } } }, 
+        setPost, 
+        isLikedByUser, 
+        setIsLikedByUser 
+    } = useContext(BlogContext);
 
-    // Флаг для контроля уведомления
+    let { userAuth: { accessToken, username } } = useContext(UserContext);
+
     const [notificationShown, setNotificationShown] = useState(false);
+    const navigate = useNavigate(); // Используем для навигации
 
     useEffect(() => {
         if (username) {
             axios
-                .post(import.meta.env.VITE_SERVER_DOMAIN + "/checklike", { _id }, {headers: {"Authorization": `Bearer ${accessToken}`}})
-                .then(({ data: {result} }) => {
+                .post(import.meta.env.VITE_SERVER_DOMAIN + "/checklike", { _id }, { headers: { "Authorization": `Bearer ${accessToken}` } })
+                .then(({ data: { result } }) => {
                     setIsLikedByUser(Boolean(result));
                 })
                 .catch(err => {
@@ -24,40 +31,29 @@ const BlogInteraction = () => {
                 });
         }
     }, []);
-    
+
     const handleLike = () => {
         if (accessToken) {
             setIsLikedByUser(!isLikedByUser);
-            setPost({ ...post, activity: { ...activity, total_likes: isLikedByUser ? activity.total_likes - 1 : activity.total_likes + 1 } });
+            setPost({ ...post, activity: { ...post.activity, total_likes: isLikedByUser ? total_likes - 1 : total_likes + 1 } });
 
-            axios
-                .post(import.meta.env.VITE_SERVER_DOMAIN + "/likeblog", { _id, isLikedByUser }, {headers: {"Authorization": `Bearer ${accessToken}`}})
-                .then(({ data }) => {
-                    console.log("Like response:", data);
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-            
+            axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/likeblog", { _id, isLikedByUser }, { headers: { "Authorization": `Bearer ${accessToken}` } })
+                .catch(err => console.log(err));
         } else {
             showAuthErrorNotification();
         }
-    }
+    };
 
-    const Translit = (word) => {
-        const converter = { 'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ь': '', 'ы': 'y', 'ъ': '', 'э': 'e', 'ю': 'yu', 'я': 'ya', ' ': '_' };
-        return word.toLowerCase().split('').map(letter => converter[letter] || letter).join('').replace(/[^-0-9a-z]/g, '-').replace(/[-]+/g, '-').replace(/^\-|-$/g, '');
+    const handleCommentsClick = () => {
+        // Переход на страницу блога с хэшем для прокрутки к комментариям
+        navigate(`/blog/${blog_id}#comments`);
     };
 
     const handleShareClick = () => {
         const blogUrl = `${window.location.origin}/blog/${blog_id}`;
         navigator.clipboard.writeText(blogUrl)
-            .then(() => {
-                toast.success('Ссылка скопирована!');
-            })
-            .catch(err => {
-                console.error('Ошибка копирования: ', err);
-            });
+            .then(() => toast.success('Ссылка скопирована!'))
+            .catch(err => console.error('Ошибка копирования: ', err));
     };
 
     const handlePrintPDF = () => {
@@ -68,60 +64,55 @@ const BlogInteraction = () => {
         }
     };
 
-    // Функция для показа уведомления
     const showAuthErrorNotification = () => {
         if (!notificationShown) {
             toast.error("Для этого действия необходима авторизация");
             setNotificationShown(true);
-            setTimeout(() => setNotificationShown(false), 1000); // Сброс флага через 1 секунду
+            setTimeout(() => setNotificationShown(false), 1000);
         }
     };
 
-    useEffect(() => {
-        setPost(post);
-    }, [post]);
-
     return (
-        <>
-            <hr className='border-grey my-2'/>
-            <div className='flex gap-6 justify-between'>
-                <div className='flex gap-6 items-center'>
-                    <div className='flex gap-3 items-center'>
-                        <button 
+        <div className="fixed bottom-0 left-0 w-full z-50 bg-white shadow-lg border-t border-grey">
+            <div className="max-w-5xl mx-auto px-4 py-2 flex items-center justify-between">
+                {/* Лайки и комментарии */}
+                <div className="flex gap-6 items-center">
+                    <button
                         onClick={handleLike}
-                        className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                            <i className={`text-xl hover:text-purple ${isLikedByUser ? 'fi fi-sr-heart text-red' : 'fi fi-rr-heart'}`}></i>
-                        </button>
-                        <p className=' text-xl text-dark-grey'>{total_likes}</p>
-                    </div>
-                    <div className='flex gap-3 items-center'>
-                        <button onClick={() => setCommentsWrapper(prev => !prev)} 
-                        className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                            <i className={'fi fi-rr-comment text-xl hover:text-purple ' + (commentsWrapper ? 'text-purple' : '')}></i>
-                        </button>
-                        <p className=' text-xl text-dark-grey'>{total_comments}</p>
-                    </div>
-                </div>
-                <div className='flex gap-6 items-center'>
-                    {
-                        username === author_username ? (
-                            <Link to={`/editor/${blog_id}`} className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                                <i className='fi fi-rr-edit text-xl hover:text-purple'></i>
-                            </Link>
-                        ) : ""
-                    }
-                    <button className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80' onClick={handleShareClick}>
-                        <i className='fi fi-rr-share text-xl hover:text-purple'></i>
+                        className="flex items-center gap-2 text-dark-grey hover:text-purple transition-colors">
+                        <i className={`text-2xl ${isLikedByUser ? 'fi fi-sr-heart text-red' : 'fi fi-rr-heart'}`}></i>
+                        <span>{total_likes}</span>
                     </button>
-                    <button 
-                        onClick={handlePrintPDF} 
-                        className='w-10 h-10 rounded-full flex items-center justify-center bg-grey/80'>
-                        <i className='fi fi-rr-print text-xl hover:text-purple'></i>
+                    <button
+                        onClick={handleCommentsClick}
+                        className="flex items-center gap-2 text-dark-grey hover:text-purple transition-colors">
+                        <i className="text-2xl fi fi-rr-comment"></i>
+                        <span>{total_comments}</span>
+                    </button>
+                </div>
+
+                {/* Действия */}
+                <div className="flex gap-4 items-center">
+                    {username === author_username && (
+                        <Link
+                            to={`/editor/${blog_id}`}
+                            className="text-dark-grey hover:text-purple transition-colors">
+                            <i className="fi fi-rr-edit text-2xl"></i>
+                        </Link>
+                    )}
+                    <button
+                        onClick={handleShareClick}
+                        className="text-dark-grey hover:text-purple transition-colors">
+                        <i className="fi fi-rr-share text-2xl"></i>
+                    </button>
+                    <button
+                        onClick={handlePrintPDF}
+                        className="text-dark-grey hover:text-purple transition-colors">
+                        <i className="fi fi-rr-print text-2xl"></i>
                     </button>
                 </div>
             </div>
-            <hr className='border-grey my-2'/>
-        </>
+        </div>
     );
 };
 

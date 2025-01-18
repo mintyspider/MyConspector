@@ -114,7 +114,6 @@ useEffect(() => {
         <BlogContext.Provider
           value={{ post, setPost, isLikedByUser, setIsLikedByUser, commentsWrapper, setCommentsWrapper, totalParentCommentsLoaded, setTotalParentCommentsLoaded }}
         >
-          <CommentsContainer /> 
             <div className="max-w-[900px] center py-10 max-lg:px-[5vw]"
             >
 
@@ -138,7 +137,6 @@ useEffect(() => {
                   Опубликовано {getFullDay(publishedAt)}
                 </p>
               </div>
-              <BlogInteraction />
 
               {/* content */}
               <div className="my-12 font-gelasio blog-page-content">
@@ -151,6 +149,9 @@ useEffect(() => {
                 })}
               </div>
               </div>
+
+              <CommentsContainer /> 
+              
               <BlogInteraction />
 
               {/* similar posts */}

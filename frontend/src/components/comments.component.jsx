@@ -1,78 +1,99 @@
-import React, { useContext,  useState } from 'react'
-import { BlogContext } from '../pages/blog.page'
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { BlogContext } from '../pages/blog.page';
 import CommentField from './comment-field.component';
 import axios from 'axios';
 import NoDataMessage from './nodata.component';
 import AnimationWrapper from '../common/page-animation';
 import CommentCard from './comment-card.component';
+import { useLocation } from 'react-router-dom';
 
-export const fetchComments = async ({skip = 0, blog_id, setParentCommentCountFun, comment_array = null}) => {
+export const fetchComments = async ({ skip = 0, blog_id, setParentCommentCountFun, comment_array = null }) => {
     let res;
-    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/getcomments", {blog_id, skip})
-    .then(({data}) => {
-        data.map(comment => {
-            comment.childrenLevel = 0;
-        })
-        setParentCommentCountFun(prev => prev + data.length);
-        if(comment_array == null) {
-            console.log("data:", data)
-            res = {results: data}
-        } else {
-            res = {results: [...comment_array, ...data]}
-        }
-    })
+    await axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/getcomments", { blog_id, skip })
+        .then(({ data }) => {
+            data.map(comment => {
+                comment.childrenLevel = 0;
+            });
+            setParentCommentCountFun(prev => prev + data.length);
+            res = comment_array ? { results: [...comment_array, ...data] } : { results: data };
+        });
     return res;
-}
+};
 
 const CommentsContainer = () => {
-    let {post, setPost, post: { title, comments: {results: commentsArr},  activity: {total_parent_comments} }, commentsWrapper, setCommentsWrapper, totalParentCommentsLoaded, setTotalParentCommentsLoaded} = useContext(BlogContext);
-    let newTotalParentCommentsLoaded;
-    const [isButtonClicked, setIsButtonClicked] = useState(false);
-    
-    totalParentCommentsLoaded == 10 && isButtonClicked == false ? newTotalParentCommentsLoaded = totalParentCommentsLoaded / 2 : newTotalParentCommentsLoaded = totalParentCommentsLoaded;
+    const location = useLocation();
+    const commentsRef = useRef(null);
 
-    setTotalParentCommentsLoaded(newTotalParentCommentsLoaded);
+    useEffect(() => {
+        // Если хэш указывает на комментарии, прокрутить
+        if (location.hash === '#comments' && commentsRef.current) {
+            commentsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+            // Удаляем хэш из URL после прокрутки
+            window.history.replaceState(null, null, ' ');
+        }
+    }, [location]);
+    const {
+        post,
+        setPost,
+        post: { title, comments: { results: commentsArr }, activity: { total_parent_comments } },
+        commentsWrapper,
+        setCommentsWrapper,
+        totalParentCommentsLoaded,
+        setTotalParentCommentsLoaded
+    } = useContext(BlogContext);
+
+    const [isButtonClicked, setIsButtonClicked] = useState(false);
 
     const loadMoreComments = async () => {
         setIsButtonClicked(true);
-        let newCommentArr = await fetchComments({skip: totalParentCommentsLoaded, blog_id: post._id, setParentCommentCountFun: setTotalParentCommentsLoaded, comment_array: commentsArr});
-        setPost({...post, comments: newCommentArr});
-    }
-    
-    return (
-        <div className={'max-sm:w-full fixed ' + (commentsWrapper ? "top-0 sm:right-0" : "top-[100%] sm:right-[-100%]") + ' duration-700 max-sm:right-0 sm:top-0 w-[45%] min-w-[350px] h-full z-50 bg-white shadow-2xl p-8 px-16 overflow-y-auto overflow-x-hidden'}>
-            <div className='relative'>
-                <button onClick={() => setCommentsWrapper(false)} className='absolute top-0 right-0 w-10 h-10 rounded-full flex items-center justify-center bg-grey hover:bg-dark-grey hover:text-white'>
-                    <i className='fi fi-rr-cross text-xl'></i>
-                </button>
-                <h1 className='text-xl xl:text-2xl font-medium text-black'>Контекстура (╹ڡ╹ )</h1>
-                <p className='text-lg xl:text-xl mt-2 w-[70%] text-dark-grey line-clamp-1'>{title}</p>  
-            </div>
-            <hr className='border-grey my-8 w-[100%]'/>
+        let newCommentArr = await fetchComments({
+            skip: totalParentCommentsLoaded,
+            blog_id: post._id,
+            setParentCommentCountFun: setTotalParentCommentsLoaded,
+            comment_array: commentsArr
+        });
+        setPost({ ...post, comments: newCommentArr });
+    };
 
-            <CommentField action="comment"/>
-            {
-                commentsArr && commentsArr.length ?
-                commentsArr.map((comment, index) => {
-                    return <AnimationWrapper key={index}>
+    return (
+        <>
+        <div ref={commentsRef} className='mt-7 mb-6'></div>
+
+        <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+            {/* Заголовок */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-xl font-semibold text-black">Комментарии</h1>
+                </div>
+            </div>
+            <hr className="border-grey my-4" />
+
+            {/* Поле для добавления комментариев */}
+            <CommentField action="comment" />
+
+            {/* Список комментариев */}
+            {commentsArr && commentsArr.length ? (
+                commentsArr.map((comment, index) => (
+                    <AnimationWrapper key={index}>
                         <CommentCard index={index} leftVal={comment.childrenLevel * 4} commentData={comment} />
-                    </AnimationWrapper>;
-                })
-                :
+                    </AnimationWrapper>
+                ))
+            ) : (
                 <NoDataMessage message="Без комментариев ~(>_<。)＼" />
-            }
-            {
-                total_parent_comments > totalParentCommentsLoaded ?
-                <button 
-                onClick={loadMoreComments}
-                className='text-dark-grey p-2 px-3 bg-grey hover:bg-dark-grey hover:text-white rounded-full flex items-center gap-2'>
-                    <i className="fi fi-rr-arrow-down text-xl"></i>
+            )}
+
+            {/* Кнопка загрузки дополнительных комментариев */}
+            {total_parent_comments > totalParentCommentsLoaded && (
+                <button
+                    onClick={loadMoreComments}
+                    className="mt-4 text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-gray-800 rounded-full px-4 py-2 flex items-center gap-2 transition">
+                    <i className="fi fi-rr-arrow-down text-lg"></i>
                     Загрузить еще (╹ڡ╹ )
                 </button>
-                : ""
-            }
+            )}
         </div>
-    )
-}
+        </>
+    );
+};
 
-export default CommentsContainer
+export default CommentsContainer;
