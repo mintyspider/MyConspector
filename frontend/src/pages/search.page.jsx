@@ -95,11 +95,12 @@ const SearchPage = () => {
                 <div className="flex items-center mb-6">
                     <input
                         type="text"
-                        className="border border-grey rounded-full px-4 py-2 w-full"
+                        className="w-full bg-grey p-4 pl-12 rounded-full placeholder:text-dark-grey"
                         placeholder="Введите запрос для поиска..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                     />
+                    <i className='fi fi-rr-search absolute ml-3 md:pointer-events-none text-xl text-dark-grey'></i>
                     {query && (
                         <button
                             className="ml-2 text-red hover:text-red"

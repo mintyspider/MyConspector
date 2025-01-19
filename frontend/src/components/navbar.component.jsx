@@ -108,6 +108,12 @@ const Navbar = () => {
                         <p className='pl-2'>Новый конспект</p>
                     </Link>
 
+                    <Link to='/v2t'>
+                        <button className='bg-grey w-12 h-12 rounded-full flex items-center justify-center'>
+                            <i className="<fi fi-rr-microphone text-2xl block mt-2 text-dark-grey"></i>
+                        </button>
+                    </Link>
+
                     {accessToken ?
                         <>
                             <Link to="/dashboard/notification">

@@ -16,6 +16,7 @@ import Notification from "./pages/notifications.page";
 import ManageBlogs from "./pages/manage-blogs.page";
 import WelcomePage from "./pages/welcome.page";
 import { Toaster } from "react-hot-toast";
+import VoiceToText from "./pages/voiceToText.page";
 
 export const UserContext = createContext({});
 
@@ -80,6 +81,7 @@ const App = () => {
                             <Route path="user/:id" element={<ProfilePage />} />
                             <Route path="blog/:blog_id" element={<BlogPage />} />
                             <Route path="welcome" element={<WelcomePage/>}/>
+                            <Route path="v2t" element={<VoiceToText/>}/>
                             <Route path="*" element={<NotFound/>}/>
                         </Route>
                     </Routes>
