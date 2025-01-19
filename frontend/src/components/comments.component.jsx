@@ -25,13 +25,24 @@ const CommentsContainer = () => {
     const commentsRef = useRef(null);
 
     useEffect(() => {
-        // Если хэш указывает на комментарии, прокрутить
         if (location.hash === '#comments' && commentsRef.current) {
-            commentsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-            // Удаляем хэш из URL после прокрутки
+            // Получаем текущую позицию комментариев
+            const commentsPosition = commentsRef.current.offsetTop;
+    
+            // Высота вашего навбара (например, 60px)
+            const navbarHeight = 80;
+    
+            // Прокручиваем на нужное место с учетом смещения
+            window.scrollTo({
+                top: commentsPosition - navbarHeight, // Смещаем прокрутку выше на высоту навбара
+                behavior: 'smooth',
+            });
+            
+            // Убираем хэш из URL после прокрутки
             window.history.replaceState(null, null, ' ');
         }
     }, [location]);
+
     const {
         post,
         setPost,
@@ -57,9 +68,7 @@ const CommentsContainer = () => {
 
     return (
         <>
-        <div ref={commentsRef} className='mt-7 mb-6'></div>
-
-        <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+        <div ref={commentsRef} className="bg-white shadow-md rounded-lg p-6 mb-8">
             {/* Заголовок */}
             <div className="flex justify-between items-center">
                 <div>
@@ -75,7 +84,7 @@ const CommentsContainer = () => {
             {commentsArr && commentsArr.length ? (
                 commentsArr.map((comment, index) => (
                     <AnimationWrapper key={index}>
-                        <CommentCard index={index} leftVal={comment.childrenLevel * 4} commentData={comment} />
+                        <CommentCard index={index} leftVal={comment.childrenLevel * 4 == 0 ? 0 : 4} commentData={comment} />
                     </AnimationWrapper>
                 ))
             ) : (
