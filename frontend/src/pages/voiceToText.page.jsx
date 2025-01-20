@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { toast } from 'react-hot-toast'; // Импортируем toast
+import { PropagateLoader } from 'react-spinners';
 
 const VoiceToText = () => {
     const [text, setText] = useState("");
@@ -10,6 +11,7 @@ const VoiceToText = () => {
     const timestamp = new Date().toISOString().replace(/[^\w\s]/gi, '_'); // Преобразуем дату в строку и заменяем неалфавитные символы
     const [currentFileName, setCurrentFileName] = useState(`transcription_${timestamp}.txt`);
     const [currentFileIndex, setCurrentFileIndex] = useState(null);
+    const [isSaving, setIsSaving] = useState(false); // Состояние сохранения
 
     // Загружаем историю из localStorage при монтировании компонента
     useEffect(() => {
@@ -47,13 +49,13 @@ const VoiceToText = () => {
 
         newRecognition.onerror = (event) => {
             toast.error(`Ошибка распознавания`);
-            console.log("Ошибка распознавания: ", event.eror)
+            console.log("Ошибка распознавания: ", event.error)
             setIsRecording(true);
         };
 
         newRecognition.onend = () => {
             setIsRecording(false);
-            toast.info("Запись завершена!");
+            toast.success("Запись завершена!");
         };
 
         newRecognition.start();
@@ -70,27 +72,23 @@ const VoiceToText = () => {
     };
 
     // Добавление текста в историю
-    const addToHistory = () => {
-        if (currentFileIndex !== null) {
-            // Если файл уже существует, обновляем его содержимое
-            setHistory((prevHistory) => {
-                const updatedHistory = [...prevHistory];
-                updatedHistory[currentFileIndex] = {
-                    fileName: currentFileName,
-                    content: text,
-                };
-                return updatedHistory;
-            });
-            toast.success("Текст добавлен в историю!");
-        } else {
-            // Если файл новый, добавляем его в историю
-            setHistory((prevHistory) => [
-                ...prevHistory,
-                { fileName: currentFileName, content: text },
-            ]);
-            toast.success("Новый файл добавлен в историю!");
-        }
-    };
+    const addToHistory = useCallback(() => {
+        setIsSaving(true); // Устанавливаем состояние сохранения
+        setTimeout(() => { // Имитация задержки
+            if (currentFileIndex !== null) {
+                setHistory((prevHistory) => {
+                    const updatedHistory = [...prevHistory];
+                    updatedHistory[currentFileIndex] = { fileName: currentFileName, content: text };
+                    return updatedHistory;
+                });
+                toast.success("Текст добавлен в историю!");
+            } else {
+                setHistory((prevHistory) => [...prevHistory, { fileName: currentFileName, content: text }]);
+                toast.success("Новый файл добавлен в историю!");
+            }
+            setIsSaving(false); // Сбрасываем состояние сохранения
+        }, 500);
+    }, [text, currentFileName, currentFileIndex]);
 
     // Сохранение текста в файл
     const saveTextToFile = (content, fileName) => {
@@ -115,7 +113,7 @@ const VoiceToText = () => {
         setText(history[index].content); // Загружаем содержимое файла для редактирования
         setCurrentFileName(history[index].fileName);
         setCurrentFileIndex(index); // Устанавливаем индекс редактируемого файла
-        toast.info(`Редактирование файла "${history[index].fileName}"`);
+        toast(`Редактирование файла "${history[index].fileName}"`, { icon: 'ℹ️' });
     };
 
     // Удаление файла из истории
@@ -129,58 +127,52 @@ const VoiceToText = () => {
 
     return (
         <div className="flex flex-col items-center gap-4 p-4 bg-white shadow-md rounded-lg w-[90%] max-h-[87vh] mx-auto">
-            <div className="flex flex-row gap-4">
-                {/* Выбор языка */}
-                <select
-                    value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                    className="lang p-2 mt-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple"
-                >
-                    <option value="ru-RU">Русский</option>
-                    <option value="en-US">Английский</option>
-                    <option value="es-ES">Испанский</option>
-                    <option value="de-DE">Немецкий</option>
-                </select>
-
-                {/* Кнопка записи */}
-                <button
-                    onClick={startRecording}
-                    disabled={isRecording}
-                    className={`px-6 py-3 mt-4 text-lg font-semibold rounded-full shadow-md transition 
-            ${isRecording
-                            ? "bg-purple/40 text-white animate-pulse"
-                            : "bg-orange/40 text-white hover:bg-orange"
-                        }`}
-                >
-                    {isRecording ? "Запись..." : "Начать запись"}
-                </button>
-
-                {/* Кнопка остановки записи */}
-                {isRecording && (
-                    <button
-                        onClick={stopRecording}
-                        className="px-6 py-3 mt-4 text-lg font-semibold rounded-full shadow-md bg-orange/50 text-white hover:bg-red"
+            <div className="flex flex-row w-[80%] justify-between"> {/* Занимает всю ширину и элементы распределены по краям */}
+                <div className="flex flex-row gap-4"> {/* Контейнер для языка и кнопок записи */}
+                    <select
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                        className="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple"
                     >
-                        Остановить запись
+                        <option value="ru-RU">Русский</option>
+                        <option value="en-US">Английский</option>
+                        <option value="es-ES">Испанский</option>
+                        <option value="de-DE">Немецкий</option>
+                    </select>
+
+                    <button
+                        onClick={startRecording}
+                        disabled={isRecording}
+                        className={`px-6 py-3 text-lg font-semibold rounded-full shadow-md transition ${isRecording ? "bg-purple/40 text-white animate-pulse" : "bg-orange/40 text-white hover:bg-orange"}`}
+                    >
+                        {isRecording ? "Запись..." : "Начать запись"}
                     </button>
-                )}
 
-                {/* Кнопка для добавления текста в историю */}
-                <button
-                    onClick={addToHistory}
-                    disabled={!text}
-                    className="px-6 py-3 mt-4 text-lg font-semibold rounded-full shadow-md bg-red/50 text-white hover:bg-red"
-                >
-                    Сохранить
-                </button>
-
-                {/* Кнопка для создания нового файла */}
-                <button
-                    onClick={createNewFile}
-                    className="px-6 py-3 mt-4 text-lg font-semibold rounded-full shadow-md bg-purple/50 text-white hover:bg-purple"
-                >
-                    Новый файл
-                </button>
+                    {isRecording && (
+                        <button
+                            onClick={stopRecording}
+                            className="px-6 py-3 text-lg font-semibold rounded-full shadow-md bg-orange/50 text-white hover:bg-red"
+                        >
+                            Остановить запись
+                        </button>
+                    )}
+                </div>
+                {/* Кнопки "Сохранить" и "Новый файл" вынесены в отдельный блок справа */}
+                <div className="flex flex-row gap-4">
+                    <button
+                        onClick={addToHistory}
+                        disabled={!text || isSaving}
+                        className="px-6 py-3 text-lg font-semibold rounded-full shadow-md bg-red/50 text-white hover:bg-red disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isSaving ? <PropagateLoader color="#fff" size={8} /> : "Сохранить"}
+                    </button>
+                    <button
+                        onClick={createNewFile}
+                        className="px-6 py-3 text-lg font-semibold rounded-full shadow-md bg-purple/50 text-white hover:bg-purple"
+                    >
+                        Новый файл
+                    </button>
+                </div>
             </div>
 
             {/* Поле для отображения текста */}

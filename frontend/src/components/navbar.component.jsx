@@ -109,8 +109,9 @@ const Navbar = () => {
                     </Link>
 
                     <Link to='/v2t'>
-                        <button className='bg-grey w-12 h-12 rounded-full flex items-center justify-center'>
-                            <i className="<fi fi-rr-microphone text-2xl block mt-2 text-dark-grey"></i>
+                        <button className='w-12 h-12 rounded-xl bg-grey relative hover:bg-black/10'>
+                            <i className="fi fi-rr-microphone text-2xl block mt-2 text-dark-grey"></i>
+                            <span className='h-2 w-2 rounded-full absolute z-10 bottom-2.5 left-1'>β</span>
                         </button>
                     </Link>
 
