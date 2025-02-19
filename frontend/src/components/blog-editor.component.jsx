@@ -76,61 +76,59 @@ const BlogEditor = () => {
     let navigate = useNavigate();
 
     const handleSave = (e) => {
-        // Блокируем кнопку, если она уже нажата
-    if (e.target.classList.contains('disable')){
-        e.target.classList.add('bg-grey');
-        return;
+      // Блокируем кнопку, если она уже нажата
+      if (e.target.classList.contains('disable')) {
+          e.target.classList.add('bg-red');
+          return;
       }
   
       // Проверка заголовка
-      if(!title.length){
-        return toast.error("Озаглавьте конспект");
+      if (!title.length) {
+          return toast.error("Озаглавьте конспект");
       }
   
       let loadingToast = toast.loading("Сохранение черновика...");
   
       // Блокируем кнопку
       e.target.classList.add('disable');
-  
-      let blogObj = { 
-        title,  
-        des, 
-        content: content[0] ? {content: content[0].blocks} : { content: content.blocks }, // Оборачиваем в объект с ключом `blocks`
-        tags, 
-        draft: true 
+
+      //! FIX ME!!!
+      // Формируем объект для сохранения
+      let blogObj = {
+          title,
+          des,
+          content: content[0] ? content[0] : content,
+          tags,
+          draft: true // Мы сохраняем как черновик
       };
-      
+  
       // Отправляем запрос на сервер
-      axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', {...blogObj, id: blog_id}, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
+      axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', { ...blogObj, id: blog_id }, {
+          headers: {
+              Authorization: `Bearer ${accessToken}`
+          }
       }).then(() => {
-        // Разблокируем кнопку
-        e.target.classList.remove('disable');
-        e.target.classList.remove('bg-grey');
+          // Разблокируем кнопку
+          e.target.classList.remove('disable');
+          toast.dismiss(loadingToast);
+          toast.success("Сохранение завершено");
   
-        toast.dismiss(loadingToast);
-        toast.success("Сохранение завершено");
-  
-        // Перенаправление через 500 мс
-        setTimeout(() => {
-          navigate("/dashboard/blogs");
-        }, 500);
+          // Перенаправление через 500 мс
+          setTimeout(() => {
+              navigate("/dashboard/blogs"); // Перенаправление на страницу со списком черновиков
+          }, 500);
       }).catch(({ response }) => {
-        // Разблокируем кнопку при ошибке
-        e.target.classList.remove('disable');
-        e.target.classList.remove('bg-grey');
+          // Разблокируем кнопку при ошибке
+          e.target.classList.remove('disable');
+          toast.dismiss(loadingToast);
   
-        toast.dismiss(loadingToast);
+          // Выводим ошибку сервера, если она есть
+          if (response && response.data && response.data.error) {
+              console.log(response.data.error);
+              return toast.error(response.data.error);
+          }
   
-        // Выводим ошибку сервера, если она есть
-        if (response && response.data && response.data.error) {
-          console.log(response.data.error);
-          return toast.error(response.data.error);
-        }
-  
-        return toast.error("Произошла ошибка при сохранении");
+          return toast.error("Произошла ошибка при сохранении");
       });
   };
 

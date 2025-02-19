@@ -95,7 +95,7 @@ const CommentsContainer = () => {
             {total_parent_comments > totalParentCommentsLoaded && (
                 <button
                     onClick={loadMoreComments}
-                    className="mt-4 text-gray-600 bg-gray-100 hover:bg-gray-200 hover:text-gray-800 rounded-full px-4 py-2 flex items-center gap-2 transition">
+                    className="mt-4 text-gray-600 bg-gray-100 hover:bg-grey hover:text-gray-800 rounded-full px-4 py-2 flex items-center gap-2 transition">
                     <i className="fi fi-rr-arrow-down text-lg"></i>
                     Загрузить еще (╹ڡ╹ )
                 </button>

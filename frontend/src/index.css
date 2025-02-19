@@ -161,3 +161,7 @@
     background-color: black;
     color: white;
 }
+[data-theme="dark"] .size{
+    background-color: black;
+    color: white;
+}
