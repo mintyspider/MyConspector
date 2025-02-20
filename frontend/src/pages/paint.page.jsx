@@ -22,8 +22,8 @@ const PaintPage = () => {
   const resizeCanvas = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    ctx.canvas.width = window.innerWidth - 20;
-    ctx.canvas.height = window.innerHeight - 80;
+    ctx.canvas.width = window.innerWidth - 150;
+    ctx.canvas.height = window.innerHeight - 150;
     ctxRef.current = ctx;
   };
 
@@ -70,9 +70,8 @@ const PaintPage = () => {
     const ctx = ctxRef.current;
     setDrawing(true);
 
-    const canvasRect = canvas.getBoundingClientRect();
-    const x = e.clientX - canvasRect.left; // X-coordinate relative to the canvas
-    const y = e.clientY - canvasRect.top;  // Y-coordinate relative to the canvas
+    const x = e.clientX - canvas.left; // X-coordinate relative to the canvas
+    const y = e.clientY - canvas.top;  // Y-coordinate relative to the canvas
 
     lastPosition.current.x = x;
     lastPosition.current.y = y;
@@ -93,44 +92,42 @@ const PaintPage = () => {
     const x = e.clientX - canvasRect.left;
     const y = e.clientY - canvasRect.top;
 
-    // Start a new path for the drawing
+    // Начинаем рисовать
     ctx.beginPath();
-    ctx.moveTo(lastPosition.current.x, lastPosition.current.y); // Move to the previous position
-    ctx.lineTo(x, y);  // Draw to the current position
+    ctx.moveTo(lastPosition.current.x, lastPosition.current.y); // Перемещаем в предыдущую позицию
+    ctx.lineTo(x, y);  // Рисуем линию до текущей позиции
     ctx.lineWidth = size;
     ctx.lineCap = 'round';
 
     if (isEraser) {
-      ctx.globalCompositeOperation = 'destination-out'; // Eraser mode
+      ctx.globalCompositeOperation = 'destination-out'; // Эффект ластика
       ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
     } else {
-      ctx.globalCompositeOperation = 'source-over'; // Drawing mode
+      ctx.globalCompositeOperation = 'source-over'; // Обычное рисование
       ctx.strokeStyle = color;
     }
-    
+
     ctx.stroke();
     ctx.closePath();
 
-    // Update the last position to the current one
     lastPosition.current.x = x;
     lastPosition.current.y = y;
 
-    const newLine = {
-      startX: lastPosition.current.x,
-      startY: lastPosition.current.y,
-      endX: x,
-      endY: y,
-      color,
-      size,
-      isEraser,
-    };
-
     if (!isEraser) {
+      const newLine = {
+        startX: lastPosition.current.x,
+        startY: lastPosition.current.y,
+        endX: x,
+        endY: y,
+        color,
+        size,
+        isEraser,
+      };
+
       setLines((prevLines) => [...prevLines, newLine]);
     }
   };
 
-  // Clear the canvas
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
@@ -276,18 +273,18 @@ const PaintPage = () => {
         </div>
       </header>
 
-      <div className="canvas-container h-[calc(100vh-150px)] relative">
+      <div className="canvas-container center w-11/12 h-[calc(100vh-150px)] relative">
         <canvas
           ref={canvasRef}
-          className="w-11/12 h-full center border border-black rounded-xl"
+          className="w-full h-full border border-black rounded-xl"
           onMouseDown={startDrawing}
           onMouseUp={stopDrawing}
           onMouseMove={draw}
           style={{
-            cursor: isEraser
-              ? `url(${eraser}) 0 64, auto` // Eraser cursor
-              : `url(${pencil}) 0 64, auto`  // Pencil cursor
-          }}          
+                  cursor: isEraser
+                    ? `url(${eraser}) 0 32, auto` // Adjust cursor position
+                    : `url(${pencil}) 0 32, auto`  // Adjust cursor position
+                }}           
         />
       </div>
     </div>
