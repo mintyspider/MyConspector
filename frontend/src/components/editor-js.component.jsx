@@ -22,7 +22,9 @@ import { ThemeContext } from '../App';
 import DoodleThing from './doodle.component';
 
 const ContentEditor = () => {
-    const { blog, setBlog, blog: { content } } = useContext(EditorContext);
+    const { blog, setBlog } = useContext(EditorContext);
+    let content = blog.content || [];  // Default to an empty array if blog or content is undefined
+
     let { theme } = useContext(ThemeContext);
     const currentTheme = theme;
     const editorRef = useRef(null);

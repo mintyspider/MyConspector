@@ -440,125 +440,160 @@ server.post("/getprofile", (req, res) => {
 })
 
 //Blog post
-server.post('/createblog', verifyJWT, (req, res) => {
+server.post('/createblog', verifyJWT, async (req, res) => {
   let authId = req.user;
-
   let { title, des, tags, content, draft, id } = req.body;
 
   if (!title || !title.length) {
-      return res.status(403).json({ "error": "there is no title" });
+    return res.status(403).json({ error: "There is no title" });
   }
 
   if (!content) {
-      return res.status(403).json({ "error": "there is no content" });
+    return res.status(403).json({ error: "There is no content" });
   }
+
   if (!draft) {
     if (!Array.isArray(tags) || tags.length === 0 || tags.length > 10) {
-        return res.status(403).json({ "error": "there must be 1-10 tags" });
+      return res.status(403).json({ error: "There must be 1-10 tags" });
     }
 
     if (!des || des.length === 0 || des.length > 200) {
-        return res.status(403).json({ "error": "blog description must be 1-200 characters" });
+      return res.status(403).json({ error: "Blog description must be 1-200 characters" });
     }
   }
 
   tags = tags.map(tag => tag.toLowerCase());
-  
-  let blog_id = id || translit(title).replace(/^a-zA-Z0-9_/g, ' ').replace(/\s/g, '-') + nanoid();
 
-  if (id) {
-    Blog.findOneAndUpdate({ blog_id }, { title, des, content, tags, author: authId, draft : draft ? draft : false })
-    .then(() => {
-      return res.status(200).json({ id:blog_id });
-    })
-    .catch (err => {
-      return res.status(500).json({ error: 'Failed to update blog post' });
-    })
-  } else {
-    let blog = new Blog({
-      title,
-      des,
-      content,
-      tags,
-      author: authId,
-      blog_id,
-      draft: Boolean(draft)
-    })
+  let blog_id = id || translit(title).replace(/[^a-zA-Z0-9_]/g, ' ').replace(/\s/g, '-') + nanoid();
 
-    blog.save().then((blog) => {
+  try {
+    let blog;
+    if (id) {
+      // Обновление существующего блога
+      const existingBlog = await Blog.findOne({ blog_id });
+      if (!existingBlog) {
+        return res.status(404).json({ error: "Blog not found" });
+      }
 
-      let incrimentVal = draft ? 0 : 1;
-      User.findOneAndUpdate({ _id: authId }, { $inc : { "account_info.total_posts" : incrimentVal }, $push: { "blogs": blog._id } })
-      .then(user => {
-        return res.status(200).json({ "message": "Blog post created successfully", id: blog.blog_id });
-      })
-      .catch (err => {
-        return res.status(500).json({ error: 'Failed to update total posts number' });
-      })
-        
-    })
-    .catch (err => {
-      return res.status(500).json({ error: 'Internal Server Error' });
-    });
+      // Проверяем, изменился ли статус блога (опубликован/черновик)
+      if (existingBlog.draft !== draft) {
+        // Если блог переходит из опубликованного в черновик, уменьшаем счетчик
+        if (!existingBlog.draft && draft) {
+          await User.findOneAndUpdate(
+            { _id: authId },
+            { $inc: { "account_info.total_posts": -1 } }
+          );
+        }
+
+        // Если блог переходит из черновика в опубликованный, увеличиваем счетчик
+        if (existingBlog.draft && !draft) {
+          await User.findOneAndUpdate(
+            { _id: authId },
+            { $inc: { "account_info.total_posts": 1 } }
+          );
+        }
+      }
+
+      // Обновляем блог
+      blog = await Blog.findOneAndUpdate(
+        { blog_id },
+        { title, des, content, tags, author: authId, draft: Boolean(draft) },
+        { new: true }
+      );
+    } else {
+      // Создание нового блога
+      blog = new Blog({
+        title,
+        des,
+        content,
+        tags,
+        author: authId,
+        blog_id,
+        draft: Boolean(draft)
+      });
+
+      await blog.save();
+
+      // Увеличиваем счетчик только для опубликованных блогов
+      if (!draft) {
+        await User.findOneAndUpdate(
+          { _id: authId },
+          { $inc: { "account_info.total_posts": 1 }, $push: { blogs: blog._id } }
+        );
+      }
+    }
+
+    return res.status(200).json({ message: "Blog post created/updated successfully", id: blog.blog_id });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 server.post("/getblog", (req, res) => {
   let { blog_id, draft, mode } = req.body;
-  let incrementVlue = mode !== "edit" ? 1 : 0;
-  Blog.findOneAndUpdate({ blog_id }, { $inc: { "activity.total_reads": incrementVlue } })
-  .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
-  .select("title des content activity tags publishedAt blog_id")
-  .then(blog => {
-    User.findOneAndUpdate({ "personal_info.username": blog.author.personal_info.username }, { $inc: { "account_info.total_reads": incrementVlue } 
+  let incrementValue = mode !== "edit" ? 1 : 0; // Увеличиваем счетчик только в режиме чтения
+
+  Blog.findOneAndUpdate({ blog_id }, { $inc: { "activity.total_reads": incrementValue } })
+    .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
+    .select("title des content activity tags publishedAt blog_id draft")
+    .then(blog => {
+      if (!blog) {
+        return res.status(404).json({ error: "Blog not found" });
+      }
+
+      if (blog.draft && !draft) {
+        return res.status(403).json({ error: "No access to edit this blog" });
+      }
+
+      // Обновляем счетчик прочтений у автора блога
+      User.findOneAndUpdate(
+        { "personal_info.username": blog.author.personal_info.username },
+        { $inc: { "account_info.total_reads": incrementValue } }
+      )
+        .then(() => {
+          return res.status(200).json({ blog });
+        })
+        .catch(err => {
+          return res.status(500).json({ error: err.message });
+        });
     })
     .catch(err => {
-      return res.status(500).json({error: err.message})
-    })
-    if (blog.draft && !draft) {
-      return res.status(500).json({error: "No access to edit this blog"})
-    }
-    return res.status(200).json({blog})
-  })
-  .catch(err => {
-    return res.status(500).json({error: err.message})
-  })
-})
+      return res.status(500).json({ error: err.message });
+    });
+});
 
 //liking blogs
-server.post("/likeblog", verifyJWT, (req, res) => {
+server.post("/likeblog", verifyJWT, async (req, res) => {
   let user_id = req.user;
   let { _id, isLikedByUser } = req.body;
-  let incrementVlue = isLikedByUser ? -1 : 1;
-  Blog.findOneAndUpdate({ _id }, { $inc : { "activity.total_likes" : incrementVlue } })
-  .then(blog => {
-    if(!isLikedByUser) {
+  let incrementValue = isLikedByUser ? -1 : 1;
+
+  try {
+    const blog = await Blog.findOneAndUpdate(
+      { _id },
+      { $inc: { "activity.total_likes": incrementValue } },
+      { new: true }
+    );
+
+    if (!isLikedByUser) {
       let like = new Notification({
         type: "like",
         blog: _id,
         notification_for: blog.author,
         user: user_id
-      })
-      like.save().then(() => {
-        return res.status(200).json({liked_by_user: true})
-      })
-      .catch(err => {
-        return res.status(500).json({error: err.message})
-      })
+      });
+
+      await like.save();
+      return res.status(200).json({ liked_by_user: true });
     } else {
-      Notification.findOneAndDelete({ blog: _id, user: user_id, type: "like" })
-      .then(() => {
-        return res.status(200).json({liked_by_user: false})
-      })
-      .catch(err => {
-        return res.status(500).json({error: err.message})
-      })
+      await Notification.findOneAndDelete({ blog: _id, user: user_id, type: "like" });
+      return res.status(200).json({ liked_by_user: false });
     }
-  })
-  .catch(err => {
-    return res.status(500).json({error: err.message})
-  })
-})
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
 
 //checking liking blog
 server.post("/checklike", verifyJWT, (req, res) => {
@@ -582,14 +617,6 @@ server.post("/addcomment", verifyJWT, async (req, res) => {
     return res.status(400).json({ error: "Blog ID and message are required" });
   }
 
-  if (replying_to && !mongoose.Types.ObjectId.isValid(replying_to)) {
-    return res.status(400).json({ error: "Invalid parent comment ID" });
-  }
-
-  if (notification_id && !mongoose.Types.ObjectId.isValid(notification_id)) {
-    return res.status(400).json({ error: "Invalid notification ID" });
-  }
-
   const commentedAt = new Date();
   let commentFile = {
     blog_id: _id,
@@ -608,13 +635,7 @@ server.post("/addcomment", verifyJWT, async (req, res) => {
   try {
     const newComment = await new Comment(commentFile).save();
 
-    // Проверяем существование блога
-    const blogExists = await Blog.exists({ _id });
-    if (!blogExists) {
-      return res.status(404).json({ error: "Blog not found" });
-    }
-
-    // Обновляем блог
+    // Обновляем счетчик комментариев в блоге
     await Blog.findOneAndUpdate(
       { _id },
       {
@@ -623,6 +644,7 @@ server.post("/addcomment", verifyJWT, async (req, res) => {
       }
     );
 
+    // Создаем уведомление
     let notificationObj = {
       type: replying_to ? "reply" : "comment",
       blog: _id,
@@ -643,19 +665,14 @@ server.post("/addcomment", verifyJWT, async (req, res) => {
       }
 
       if (notification_id) {
-        const updatedNotification = await Notification.findOneAndUpdate(
+        await Notification.findOneAndUpdate(
           { _id: notification_id },
           { reply: commentFile._id }
         );
-
-        if (!updatedNotification) {
-          console.log("Notification not found.");
-        }
       }
     }
 
     await new Notification(notificationObj).save();
-    console.log("New notification created");
 
     res.status(200).json({
       comment: newComment.comment,
