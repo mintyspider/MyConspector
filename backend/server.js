@@ -442,6 +442,7 @@ server.post("/getprofile", (req, res) => {
 //Blog post
 server.post('/createblog', verifyJWT, (req, res) => {
   let authId = req.user;
+  console.log("authId", authId);
 
   let { title, des, tags, content, draft, id } = req.body;
 

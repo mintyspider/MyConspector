@@ -43,7 +43,7 @@ const BlogEditor = () => {
     const handlePublish = () => {
         console.log("blog: ", blog);
         let { title, content } = blog;
-        console.log("title:", title, "content:", content[0] ? content[0].blocks : content.blocks);
+        console.log("title:", title, "content:", content[0] ? content[0] : content);
         // Проверка перед публикацией
         if (!title.length) {
             return toast.error("Озаглавьте конспект");
@@ -92,14 +92,13 @@ const BlogEditor = () => {
       // Блокируем кнопку
       e.target.classList.add('disable');
 
-      //! FIX ME!!!
       // Формируем объект для сохранения
       let blogObj = {
           title,
           des,
           content: content[0] ? content[0] : content,
           tags,
-          draft: true // Мы сохраняем как черновик
+          draft: true // Сохраняем как черновик
       };
   
       // Отправляем запрос на сервер
