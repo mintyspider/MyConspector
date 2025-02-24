@@ -921,9 +921,8 @@ server.post("/deleteblog", verifyJWT, async (req, res) => {
   try {
     let user_id = req.user; // ID пользователя из токена
     let { blog_id } = req.body;
-
     // Найти и удалить блог
-    const blog = await Blog.findOneAndDelete({ _id: blog_id });
+    const blog = await Blog.findOneAndDelete({ blog_id: blog_id });
 
     if (!blog) {
       return res.status(404).json({ error: "Blog not found" });
