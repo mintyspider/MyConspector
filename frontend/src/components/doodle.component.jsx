@@ -16,7 +16,6 @@ const DoodleThing = ({ onSave, onClose }) => {
   const [lines, setLines] = useState([]);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-  const [isPanelVisible, setIsPanelVisible] = useState(true);
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const lastPosition = useRef({ x: 0, y: 0 });
@@ -301,6 +300,12 @@ const DoodleThing = ({ onSave, onClose }) => {
               className="btn p-2 border border-grey hover:bg-grey"
             >
               Download
+            </button>
+            <button 
+              onClick={onClose}
+              className="btn p-2 border border-grey hover:bg-grey"
+            >
+              Close
             </button>
           </div>
         </div>
