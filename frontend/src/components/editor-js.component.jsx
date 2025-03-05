@@ -20,11 +20,12 @@ import { EditorContext } from '../pages/editor.pages';
 import ImageTool from '@editorjs/image';
 import { ThemeContext } from '../App';
 import DoodleThing from './doodle.component';
+import Tooltip from './tooltip.component';
 
 const ContentEditor = () => {
     const { blog, setBlog } = useContext(EditorContext);
     let content = blog.content || [];  // Default to an empty array if blog or content is undefined
-
+    const [isPanelVisible, setIsPanelVisible] = useState(true);
     let { theme } = useContext(ThemeContext);
     const currentTheme = theme;
     const editorRef = useRef(null);
@@ -75,6 +76,10 @@ const ContentEditor = () => {
 
         // Добавляем блок изображения в EditorJS
         editorRef.current.blocks.insert('image', imageBlock.data);
+    };
+
+    const togglePanel = () => {
+        setIsPanelVisible(!isPanelVisible);
     };
 
     const tools = {
@@ -219,17 +224,69 @@ const ContentEditor = () => {
     return (
         <div>
             {/* Панель инструментов */}
-            <div className="toolbar max-md:hidden">
-                <button onClick={() => editorRef.current.blocks.insert('header')}><i className="fi fi-rr-square-h"></i></button>
-                <button onClick={() => editorRef.current.blocks.insert('list')}><i className="fi fi-rr-rectangle-list"></i></button>
-                <button onClick={() => editorRef.current.blocks.insert('quote')}><i className="fi fi-rr-comment-quote"></i></button>
-                <button onClick={() => editorRef.current.blocks.insert('image')}><i className="fi fi-rr-comment-image"></i></button>
-                <button onClick={() => editorRef.current.blocks.insert('warning')}><i className="fi fi-rr-exclamation"></i></button>
-                <button onClick={() => editorRef.current.blocks.insert('code')}><i className="fi fi-rr-terminal"></i></button>
-                <button onClick={() => editorRef.current.blocks.insert('delimiter')}><i className="fi fi-rr-grid-dividers"></i></button>
-                <button onClick={() => editorRef.current.blocks.insert('table')}><i className="fi fi-rr-table-list"></i></button>
-                <button onClick={() => editorRef.current.blocks.insert('checklist')}><i className="fi fi-rr-list-check"></i></button>
-                <button onClick={() => setIsPaintOpen(true)}><i className="fi fi-rr-pencil"></i></button> {/* Кнопка для открытия PaintPage */}
+            <div className="toolbar flex py-1 px-5 max-md:hidden">
+                <button
+                onClick={togglePanel}
+                className="text-2xl p-2"
+                style={{
+                    position: 'absolute',
+                    bottom: '50%',
+                    left: isPanelVisible ? '90px' : '-10px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    zIndex: 10,
+                }}
+                >
+                    {isPanelVisible ? <i className="fi fi-sr-left text-purple"></i> : <i className="fi fi-sr-right text-purple"></i>}
+                </button>
+                <div style={{
+                    transition: 'transform 0.3s ease',
+                    transform: isPanelVisible ? 'translateX(0)' : 'translateX(-150%)',
+                }}>
+                    <div className='flex flex-col gap-2'>
+                        <Tooltip onClick={() => editorRef.current.blocks.insert('header')}
+                                tooltipText="Заголовок" tooltipPosition="right">
+                                <i className="fi fi-rr-square-h"></i>
+                        </Tooltip>
+                        <Tooltip onClick={() => editorRef.current.blocks.insert('list')}
+                                tooltipText="Список" tooltipPosition="right">
+                                <i className="fi fi-rr-rectangle-list"></i>
+                        </Tooltip>
+                        <Tooltip onClick={() => editorRef.current.blocks.insert('quote')}
+                                tooltipText="Цитата" tooltipPosition="right">
+                                <i className="fi fi-rr-comment-quote"></i>
+                        </Tooltip>
+                        <Tooltip onClick={() => editorRef.current.blocks.insert('image')}
+                                tooltipText="Изображение" tooltipPosition="right">
+                                <i className="fi fi-rr-comment-image"></i>
+                        </Tooltip>
+                        <Tooltip onClick={() => editorRef.current.blocks.insert('warning')}
+                                tooltipText="Важно" tooltipPosition="right">
+                                <i className="fi fi-rr-exclamation"></i>
+                        </Tooltip>
+                        <Tooltip onClick={() => editorRef.current.blocks.insert('code')}
+                            tooltipText="Код" tooltipPosition="right">
+                            <i className="fi fi-rr-terminal"></i>
+                        </Tooltip>
+                        <Tooltip onClick={() => editorRef.current.blocks.insert('delimiter')}
+                                tooltipText="Разделитель" tooltipPosition="right">
+                                <i className="fi fi-rr-grid-dividers"></i>
+                        </Tooltip>
+                        <Tooltip onClick={() => editorRef.current.blocks.insert('table')}
+                                tooltipText="Таблица" tooltipPosition="right">
+                                <i className="fi fi-rr-table-list"></i>
+                        </Tooltip>
+                        <Tooltip onClick={() => editorRef.current.blocks.insert('checklist')}
+                                tooltipText="Чеклист" tooltipPosition="right">
+                                <i className="fi fi-rr-list-check"></i>
+                        </Tooltip>
+                        <Tooltip onClick={() => setIsPaintOpen(true)}
+                                tooltipText="Рисунок" tooltipPosition="right">
+                                <i className="fi fi-rr-pencil"></i>
+                        </Tooltip>
+                    </div>
+                </div>
             </div>
             {/* Контейнер редактора */}
             <div id="textEditor" className={"editor-container" + (currentTheme == "dark" ? "-dark" : "")}></div>

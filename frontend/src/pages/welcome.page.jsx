@@ -14,7 +14,7 @@ const WelcomePage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="max-h-screen top-[80px] flex flex-col items-center justify-between bg-white text-black px-4 md:px-8"
+            className="h-[100vh-150px] top-[80px] flex flex-col items-center justify-between bg-white text-black px-4 md:px-8"
         >
             {/* Верхняя секция */}
             <motion.div
@@ -31,7 +31,7 @@ const WelcomePage = () => {
                 </p>
             </motion.div>
             
-            {/* Cекция: кнопки */}
+            {/* Cекция: кнопка */}
             <motion.div
                 className="center my-8"
                 initial={{ opacity: 0, y: 50 }}
@@ -40,7 +40,7 @@ const WelcomePage = () => {
             >
                 <button
                     onClick={handleSkip}
-                    className="px-6 py-3 md:px-8 md:py-4 border-purple border-2 text-black rounded-full font-semibold text-sm md:text-lg shadow-md hover:bg-orange transition duration-300"
+                    className="px-6 py-3 md:px-8 md:py-4 border-purple/70 border-2 text-black rounded-full font-semibold text-sm md:text-lg shadow-md hover:bg-purple/30 transition duration-300"
                 >
                     Исследовать
                 </button>
@@ -67,13 +67,13 @@ const WelcomePage = () => {
                 ].map((item, i) => (
                     <motion.div
                         key={i}
-                        className="bg-white bg-opacity-10 backdrop-blur-md p-6 rounded-xl shadow-lg hover:shadow-xl hover:shadow-black shadow-dark-grey transition duration-300 text-center"
+                        className="bg-white bg-opacity-10 backdrop-blur-md p-6 rounded-xl shadow-sm hover:shadow-lg hover:shadow-purple shadow-dark-grey transition duration-300 text-center"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.2 }}
                     >
                         <div className="text-2xl lg:text-5xl mb-4">{item.icon}</div>
-                        <h2 className="text-lg lg:text-xl font-bold mb-2">{item.title}</h2>
+                        <h2 className="text-md lg:text-xl font-bold mb-2">{item.title}</h2>
                         <p className="text-sm lg:text-base">{item.description}</p>
                     </motion.div>
                 ))}
