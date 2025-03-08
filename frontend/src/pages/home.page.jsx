@@ -9,14 +9,13 @@ import { activeTabLineRef, activeTabRef } from '../components/inpage-navigation.
 import NoDataMessage from '../components/nodata.component'
 import { filterPaginationData } from '../common/filter-pagination-data'
 import LoadMoreDataBtn from '../components/load-more.component'
+import mascot from '../imgs/mascot.png'
 
 const HomePage = () => {
 
   let [blogs, setBlogs] = useState(null);
   let [trendingBlogs, setTrendingBlogs] = useState(null);
   let [pageState, setPageState] = useState("Новое");
-
-  let categories = ["ИБЭАТ", "ИИЯ", "ИИПСН", "ИЛГСН", "ИМИТ", "МИ", "ИПП", "ИФКСТ", "ИФ", "ИЭП", "ФТИ"];
 
   const fetchLatestBlogs = ({ page }) => {
     axios
@@ -39,30 +38,6 @@ const HomePage = () => {
     })
   }
 
-  const fetchBlogsByCategory = ({ page }) => {
-    const searchPageState = pageState.toLowerCase();
-    console.log("Отправляемые данные:", { page, searchPageState });
-    axios
-    .post(import.meta.env.VITE_SERVER_DOMAIN + "/searchblogs", { page, tag: searchPageState })
-    .then( async ({ data }) => {
-      console.log(data.blogs, data.blogs.length)
-      let formattedBlogs = await filterPaginationData({ 
-        state: blogs, 
-        data: data.blogs, 
-        page, 
-        countRoute: "/countsearchblogs", 
-        data_to_send: {tag: searchPageState}
-      })
-      console.log("data:", formattedBlogs)
-      if (JSON.stringify(formattedBlogs) !== JSON.stringify(blogs)) {
-        setBlogs(formattedBlogs);
-      }
-      })
-    .catch(err => {
-      console.log(err)
-    })
-  }
-
   const fetchTrendingBlogs = () => {
     axios.get(import.meta.env.VITE_SERVER_DOMAIN + "/trendindblogs")
     .then(({ data }) => {
@@ -74,30 +49,13 @@ const HomePage = () => {
   }
 
   useEffect(() => {
-
+    fetchLatestBlogs({page:1});
     activeTabRef.current.click();
-
-    if(pageState == "Новое"){
-      fetchLatestBlogs({page: 1});
-    } else {
-      fetchBlogsByCategory({page: 1});
-    }
 
     if(!trendingBlogs){
       fetchTrendingBlogs();
     }
-  }, [pageState])
-
-  const loadBlogByCategory = (e) => {
-    let category = e.target.innerText.toUpperCase();
-    setBlogs(null);
-    if(pageState == category){
-      setPageState("Новое");
-      return;
-    }
-    setPageState(category);
-
-  }
+  }, [])
 
   return (
     <AnimationWrapper>
@@ -135,22 +93,10 @@ const HomePage = () => {
                 </InPageNavigation>
             </div>
 
-            {/* Фильтры и самые популярные конспекты */}
+            {/* Самые популярные конспекты */}
             <div className='min-w-[40%] lg:min-w-[400px] max-w-min border-1 border-grey pl-8 pt-3 max-md:hidden'>
               <div className='flex flex-col gap-10'>
-                <div>
-                <h1 className='font-medium text-xl mb-8'>Конспекты для всех и каждого</h1>
-
-                <div className='flex gap-3 flex-wrap'>{
-                  categories.map((category, i) => {
-                    return <button key={i} className={"tag "+ (pageState === category ? "bg-black text-white" : "")} onClick={loadBlogByCategory} >
-                      {category}
-                    </button>
-                  })}
-                </div>
-              </div>
-
-              <div className=''>
+              <div>
                 <h1 className='font-medium text-xl mb-8 gap-2'>
                   Популярное <i className='fi fi-rr-arrow-trend-up'></i>
                 </h1>
@@ -168,6 +114,13 @@ const HomePage = () => {
               </div>
           </div>
           </div>
+          <button 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="fixed bottom-0 left-0 w-[5%] h-screen hover:bg-grey text-purple"
+              title="Scroll to top"
+            >
+              <i className='fixed bottom-10 left-10 fi fi-sr-up'></i>
+            </button>
         </section>
     </AnimationWrapper>
   )

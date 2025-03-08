@@ -230,8 +230,7 @@ const ContentEditor = () => {
                 className="text-2xl p-2"
                 style={{
                     position: 'absolute',
-                    bottom: '50%',
-                    left: isPanelVisible ? '90px' : '-10px',
+                    left: isPanelVisible ? '80px' : '-10px',
                     backgroundColor: 'transparent',
                     border: 'none',
                     cursor: 'pointer',
