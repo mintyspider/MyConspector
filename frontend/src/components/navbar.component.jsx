@@ -98,14 +98,9 @@ const Navbar = () => {
                     </button>
 
                     <Link to='/editor'>
-                        <button className='md:hidden bg-grey w-12 h-12 rounded-full flex items-center justify-center'>
+                        <button className='bg-grey w-12 h-12 rounded-full flex items-center justify-center'>
                             <i className="fi fi-rr-file-edit text-2xl block mt-2 text-dark-grey"></i>
                         </button>
-                    </Link>
-
-                    <Link to='/editor' className='btn-light py-2 hidden md:flex'>
-                        <i className="fi fi-rr-file-edit"></i>
-                        <p className='pl-2'>Новый конспект</p>
                     </Link>
 
                     <Link to='/v2t'>

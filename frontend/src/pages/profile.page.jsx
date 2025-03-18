@@ -128,6 +128,13 @@ const ProfilePage = () => {
 
   return (
     <AnimationWrapper>
+      <button 
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-0 left-0 w-[5%] h-screen hover:bg-grey text-dark-grey text-sm"
+        title="Scroll to top"
+      >
+        <span className='fixed bottom-10 left-1 items-center justify-center'><i className='gap-1 fi fi-rr-angle-small-up'></i>Наверх</span>
+      </button>
       {
         loading ? <Loader /> : 
         profile_username.length ?

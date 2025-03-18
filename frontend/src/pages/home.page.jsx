@@ -94,8 +94,8 @@ const HomePage = () => {
             </div>
 
             {/* Самые популярные конспекты */}
-            <div className='min-w-[40%] lg:min-w-[400px] max-w-min border-1 border-grey pl-8 pt-3 max-md:hidden'>
-              <div className='flex flex-col gap-10'>
+            <div className='min-w-[40%] lg:min-w-[400px] max-w-min border-1 border-grey pl-8 max-md:hidden'>
+              <div className="flex flex-col max-md:items-center gap-10 md:pl-8 md:border-l border-grey md:sticky md:top-[60px] md:py-8">
               <div>
                 <h1 className='font-medium text-xl mb-8 gap-2'>
                   Популярное <i className='fi fi-rr-arrow-trend-up'></i>
@@ -115,12 +115,12 @@ const HomePage = () => {
           </div>
           </div>
           <button 
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="fixed bottom-0 left-0 w-[5%] h-screen hover:bg-grey text-purple"
-              title="Scroll to top"
-            >
-              <i className='fixed bottom-10 left-10 fi fi-sr-up'></i>
-            </button>
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-0 left-0 w-[5%] h-screen hover:bg-grey text-dark-grey text-sm"
+            title="Scroll to top"
+          >
+            <span className='fixed bottom-10 left-1 items-center justify-center'><i className='gap-1 fi fi-rr-angle-small-up'></i>Наверх</span>
+        </button>
         </section>
     </AnimationWrapper>
   )
