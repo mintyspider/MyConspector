@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { BlogContext } from '../pages/blog.page';
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { UserContext } from '../App';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
