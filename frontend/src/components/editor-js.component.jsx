@@ -224,7 +224,7 @@ const ContentEditor = () => {
     return (
         <div>
             {/* Панель инструментов */}
-            <div className="toolbar flex py-1 px-5 max-md:hidden">
+            <div className="toolbar flex py-1 px-5 max-lg:hidden">
                 <button
                 onClick={togglePanel}
                 className="text-2xl p-2"

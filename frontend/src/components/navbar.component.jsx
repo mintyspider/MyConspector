@@ -98,7 +98,7 @@ const Navbar = () => {
                     </button>
 
                     <Link to='/editor'>
-                        <button className='bg-grey w-12 h-12 rounded-full flex items-center justify-center'>
+                        <button className='w-12 h-12 rounded-xl bg-grey flex items-center justify-center hover:bg-black/10'>
                             <i className="fi fi-rr-file-edit text-2xl block mt-2 text-dark-grey"></i>
                         </button>
                     </Link>

@@ -46,7 +46,7 @@ const PublishForm = () => {
   }
 
   const handleTopic = (e) => {
-    if(e.keyCode == 13 ){
+    if(e.keyCode == 13){
       e.preventDefault();
       let tag = e.target.value.toLowerCase();
       if(tags.length < tagLimit){
@@ -152,9 +152,9 @@ const PublishForm = () => {
 
           <p className='mt-1 text-dark-grey text-sm text-right'>{ characterLimit - des.length } / { characterLimit } </p>
 
-          <p className='text-dark-grey mb-2 mt-9'>Метки - (помогают пользователям в поиске необходимой информации)</p>
+          <p className='text-dark-grey mb-2 mt-9'>Метки. Для добавления нажмите Enter ^_^</p>
 
-          <div className='relative input-box pl-2 py-2 pb-4'>
+          <div className='input-box pl-2 py-2 pb-4'>
             <input type="text" placeholder='Метка' className='sticky font-normal text-dark-grey input-box bg-white top-0 left-0 pl-4 mb-5 focus:bg-white' 
             onKeyDown={handleTopic}/>
             
