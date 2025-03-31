@@ -30,7 +30,6 @@ const ContentEditor = () => {
     const currentTheme = theme;
     const editorRef = useRef(null);
     const [isPaintOpen, setIsPaintOpen] = useState(false); // Состояние для отображения PaintPage
-    const [showLoadModal, setShowLoadModal] = useState(false);
 
     const uploadImageByFile = async (file) => {
         const storageRef = ref(storage, `files/${file.name}`);
@@ -195,9 +194,7 @@ const ContentEditor = () => {
         try {
             const outputData = await editorRef.current.save();
             console.log('Сохраненные данные:', outputData);
-            
-            // Update the blog context and save to localStorage
-            setBlog(prevBlog => ({ ...prevBlog, content: { blocks: outputData.blocks } }));
+            setBlog(prevBlog => ({ ...prevBlog, content: { blocks: outputData.blocks } })); // Обновляем состояние
         } catch (error) {
             console.error('Ошибка при сохранении данных:', error);
         }
@@ -214,7 +211,6 @@ const ContentEditor = () => {
                 placeholder: "Не бойся начать с чистого листа...",
                 onChange: async () => {
                     await saveData();
-                    localStorage.setItem('draftBlog', JSON.stringify(blog));
                 }
             });
             isReady.current = true;
@@ -222,57 +218,11 @@ const ContentEditor = () => {
     }, []); // Только один раз при монтировании
 
     useEffect(() => {
-        const savedBlog = localStorage.getItem('draftBlog');
-        if (savedBlog && !blog.id) {
-            setShowLoadModal(true); // Show the modal if saved data exists
-        }
-    }, []); // Only run once when mounted
-
-    // Handle modal confirmation
-    const handleConfirmLoad = () => {
-        const savedBlog = localStorage.getItem('draftBlog');
-        if (savedBlog) {
-            const parsedBlog = JSON.parse(savedBlog);
-            console.log("parsed blog", parsedBlog);
-            setBlog(parsedBlog); // Restore the saved blog data
-        }
-        setShowLoadModal(false); // Close the modal after confirming
-    };
-
-    const handleCancelLoad = () => {
-        setShowLoadModal(false); // Close the modal without restoring
-    };
-
-    useEffect(() => {
         console.log('Состояние blog обновлено:', blog);
-        localStorage.setItem('draftBlog', JSON.stringify(blog));
-        console.log("в localhost: ", localStorage.getItem('draftBlog'));
     }, [blog]); // Сработает, когда blog изменится
 
     return (
         <div>
-            {/* Confirmation Modal */}
-            {showLoadModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-md w-1/3">
-                        <h3 className="text-xl font-semibold mb-4">Вы хотите загрузить сохраненный блог?</h3>
-                        <div className="flex justify-around">
-                            <button
-                                onClick={handleConfirmLoad}
-                                className="bg-blue-500 text-white py-2 px-4 rounded"
-                            >
-                                Да
-                            </button>
-                            <button
-                                onClick={handleCancelLoad}
-                                className="bg-red-500 text-white py-2 px-4 rounded"
-                            >
-                                Нет
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
             {/* Панель инструментов */}
             <div className="toolbar flex py-1 px-5 max-lg:hidden">
                 <button
