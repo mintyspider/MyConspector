@@ -42,23 +42,14 @@ const BlogEditor = () => {
 
     const handlePublish = () => {
         console.log("blog: ", blog);
-        let { title, content } = blog;
-        console.log("title:", title, "content:", content[0] ? content[0] : content);
+        let { content } = blog;
+        console.log("content:", content[0] ? content[0] : content);
         // Проверка перед публикацией
-        if (!title.length) {
-            return toast.error("Озаглавьте конспект");
-        }
         if (content[0]){
-          if(!content[0].blocks.length){
+          if(!content[0].blocks.length || !content.blocks.length){
             return toast.error("Добавьте содержание конспекту");
           }
-        } else {
-          if (!content.blocks.length) {
-            return toast.error("Добавьте контент конспекту");
-            
-          }
-        }
-        
+        }        
         setEditorState("publish");
     }
 
@@ -82,11 +73,6 @@ const BlogEditor = () => {
           return;
       }
   
-      // Проверка заголовка
-      if (!title.length) {
-          return toast.error("Озаглавьте конспект");
-      }
-  
       let loadingToast = toast.loading("Сохранение черновика...");
   
       // Блокируем кнопку
@@ -94,7 +80,7 @@ const BlogEditor = () => {
 
       // Формируем объект для сохранения
       let blogObj = {
-          title,
+          title: title ? title : "Черновик на скорую руку",
           des,
           content: content[0] ? content[0] : content,
           tags,
@@ -162,19 +148,8 @@ const BlogEditor = () => {
             </nav>
 
             <AnimationWrapper>
-                <section className='w-full'>
-                        <textarea
-                            placeholder='Тема конспекта'
-                            className='text-4xl font-medium w-full h-13 outline-none text-center resize-none mt-7 leading-tight placeholder:opacity-40'
-                            onKeyDown={handleTitleKeyDown}
-                            onChange={handleTitleChange}
-                            value={blog.title}
-                        />
-
-                        <hr className='w-full opacity-10 my-5' />
-
-                        <ContentEditor value={blog.content}/>
-                    
+                <section className='w-full mt-5'>
+                        <ContentEditor onClose={() => navigate("/dashboard/blogs")} value={blog.content}/>
                 </section>
             </AnimationWrapper>
         </>

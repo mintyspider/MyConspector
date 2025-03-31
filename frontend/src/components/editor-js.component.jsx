@@ -20,17 +20,81 @@ import { EditorContext } from '../pages/editor.pages';
 import ImageTool from '@editorjs/image';
 import { ThemeContext } from '../App';
 import DoodleThing from './doodle.component';
-import Tooltip from './tooltip.component';
+import IndexedDBViewer from '../common/indexedDB';
+import Toolbar from './toolbar.component';
+import { v4 as uuidv4 } from 'uuid';
+import { blogStructure } from '../pages/blog.page';
 
-const ContentEditor = () => {
+// Функции для работы с IndexedDB
+const openDB = () => {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('EditorDB', 1);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            db.createObjectStore('drafts', { keyPath: 'id' });
+        };
+
+        request.onsuccess = (event) => {
+            resolve(event.target.result);
+        };
+
+        request.onerror = (event) => {
+            reject(event.target.error);
+        };
+    });
+};
+
+const saveToIndexedDB = async (data, key, blogId) => {
+    try {
+        const db = await openDB();
+        const transaction = db.transaction(['drafts'], 'readwrite');
+        const store = transaction.objectStore('drafts');
+        const draft = {
+            id: key,
+            blogId: blogId,
+            data: data,
+            timestamp: new Date().toISOString()
+        };
+        store.put(draft);
+        transaction.oncomplete = () => {
+            console.log(`Данные сохранены в IndexedDB с ключом ${key}`, draft);
+        };
+    } catch (error) {
+        console.error("Ошибка при сохранении в IndexedDB:", error);
+    }
+};
+
+const loadFromIndexedDB = async (key) => {
+    return new Promise((resolve, reject) => {
+        openDB().then(db => {
+            const transaction = db.transaction(['drafts'], 'readonly');
+            const store = transaction.objectStore('drafts');
+            const request = store.get(key);
+
+            request.onsuccess = () => {
+                const result = request.result ? request.result.data : null;
+                console.log(`Загружен блог из IndexedDB с ключом ${key}:`, result);
+                resolve(result);
+            };
+            request.onerror = () => {
+                reject(request.error);
+            };
+        }).catch(error => {
+            reject(error);
+        });
+    });
+};
+
+const ContentEditor = ({ onClose, value }) => {
     const { blog, setBlog } = useContext(EditorContext);
-    let content = blog.content || [];  // Default to an empty array if blog or content is undefined
-    const [isPanelVisible, setIsPanelVisible] = useState(true);
-    let { theme } = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
     const currentTheme = theme;
     const editorRef = useRef(null);
-    const [isPaintOpen, setIsPaintOpen] = useState(false); // Состояние для отображения PaintPage
-    const [showLoadModal, setShowLoadModal] = useState(false);
+    const [isPaintOpen, setIsPaintOpen] = useState(false);
+    const [showIndexedDBViewer, setShowIndexedDBViewer] = useState(false);
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [showInitialDraftModal, setShowInitialDraftModal] = useState(false);
 
     const uploadImageByFile = async (file) => {
         const storageRef = ref(storage, `files/${file.name}`);
@@ -40,307 +104,232 @@ const ContentEditor = () => {
             await uploadBytes(storageRef, file);
             const downloadURL = await getDownloadURL(storageRef);
             toast.success("Загрузка завершена", { id: toastId });
-            return {
-                success: 1,
-                file: {
-                    url: downloadURL
-                }
-            };
+            return { success: 1, file: { url: downloadURL } };
         } catch (error) {
             toast.error("Ошибка при загрузке файла", { id: toastId });
             console.error("Ошибка при загрузке файла:", error);
-            return {
-                success: 0,
-                file: {
-                    url: null
-                }
-            };
+            return { success: 0, file: { url: null } };
         }
     };
 
     const handleSaveImage = (imageUrl) => {
-        setIsPaintOpen(false); // Закрываем PaintPage после сохранения
-
-        // Создаем блок изображения для EditorJS
-        const imageBlock = {
-            type: 'image',
-            data: {
-                file: {
-                    url: imageUrl,
+        setIsPaintOpen(false);
+        if (editorRef.current && editorRef.current.blocks) {
+            const imageBlock = {
+                type: 'image',
+                data: {
+                    file: { url: imageUrl },
+                    caption: '',
+                    stretched: false,
+                    withBackground: false,
+                    withBorder: false,
                 },
-                caption: '', // Описание изображения (можно оставить пустым)
-                stretched: false,
-                withBackground: false,
-                withBorder: false,
-            },
-        };
-
-        // Добавляем блок изображения в EditorJS
-        editorRef.current.blocks.insert('image', imageBlock.data);
-    };
-
-    const togglePanel = () => {
-        setIsPanelVisible(!isPanelVisible);
+            };
+            editorRef.current.blocks.insert('image', imageBlock.data);
+        } else {
+            console.error("Редактор ещё не инициализирован для добавления изображения");
+            toast.error("Не удалось добавить изображение, попробуйте снова");
+        }
     };
 
     const tools = {
         embed: Embed,
-        list: {
-            class: List,
-            shortcut: 'CMD+SHIFT+L',
-            inlineToolbar: true
-        },
-        checklist: {
-            class: Checklist,
-            shortcut: 'CMD+SHIFT+X',
-            inlineToolbar: true,
-        },
+        list: { class: List, shortcut: 'CMD+SHIFT+L', inlineToolbar: true },
+        checklist: { class: Checklist, shortcut: 'CMD+SHIFT+X', inlineToolbar: true },
         image: {
             class: ImageTool,
             shortcut: 'CMD+SHIFT+I',
-            config: {
-                uploader: {
-                    uploadByUrl: async (url) => {
-                        toast.loading("Загрузка...");
-                        try {
-                            toast.success("Загрузка завершена");
-                            return {
-                                success: 1,
-                                file: { url }
-                            };
-                        } catch (err) {
-                            toast.error("Ошибка при загрузке файла");
-                            console.error("Ошибка при загрузке файла:", err);
-                            return {
-                                success: 0,
-                                file: {
-                                    url: null
-                                }
-                            };
-                        }
-                    },
-                    uploadByFile: uploadImageByFile,
-                }
-            }
+            config: { uploader: { uploadByFile: uploadImageByFile } }
         },
-        header: {
-            class: Header,
-            inlineToolbar: true,
-            shortcut: 'CMD+SHIFT+H',
-            config: {
-                placeholder: "Место для заголовка...",
-                levels: [2, 3],
-                defaultLevel: 2
-            }
-        },
-        table: {
-            class: Table,
-            inlineToolbar: true,
-            shortcut: 'CMD+SHIFT+T',
-            config: {
-                rows: 2,
-                cols: 3,
-                maxRows: 20,
-                maxCols: 10,
-                stretched: true,
-                withHeadings: true,
-            },
-        },
-        quote: {
-            class: Quote,
-            shortcut: 'CMD+SHIFT+Q',
-            inlineToolbar: true,
-            config: {
-                titlePlaceholder: 'Заголовок',
-                messagePlaceholder: 'Цитата',
-            },
-        },
-        warning: {
-            class: Warning,
-            shortcut: 'CMD+SHIFT+W',
-            inlineToolbar: true,
-            config: {
-                titlePlaceholder: 'Заголовок',
-                messagePlaceholder: 'Заметка',
-            },
-        },
-        Math: {
-            class: EJLaTeX,
-            shortcut: 'CMD+SHIFT+M',
-            config: {
-                renderOnPaste: false,
-            }
-        },
-        delimiter: {
-            class: Delimiter,
-            shortcut: 'CMD+SHIFT+D',
-        },
+        header: { class: Header, inlineToolbar: true, shortcut: 'CMD+SHIFT+H', config: { placeholder: "Место для заголовка...", levels: [2, 3], defaultLevel: 2 } },
+        table: { class: Table, inlineToolbar: true, shortcut: 'CMD+SHIFT+T', config: { rows: 2, cols: 3, maxRows: 20, maxCols: 10, stretched: true, withHeadings: true } },
+        quote: { class: Quote, shortcut: 'CMD+SHIFT+Q', inlineToolbar: true, config: { titlePlaceholder: 'Заголовок', messagePlaceholder: 'Цитата' } },
+        warning: { class: Warning, shortcut: 'CMD+SHIFT+W', inlineToolbar: true, config: { titlePlaceholder: 'Заголовок', messagePlaceholder: 'Заметка' } },
+        Math: { class: EJLaTeX, shortcut: 'CMD+SHIFT+M', config: { renderOnPaste: false } },
+        delimiter: { class: Delimiter, shortcut: 'CMD+SHIFT+D' },
         marker: Marker,
-        code: {
-            class: CodeTool,
-            shortcut: 'CMD+SHIFT+C',
-            config: {
-                placeholder: "Место для кода...",
-            }
-        },
+        code: { class: CodeTool, shortcut: 'CMD+SHIFT+C', config: { placeholder: "Место для кода..." } },
         inlineCode: InlineCode,
-        nestedList: {
-            class: NestedList,
-            inlineToolbar: true,
-            shortcut: 'CMD+SHIFT+N',
+        nestedList: { class: NestedList, inlineToolbar: true, shortcut: 'CMD+SHIFT+N' }
+    };
+
+    const getStorageKey = () => {
+        return blog.id ? `blog_${blog.id}` : `blog_${uuidv4()}`;
+    };
+
+    const clearEditor = async () => {
+        try {
+            if (editorRef.current && editorRef.current.clear) {
+                await editorRef.current.clear();
+                setBlog(prevBlog => ({ ...prevBlog, content: { blocks: [] } }));
+                toast.success("Редактор очищен");
+            }
+        } catch (error) {
+            console.error("Ошибка при очистке редактора:", error);
+            toast.error("Ошибка при очистке");
+        }
+        setShowClearConfirm(false);
+    };
+
+    const isReady = useRef(false);
+
+    const initializeEditor = async (initialBlog) => {
+        const editorContainer = document.getElementById('textEditor');
+        if (!editorContainer) {
+            console.error("Контейнер #textEditor не найден");
+            return;
+        }
+
+        const initialData = initialBlog && initialBlog.content && initialBlog.content.blocks 
+            ? initialBlog.content 
+            : (value && value.blocks ? value : { blocks: [] });
+
+        try {
+            if (!editorRef.current) {
+                // Создаём новый экземпляр только если его ещё нет
+                editorRef.current = new EditorJS({
+                    holderId: "textEditor",
+                    data: initialData,
+                    tools: tools,
+                    placeholder: "Не бойся начать с чистого листа...",
+                    onChange: debounce(async () => {
+                        await saveData();
+                    }, 2000)
+                });
+                isReady.current = true;
+            } else if (initialBlog && initialBlog.content) {
+                // Если редактор уже существует, просто рендерим новые данные
+                await editorRef.current.render(initialData);
+            }
+
+            if (initialBlog && !isReady.current) {
+                setBlog(initialBlog);
+            }
+        } catch (error) {
+            console.error("Ошибка при инициализации EditorJS:", error);
+            toast.error("Не удалось загрузить редактор");
         }
     };
 
     const saveData = async () => {
         try {
-            const outputData = await editorRef.current.save();
-            console.log('Сохраненные данные:', outputData);
-            
-            // Update the blog context and save to localStorage
-            setBlog(prevBlog => ({ ...prevBlog, content: { blocks: outputData.blocks } }));
+            if (editorRef.current && editorRef.current.save) {
+                const outputData = await editorRef.current.save();
+                console.log("Данные из EditorJS:", outputData);
+        
+                const key = getStorageKey();
+                await saveToIndexedDB(outputData, key, blog.id);
+                setBlog(prevBlog => ({ ...prevBlog, content: { blocks: outputData.blocks } }));
+            }
         } catch (error) {
             console.error('Ошибка при сохранении данных:', error);
         }
     };
 
-    const isReady = useRef(false);
-
-    useEffect(() => {
-        if (!isReady.current) {
-            editorRef.current = new EditorJS({
-                holderId: "textEditor",
-                data: Array.isArray(content) ? content[0] : content,
-                tools: tools,
-                placeholder: "Не бойся начать с чистого листа...",
-                onChange: async () => {
-                    await saveData();
-                    localStorage.setItem('draftBlog', JSON.stringify(blog));
-                }
-            });
-            isReady.current = true;
-        }
-    }, []); // Только один раз при монтировании
-
-    useEffect(() => {
-        const savedBlog = localStorage.getItem('draftBlog');
-        if (savedBlog && !blog.id) {
-            setShowLoadModal(true); // Show the modal if saved data exists
-        }
-    }, []); // Only run once when mounted
-
-    // Handle modal confirmation
-    const handleConfirmLoad = () => {
-        const savedBlog = localStorage.getItem('draftBlog');
-        if (savedBlog) {
-            const parsedBlog = JSON.parse(savedBlog);
-            console.log("parsed blog", parsedBlog);
-            setBlog(parsedBlog); // Restore the saved blog data
-        }
-        setShowLoadModal(false); // Close the modal after confirming
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func(...args), delay);
+        };
     };
 
-    const handleCancelLoad = () => {
-        setShowLoadModal(false); // Close the modal without restoring
+    const handleInitialDraftChoice = async (key) => {
+        if (key === undefined) {
+            onClose();
+            return;
+        }
+        let initialBlog = null;
+        if (key) {
+            initialBlog = await loadFromIndexedDB(key);
+        }
+        await initializeEditor({ ...blogStructure, content: initialBlog || { blocks: [] } });
+        setShowInitialDraftModal(false);
+    };
+
+    const handleLoadDraft = async (key) => {
+        const blogData = await loadFromIndexedDB(key);
+        if (blogData) {
+            const contentData = blogData.blocks ? blogData : { blocks: [] };
+            if (editorRef.current && editorRef.current.render) {
+                await editorRef.current.render(contentData);
+                setBlog(prevBlog => ({
+                    ...prevBlog,
+                    content: contentData
+                }));
+                toast.success(`Загружен блог ${key}`);
+            }
+        }
+        setShowIndexedDBViewer(false);
     };
 
     useEffect(() => {
-        console.log('Состояние blog обновлено:', blog);
-        localStorage.setItem('draftBlog', JSON.stringify(blog));
-        console.log("в localhost: ", localStorage.getItem('draftBlog'));
-    }, [blog]); // Сработает, когда blog изменится
+        console.log('useEffect triggered, blog:', blog);
+        const pathname = window.location.pathname;
+        const pathParts = pathname.split('/').filter(part => part);
+        const hasBlogIdInUrl = pathParts.length > 1 && pathParts[0] === 'editor' && pathParts[1];
+
+        if (hasBlogIdInUrl) {
+            const blogIdFromUrl = pathParts[1];
+            if (blog?.id === blogIdFromUrl && blog?.content) {
+                initializeEditor(blog);
+            } else if (!isReady.current) {
+                initializeEditor({ ...blogStructure, id: blogIdFromUrl });
+            }
+        } else if (!isReady.current) {
+            setShowInitialDraftModal(true);
+        }
+    }, [blog]); // Зависимость от blog
 
     return (
         <div>
-            {/* Confirmation Modal */}
-            {showLoadModal && (
+            {showClearConfirm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-1/3">
-                        <h3 className="text-xl font-semibold mb-4">Вы хотите загрузить сохраненный блог?</h3>
+                        <h3 className="text-xl font-semibold mb-4">Очистить редактор?</h3>
+                        <p className="mb-4">Все данные в редакторе будут удалены. Это действие нельзя отменить.</p>
                         <div className="flex justify-around">
                             <button
-                                onClick={handleConfirmLoad}
-                                className="bg-blue-500 text-white py-2 px-4 rounded"
-                            >
-                                Да
-                            </button>
-                            <button
-                                onClick={handleCancelLoad}
+                                onClick={clearEditor}
                                 className="bg-red-500 text-white py-2 px-4 rounded"
                             >
-                                Нет
+                                Да, очистить
+                            </button>
+                            <button
+                                onClick={() => setShowClearConfirm(false)}
+                                className="bg-gray-500 text-white py-2 px-4 rounded"
+                            >
+                                Отмена
                             </button>
                         </div>
                     </div>
                 </div>
             )}
-            {/* Панель инструментов */}
-            <div className="toolbar flex py-1 px-5 max-lg:hidden">
-                <button
-                onClick={togglePanel}
-                className="text-2xl p-2"
-                style={{
-                    position: 'absolute',
-                    left: isPanelVisible ? '80px' : '-10px',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    zIndex: 10,
-                }}
-                >
-                    {isPanelVisible ? <i className="fi fi-sr-left text-purple"></i> : <i className="fi fi-sr-right text-purple"></i>}
-                </button>
-                <div style={{
-                    transition: 'transform 0.3s ease',
-                    transform: isPanelVisible ? 'translateX(0)' : 'translateX(-150%)',
-                }}>
-                    <div className='flex flex-col gap-2'>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('header')}
-                                tooltipText="Заголовок" tooltipPosition="right">
-                                <i className="fi fi-rr-square-h"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('list')}
-                                tooltipText="Список" tooltipPosition="right">
-                                <i className="fi fi-rr-rectangle-list"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('quote')}
-                                tooltipText="Цитата" tooltipPosition="right">
-                                <i className="fi fi-rr-comment-quote"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('image')}
-                                tooltipText="Изображение" tooltipPosition="right">
-                                <i className="fi fi-rr-comment-image"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('warning')}
-                                tooltipText="Важно" tooltipPosition="right">
-                                <i className="fi fi-rr-exclamation"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('code')}
-                            tooltipText="Код" tooltipPosition="right">
-                            <i className="fi fi-rr-terminal"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('delimiter')}
-                                tooltipText="Разделитель" tooltipPosition="right">
-                                <i className="fi fi-rr-grid-dividers"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('table')}
-                                tooltipText="Таблица" tooltipPosition="right">
-                                <i className="fi fi-rr-table-list"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('checklist')}
-                                tooltipText="Чеклист" tooltipPosition="right">
-                                <i className="fi fi-rr-list-check"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => setIsPaintOpen(true)}
-                                tooltipText="Рисунок" tooltipPosition="right">
-                                <i className="fi fi-rr-pencil"></i>
-                        </Tooltip>
-                    </div>
-                </div>
-            </div>
-            {/* Контейнер редактора */}
-            <div id="textEditor" className={"editor-container" + (currentTheme == "dark" ? "-dark" : "")}></div>
 
-            {/* Окно для рисования */}
+            {showInitialDraftModal && (
+                <IndexedDBViewer 
+                    onLoad={handleInitialDraftChoice} 
+                    onClose={handleInitialDraftChoice} 
+                    isInitialLoad={true} 
+                />
+            )}
+
+            {showIndexedDBViewer && (
+                <IndexedDBViewer 
+                    onLoad={handleLoadDraft} 
+                    onClose={() => setShowIndexedDBViewer(false)} 
+                    isInitialLoad={false}
+                />
+            )}
+
+            <Toolbar 
+                editorRef={editorRef} 
+                setIsPaintOpen={setIsPaintOpen} 
+                setShowIndexedDBViewer={setShowIndexedDBViewer} 
+                setShowClearConfirm={setShowClearConfirm} 
+            />
+
+            <div id="textEditor" className={"editor-container" + (currentTheme == "dark" ? "-dark" : "")}></div>
             {isPaintOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <DoodleThing onSave={handleSaveImage} onClose={() => setIsPaintOpen(false)} />
