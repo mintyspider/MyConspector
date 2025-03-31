@@ -134,7 +134,7 @@ const PublishForm = () => {
 
   return (
     <AnimationWrapper>
-      <section className='w-screen max-h-screen grid items-center lg:grid-cols-2 py-16 lg:gap-4'>       
+      <section className='w-screen h-screen grid items-center py-16 lg:gap-4'>       
         <button 
           className='w-12 h-12 absolute right-[5vh] z-10 top-[5%] lg:top-[10%]'
           onClick={handleClose}
@@ -142,15 +142,8 @@ const PublishForm = () => {
           <i className='fi fi-rr-cross'></i>
         </button>
 
-        <div className='max-w-[550px] center'>
-          <p className="text-dark-grey mb-1">Предпросмотр</p>
-
-          <h1 className='text-4xl font-medium mt-2 leading-tight line-clamp-2'>{title}</h1>
-
-          <p className='font-gelasio line-clamp-2 text-xl leading-7 mt-4'>{ des }</p>
-        </div>
-
         <div className='border-grey lg:border-1 lg:pl-8'>
+          <h1 className='text-4xl font-medium mt-2 leading-tight line-clamp-2'>Последние шаги ᓚᘏᗢ</h1>
           <p className='text-dark-grey mb-2 mt-9'>Заголовок конспекта</p>
           <input type="text" placeholder='Заголовок' defaultValue={title} className='input-box pl-4' onChange={handleTitleChange}/>
 
