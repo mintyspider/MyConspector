@@ -15,7 +15,7 @@ const Toolbar = ({ editorRef, setIsPaintOpen, setShowIndexedDBViewer, setShowCle
                 onClick={toggleToolbar}
                 style={{ 
                     position: 'absolute', 
-                    left: isVisible ? '50px' : '-10px', 
+                    left: isVisible ? '80px' : '10px', 
                     cursor: 'pointer', 
                     padding: '4px' 
                 }}
@@ -23,13 +23,9 @@ const Toolbar = ({ editorRef, setIsPaintOpen, setShowIndexedDBViewer, setShowCle
                 <i className={`fi fi-sr-${isVisible ? 'left' : 'right'} text-purple text-lg`}></i>
             </div>
             {isVisible && (
-                <div 
-                    style={{ 
-                        backgroundColor: '#f5f5f5',
-                        padding: '5px',
-                        borderRadius: '4px',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                        width: '40px'
+                <div
+                    style={{
+                        width: '60px',
                     }}
                 >
                     <div className="flex flex-col gap-1">
