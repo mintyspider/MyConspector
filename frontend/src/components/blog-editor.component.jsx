@@ -149,7 +149,7 @@ const BlogEditor = () => {
 
             <AnimationWrapper>
                 <section className='w-full mt-5'>
-                        <ContentEditor onClose={() => navigate("/dashboard/blogs")} value={blog.content}/>
+                    <ContentEditor onClose={() => navigate("/dashboard/blogs")} value={blog.content}/>
                 </section>
             </AnimationWrapper>
         </>

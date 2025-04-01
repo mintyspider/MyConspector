@@ -180,13 +180,26 @@ const ContentEditor = ({ onClose, value }) => {
             return;
         }
 
-        const initialData = initialBlog && initialBlog.content && initialBlog.content.blocks 
-            ? initialBlog.content 
-            : (value && value.blocks ? value : { blocks: [] });
+        console.log("here's blog: => ", blog);
+
+        const pathname = window.location.pathname;
+        const pathParts = pathname.split('/').filter(part => part);
+        const hasBlogIdInUrl = pathParts.length > 1 && pathParts[0] === 'editor' && pathParts[1];
+        let initialData = {blocks: []};
+
+        console.log("initialBlog =>", initialBlog);
+
+        if (hasBlogIdInUrl) {
+            initialBlog = blog;
+            initialData = blog.content[0] ? blog.content[0] : blog.content;
+        } else if (initialBlog.content) {
+            initialData = initialBlog.content;
+        }
+
+        console.log("initialData =>", initialData);
 
         try {
             if (!editorRef.current) {
-                // Создаём новый экземпляр только если его ещё нет
                 editorRef.current = new EditorJS({
                     holderId: "textEditor",
                     data: initialData,
@@ -197,8 +210,7 @@ const ContentEditor = ({ onClose, value }) => {
                     }, 2000)
                 });
                 isReady.current = true;
-            } else if (initialBlog && initialBlog.content) {
-                // Если редактор уже существует, просто рендерим новые данные
+            } else if (initialData) {
                 await editorRef.current.render(initialData);
             }
 
@@ -243,7 +255,8 @@ const ContentEditor = ({ onClose, value }) => {
         if (key) {
             initialBlog = await loadFromIndexedDB(key);
         }
-        await initializeEditor({ ...blogStructure, content: initialBlog || { blocks: [] } });
+        await initializeEditor({ ...blogStructure, content: initialBlog});
+        setBlog({...blogStructure, content: initialBlog});
         setShowInitialDraftModal(false);
     };
 
@@ -272,6 +285,7 @@ const ContentEditor = ({ onClose, value }) => {
         if (hasBlogIdInUrl) {
             const blogIdFromUrl = pathParts[1];
             if (blog?.id === blogIdFromUrl && blog?.content) {
+                // Передаем весь объект blog, если id совпадает
                 initializeEditor(blog);
             } else if (!isReady.current) {
                 initializeEditor({ ...blogStructure, id: blogIdFromUrl });
@@ -279,7 +293,7 @@ const ContentEditor = ({ onClose, value }) => {
         } else if (!isReady.current) {
             setShowInitialDraftModal(true);
         }
-    }, [blog]); // Зависимость от blog
+    }, [blog]);
 
     return (
         <div>
