@@ -1,80 +1,204 @@
 import React, { useState } from 'react';
-import Tooltip from './tooltip.component';
 
 const Toolbar = ({ editorRef, setIsPaintOpen, setShowIndexedDBViewer, setShowClearConfirm }) => {
-    const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-    const toggleToolbar = () => {
-        setIsVisible(!isVisible);
-    };
+  const toggleToolbar = () => {
+    setIsVisible((prev) => {
+      console.log('Toolbar visibility toggled to:', !prev);
+      return !prev;
+    });
+  };
 
-    return (
-        <div className="toolbar flex py-1 px-2 max-lg:hidden">
-            <div 
-                className="toggle-btn" 
-                onClick={toggleToolbar}
-                style={{ 
-                    position: 'absolute', 
-                    left: isVisible ? '80px' : '10px', 
-                    cursor: 'pointer', 
-                    padding: '4px' 
-                }}
+  const toggleExpand = () => {
+    setIsExpanded((prev) => {
+      console.log('Toolbar expanded toggled to:', !prev);
+      return !prev;
+    });
+  };
+
+  // Проверка editorRef перед использованием
+  const insertBlock = (type) => {
+    if (editorRef.current && editorRef.current.blocks) {
+      console.log(`Inserting block: ${type}`);
+      editorRef.current.blocks.insert(type);
+    } else {
+      console.error('EditorJS not initialized or blocks unavailable');
+    }
+  };
+
+  return (
+    <>
+      <div
+        className="fixed top-[80px] left-1/2 transform -translate-x-1/2 z-50 transition-opacity duration-300"
+        style={{ opacity: isVisible ? 0 : 1, visibility: isVisible ? 'hidden' : 'visible' }}
+      >
+        <button
+          onClick={toggleToolbar}
+          className="flex items-center justify-center px-4 py-1 bg-gray-200 text-gray-900 rounded-full shadow-md hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition-colors"
+        >
+          <span className="text-sm">Показать</span>
+          <i className="fi fi-sr-angle-down ml-2 text-base"></i>
+        </button>
+      </div>
+
+      <div
+        className="fixed top-[80px] left-0 w-full bg-white dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700 z-20 transition-all duration-300"
+        style={{
+          opacity: isVisible ? 1 : 0,
+          visibility: isVisible ? 'visible' : 'hidden',
+          height: isExpanded ? '80px' : '50px',
+        }}
+      >
+        <div className="flex justify-center items-center gap-4 p-2 max-w-5xl mx-auto">
+          <div className="flex flex-col items-center">
+            <button
+              onClick={toggleToolbar}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
             >
-                <i className={`fi fi-sr-${isVisible ? 'left' : 'right'} text-purple text-lg`}></i>
-            </div>
-            {isVisible && (
-                <div
-                    style={{
-                        width: '60px',
-                    }}
-                >
-                    <div className="flex flex-col gap-1">
-                        {/* Форматирование */}
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('header')} tooltipText="Заголовок" tooltipPosition="right">
-                            <i className="fi fi-rr-square-h text-lg"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('list')} tooltipText="Список" tooltipPosition="right">
-                            <i className="fi fi-rr-rectangle-list text-lg"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('checklist')} tooltipText="Чеклист" tooltipPosition="right">
-                            <i className="fi fi-rr-list-check text-lg"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('quote')} tooltipText="Цитата" tooltipPosition="right">
-                            <i className="fi fi-rr-comment-quote text-lg"></i>
-                        </Tooltip>
+              <i className="fi fi-rr-angle-up text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Скрыть</span>}
+          </div>
 
-                        {/* Вставка */}
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('image')} tooltipText="Изображение" tooltipPosition="right">
-                            <i className="fi fi-rr-comment-image text-lg"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => setIsPaintOpen(true)} tooltipText="Рисунок" tooltipPosition="right">
-                            <i className="fi fi-rr-pencil text-lg"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('code')} tooltipText="Код" tooltipPosition="right">
-                            <i className="fi fi-rr-terminal text-lg"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('table')} tooltipText="Таблица" tooltipPosition="right">
-                            <i className="fi fi-rr-table-list text-lg"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('delimiter')} tooltipText="Разделитель" tooltipPosition="right">
-                            <i className="fi fi-rr-grid-dividers text-lg"></i>
-                        </Tooltip>
-
-                        {/* Управление */}
-                        <Tooltip onClick={() => editorRef.current.blocks.insert('warning')} tooltipText="Важно" tooltipPosition="right">
-                            <i className="fi fi-rr-exclamation text-lg"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => setShowIndexedDBViewer(true)} tooltipText="Черновики" tooltipPosition="right">
-                            <i className="fi fi-rr-folder-open text-lg"></i>
-                        </Tooltip>
-                        <Tooltip onClick={() => setShowClearConfirm(true)} tooltipText="Очистить редактор" tooltipPosition="right">
-                            <i className="fi fi-rr-trash text-lg"></i>
-                        </Tooltip>
-                    </div>
-                </div>
+          <div className="flex flex-col items-center">
+            <button
+              onClick={toggleExpand}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className={`fi fi-rr-angle-${isExpanded ? 'up' : 'down'} text-lg`}></i>
+            </button>
+            {isExpanded && (
+              <span className="text-xs text-gray-700 dark:text-gray-300">
+                {isExpanded ? 'Свернуть' : 'Развернуть'}
+              </span>
             )}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => insertBlock('header')}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-square-h text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Заголовок</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => insertBlock('list')}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-rectangle-list text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Список</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => insertBlock('checklist')}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-list-check text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Чеклист</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => insertBlock('quote')}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-comment-quote text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Цитата</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => insertBlock('image')}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-comment-image text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Изображение</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => setIsPaintOpen(true)}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-pencil text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Рисунок</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => insertBlock('code')}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-terminal text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Код</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => insertBlock('table')}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-table-list text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Таблица</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => insertBlock('delimiter')}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-grid-dividers text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Разделитель</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => insertBlock('warning')}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-exclamation text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Важно</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => setShowIndexedDBViewer(true)}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-folder-open text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Записи</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => setShowClearConfirm(true)}
+              className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
+            >
+              <i className="fi fi-rr-trash text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Очистить</span>}
+          </div>
         </div>
-    );
+      </div>
+    </>
+  );
 };
 
 export default Toolbar;

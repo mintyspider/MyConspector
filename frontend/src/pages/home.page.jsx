@@ -10,6 +10,7 @@ import NoDataMessage from '../components/nodata.component'
 import { filterPaginationData } from '../common/filter-pagination-data'
 import LoadMoreDataBtn from '../components/load-more.component'
 import mascot from '../imgs/mascot.png'
+import ScrollButton from '../components/scroll-button.component'
 
 const HomePage = () => {
 
@@ -114,13 +115,7 @@ const HomePage = () => {
               </div>
           </div>
           </div>
-          <button 
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="max-lg:hidden fixed bottom-0 left-0 w-[4%] h-screen hover:bg-grey text-dark-grey text-xl justify-center items-center"
-        title="Наверх"
-      >
-        <i className='fi fi-rr-angle-small-up fixed top-[100px] left-6'></i>
-      </button>
+          <ScrollButton />
         </section>
     </AnimationWrapper>
   )

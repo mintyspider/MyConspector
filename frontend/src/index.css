@@ -259,12 +259,9 @@
 
 }
 
-.ce-block__content, .ce-toolbar__content{
-    max-width: 900px;
-}
-
 [data-theme="dark"] .w-full {
     background-color: black;
+    color: white;
 }
 [data-theme="dark"] .toolbar{
     background-color: black;

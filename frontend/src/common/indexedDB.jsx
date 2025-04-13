@@ -47,11 +47,11 @@ const deleteFromIndexedDB = async (key) => {
             const request = store.delete(key);
 
             request.onsuccess = () => {
-                toast.success(`Черновик ${key} удалён`);
+                toast.success(`Запись ${key} удалена`);
                 resolve();
             };
             request.onerror = () => {
-                toast.error("Ошибка при удалении черновика");
+                toast.error("Ошибка при удалении записи");
                 reject(request.error);
             };
         }).catch(error => {
@@ -71,7 +71,7 @@ const IndexedDBViewer = ({ onLoad, onClose, isInitialLoad = false }) => {
                 setDrafts(sortedDrafts);
             } catch (error) {
                 console.error("Ошибка при загрузке черновиков:", error);
-                toast.error("Не удалось загрузить черновики");
+                toast.error("Не удалось загрузить записи");
             }
         };
         fetchDrafts();
@@ -92,10 +92,10 @@ const IndexedDBViewer = ({ onLoad, onClose, isInitialLoad = false }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-md w-1/2 max-h-[80vh] overflow-y-auto">
                 <h3 className="text-xl font-semibold mb-4">
-                    {isInitialLoad ? "Выберите блог для восстановления" : "Ваши сохранённые блоги"}
+                    {isInitialLoad ? "Выберите запись для восстановления" : "Ваши сохранённые записи"}
                 </h3>
                 {drafts.length === 0 ? (
-                    <p>Сохранённых блогов не найдено</p>
+                    <p>Сохранённых записей не найдено</p>
                 ) : (
                     <ul className="space-y-4">
                         {drafts.map(draft => (
@@ -108,20 +108,20 @@ const IndexedDBViewer = ({ onLoad, onClose, isInitialLoad = false }) => {
                                                 ? `Блог ${draft.blogId} от ${new Date(draft.timestamp).toLocaleString()}`
                                                 : `Новый черновик от ${new Date(draft.timestamp).toLocaleString()}`}
                                     </span>
-                                    <p className="text-sm text-gray-500">
+                                    <p className="text-sm text-dark-grey">
                                         Размер: {draft.data ? JSON.stringify(draft.data).length : 0} байт
                                     </p>
                                 </div>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => onLoad(draft.id)}
-                                        className="bg-blue-500 text-white py-1 px-2 rounded"
+                                        className="bg-purple/50 text-white py-1 px-2 rounded"
                                     >
                                         Восстановить
                                     </button>
                                     <button
                                         onClick={() => handleDeleteDraft(draft.id)}
-                                        className="bg-red-500 text-white py-1 px-2 rounded"
+                                        className="bg-orange/50 text-white py-1 px-2 rounded"
                                     >
                                         Удалить
                                     </button>
@@ -134,16 +134,16 @@ const IndexedDBViewer = ({ onLoad, onClose, isInitialLoad = false }) => {
                     {isInitialLoad && (
                         <button
                             onClick={() => onClose(null)} // null для "Начать с чистого листа"
-                            className="bg-green-500 text-white py-2 px-4 rounded"
+                            className="bg-purple text-white py-2 px-4 rounded"
                         >
                             Начать с чистого листа
                         </button>
                     )}
                     <button
                         onClick={() => onClose()}
-                        className="bg-gray-500 text-white py-2 px-4 rounded"
+                        className="bg-dark-grey/50 text-white py-2 px-4 rounded"
                     >
-                        {isInitialLoad ? "Отмена" : "Закрыть"}
+                        {isInitialLoad ? "Выйти" : "Отмена"}
                     </button>
                 </div>
             </div>
