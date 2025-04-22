@@ -8,6 +8,7 @@ import BlogInteraction from "../components/blog-interaction.component";
 import BlogPostCard from "../components/blog-post.component";
 import BlogContent from "../components/blog-content.component";
 import CommentsContainer, { fetchComments } from "../components/comments.component";
+import ScrollButton from "../components/scroll-button.component";
 
 export const blogStructure = {
   title: "",
@@ -108,13 +109,7 @@ useEffect(() => {
 
   return (
     <AnimationWrapper>
-      <button 
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="max-lg:hidden fixed bottom-0 left-0 w-[4%] h-screen hover:bg-grey text-dark-grey text-xl justify-center items-center"
-        title="Наверх"
-      >
-        <i className='fi fi-rr-angle-small-up fixed top-[100px] left-6'></i>
-      </button>
+      <ScrollButton/>
       {loading ? (
         <Loader />
       ) : (

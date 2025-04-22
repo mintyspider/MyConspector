@@ -5,7 +5,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import admin from 'firebase-admin';
-import { getAuth } from 'firebase-admin/auth';
 import { nanoid } from 'nanoid';
 
 import fs from 'fs';
@@ -16,7 +15,6 @@ import User from './Schema/User.js';
 import Blog from './Schema/Blog.js';
 import Notification from './Schema/Notification.js';
 import Comment from './Schema/Comment.js';
-import { error } from 'console';
 
 
 const server = express();
@@ -34,6 +32,122 @@ const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
 mongoose.connect(process.env.DB_LOCATION, {
   autoIndex: true,
 });
+
+async function syncAllData() {
+  try {
+    console.log('Starting full data synchronization...');
+
+    // Получаем всех пользователей
+    const users = await User.find().select(
+      '_id personal_info.username account_info.total_posts account_info.total_reads blogs'
+    );
+
+    for (const user of users) {
+      const userId = user._id;
+      const username = user.personal_info.username;
+
+      // 1. Синхронизация total_posts
+      const publishedBlogsCount = await Blog.countDocuments({
+        author: userId,
+        draft: false,
+      });
+      if (user.account_info.total_posts !== publishedBlogsCount) {
+        console.log(
+          `Updating total_posts for user ${username}: ${user.account_info.total_posts} -> ${publishedBlogsCount}`
+        );
+        await User.updateOne(
+          { _id: userId },
+          { 'account_info.total_posts': publishedBlogsCount }
+        );
+      } else {
+        console.log(`total_posts for user ${username} is up-to-date: ${publishedBlogsCount}`);
+      }
+
+      // 2. Синхронизация массива blogs
+      const userBlogs = await Blog.find({ author: userId }).select('_id draft');
+      const userBlogIds = userBlogs.map(blog => blog._id.toString());
+      const storedBlogIds = user.blogs.map(id => id.toString());
+
+      // Проверяем, есть ли "осиротевшие" ссылки в blogs
+      const orphanedBlogs = storedBlogIds.filter(id => !userBlogIds.includes(id));
+      if (orphanedBlogs.length > 0) {
+        console.log(`Removing orphaned blog IDs for user ${username}: ${orphanedBlogs}`);
+        await User.updateOne(
+          { _id: userId },
+          { $pull: { blogs: { $in: orphanedBlogs } } }
+        );
+      }
+
+      // Проверяем, все ли существующие блоги добавлены в blogs
+      const missingBlogs = userBlogIds.filter(id => !storedBlogIds.includes(id));
+      if (missingBlogs.length > 0) {
+        console.log(`Adding missing blog IDs for user ${username}: ${missingBlogs}`);
+        await User.updateOne(
+          { _id: userId },
+          { $addToSet: { blogs: { $each: missingBlogs } } }
+        );
+      }
+
+      if (orphanedBlogs.length === 0 && missingBlogs.length === 0) {
+        console.log(`blogs array for user ${username} is up-to-date`);
+      }
+
+      // 3. Синхронизация total_reads
+      const totalReads = await Blog.aggregate([
+        { $match: { author: userId } },
+        { $group: { _id: null, totalReads: { $sum: '$activity.total_reads' } } },
+      ]);
+      const calculatedTotalReads = totalReads.length > 0 ? totalReads[0].totalReads : 0;
+      if (user.account_info.total_reads !== calculatedTotalReads) {
+        console.log(
+          `Updating total_reads for user ${username}: ${user.account_info.total_reads} -> ${calculatedTotalReads}`
+        );
+        await User.updateOne(
+          { _id: userId },
+          { 'account_info.total_reads': calculatedTotalReads }
+        );
+      } else {
+        console.log(`total_reads for user ${username} is up-to-date: ${calculatedTotalReads}`);
+      }
+
+      // 4. Проверка уведомлений (опционально)
+      const notifications = await Notification.find({ notification_for: userId });
+      const invalidNotifications = await Promise.all(
+        notifications.map(async (notif) => {
+          if (notif.blog) {
+            const blogExists = await Blog.exists({ _id: notif.blog });
+            if (!blogExists) return notif._id;
+          }
+          if (notif.comment) {
+            const commentExists = await Comment.exists({ _id: notif.comment });
+            if (!commentExists) return notif._id;
+          }
+          return null;
+        })
+      );
+      const invalidNotifIds = invalidNotifications.filter(id => id != null);
+      if (invalidNotifIds.length > 0) {
+        console.log(`Removing invalid notifications for user ${username}: ${invalidNotifIds}`);
+        await Notification.deleteMany({ _id: { $in: invalidNotifIds } });
+      }
+    }
+
+    // 5. Проверка "осиротевших" блогов (без автора)
+    const orphanedBlogs = await Blog.find({ author: { $exists: false } });
+    if (orphanedBlogs.length > 0) {
+      console.log(`Found orphaned blogs: ${orphanedBlogs.map(b => b.blog_id)}`);
+      await Blog.deleteMany({ _id: { $in: orphanedBlogs.map(b => b._id) } });
+      console.log(`Deleted ${orphanedBlogs.length} orphaned blogs`);
+    }
+
+    console.log('Full data synchronization completed successfully!');
+  } catch (err) {
+    console.error('Synchronization error:', err);
+    throw err;
+  }
+}
+
+syncAllData();
 
 //verifying user to publish posts 
 const verifyJWT = (req, res, next) => {

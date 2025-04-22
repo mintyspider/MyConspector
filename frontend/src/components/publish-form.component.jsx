@@ -8,171 +8,185 @@ import { UserContext } from '../App';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const PublishForm = () => {
-  const { setEditorState, setBlog, blog, blog:{ title, tags, des, content } } = useContext(EditorContext);
-
-  let { userAuth: {accessToken} } = useContext(UserContext);
-  let {blog_id} = useParams();
+  const { setEditorState, setBlog, blog, blog: { title, tags, des, content } } = useContext(EditorContext);
+  let { userAuth: { accessToken } } = useContext(UserContext);
+  let { blog_id } = useParams();
 
   useEffect(() => {
     console.log('Состояние blog обновлено:', blog);
-  }, [blog]); // Сработает, когда blog изменится
+  }, [blog]);
 
   let navigate = useNavigate();
 
   let characterLimit = 200;
   let tagLimit = 10;
-  
+
   const handleClose = () => {
     console.log("Current blog data:", blog);
-
     setEditorState("editor");
     console.log("Updated blog data sent back to editor:", blog);
   };
 
   const handleTitleChange = (e) => {
     let input = e.target;
-    setBlog({...blog, title: input.value})
-  }
+    setBlog({ ...blog, title: input.value });
+    console.log('Title updated:', input.value);
+  };
 
   const handleDesChange = (e) => {
     let input = e.target;
-    setBlog({...blog, des: input.value})
-  }
+    setBlog({ ...blog, des: input.value });
+    console.log('Description updated:', input.value);
+  };
 
   const handleKeyDown = (e) => {
     if (e.keyCode === 13) {
-        e.preventDefault();
+      e.preventDefault();
     }
-  }
+  };
 
   const handleTopic = (e) => {
-    if(e.keyCode == 13){
+    if (e.keyCode === 13) {
       e.preventDefault();
       let tag = e.target.value.toLowerCase();
-      if(tags.length < tagLimit){
-        if(!tags.includes(tag) && tag.length){
-          setBlog({...blog, tags : [...tags, tag ]})
+      if (tags.length < tagLimit) {
+        if (!tags.includes(tag) && tag.length) {
+          setBlog({ ...blog, tags: [...tags, tag] });
+          console.log('Tag added:', tag);
         }
-      } else{
-        toast.error(`Максимальное количество меток: ${tagLimit}`)
+      } else {
+        toast.error(`Максимальное количество меток: ${tagLimit}`);
       }
       e.target.value = "";
     }
-  }
+  };
 
   const publishBlog = (e) => {
-
-    // Блокируем кнопку, если она уже нажата
-    if (e.target.classList.contains('disable')){
+    if (e.target.classList.contains('disable')) {
       e.target.classList.add('bg-dark-grey');
       return;
     }
 
-    // Проверка заголовка
-    if(!title.length){
+    if (!title.length) {
       return toast.error("Озаглавьте конспект");
     }
 
-    // Проверка описания
-    if(!des.length || des.length > characterLimit){
-      return toast.error(`Добавьте описение конспекту (допустимый объем символов - ${characterLimit})`);
+    if (!des.length || des.length > characterLimit) {
+      return toast.error(`Добавьте описание конспекту (допустимый объем символов - ${characterLimit})`);
     }
 
-    // Проверка меток (тегов)
-    if(!tags.length || tags.length > tagLimit){
+    if (!tags.length || tags.length > tagLimit) {
       return toast.error(`Добавьте хотя бы одну метку конспекту (не более ${tagLimit})`);
     }
 
     let loadingToast = toast.loading("Публикация...");
-
-    // Блокируем кнопку
     e.target.classList.add('disable');
 
-    let blogObj = { 
+    let blogObj = {
       title,
-      des, 
-      content: { blocks: content.blocks }, // Оборачиваем в объект с ключом `blocks`
-      tags, 
-      draft: false 
+      des,
+      content: { blocks: content.blocks },
+      tags,
+      draft: false,
     };
-    
 
-    // Отправляем запрос на сервер
-    axios.post(import.meta.env.VITE_SERVER_DOMAIN + '/createblog', {...blogObj, id: blog_id}, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    }).then(() => {
-      // Разблокируем кнопку
-      e.target.classList.remove('disable');
-      e.target.classList.remove('bg-dark-grey');
+    console.log('Publishing blog:', blogObj);
 
-      toast.dismiss(loadingToast);
-      toast.success("Публикация завершена");
-
-      // Перенаправление через 500 мс
-      setTimeout(() => {
-        navigate("/dashboard/blogs");
-      }, 500);
-    }).catch(({ response }) => {
-      // Разблокируем кнопку при ошибке
-      e.target.classList.remove('disable');
-      e.target.classList.remove('bg-dark-grey');
-
-      toast.dismiss(loadingToast);
-
-      // Выводим ошибку сервера, если она есть
-      if (response && response.data && response.data.error) {
-        console.log(response.data.error);
-        return toast.error(response.data.error);
-      }
-
-      return toast.error("Произошла ошибка при публикации");
-    });
-};
-
+    axios
+      .post(
+        import.meta.env.VITE_SERVER_DOMAIN + '/createblog',
+        { ...blogObj, id: blog_id },
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then(() => {
+        e.target.classList.remove('disable');
+        e.target.classList.remove('bg-dark-grey');
+        toast.dismiss(loadingToast);
+        toast.success("Публикация завершена");
+        setTimeout(() => {
+          navigate("/dashboard/blogs");
+        }, 500);
+      })
+      .catch(({ response }) => {
+        e.target.classList.remove('disable');
+        e.target.classList.remove('bg-dark-grey');
+        toast.dismiss(loadingToast);
+        if (response && response.data && response.data.error) {
+          console.log('Publish error:', response.data.error);
+          return toast.error(response.data.error);
+        }
+        return toast.error("Произошла ошибка при публикации");
+      });
+  };
 
   return (
     <AnimationWrapper>
-      <section className='w-screen h-screen grid items-center py-16 lg:gap-4'>       
-        <button 
-          className='w-12 h-12 absolute right-[5vh] z-10 top-[5%] lg:top-[10%]'
+      <section className='w-full fixed top-0 left-0 h-screen flex items-start justify-center bg-white z-50 overflow-y-auto'>
+        <button
+          className='w-12 h-12 absolute right-4 top-4 z-10'
           onClick={handleClose}
         >
           <i className='fi fi-rr-cross'></i>
         </button>
 
-        <div className='border-grey lg:border-1 lg:pl-8'>
-          <h1 className='text-4xl font-medium mt-2 leading-tight line-clamp-2'>Последние шаги ᓚᘏᗢ</h1>
-          <p className='text-dark-grey mb-2 mt-9'>Заголовок конспекта</p>
-          <input type="text" placeholder='Заголовок' defaultValue={title} className='input-box pl-4' onChange={handleTitleChange}/>
-
-          <p className='text-dark-grey mb-2 mt-9'>Описание конспекта</p>
-          <textarea defaultValue={des} maxLength={characterLimit} placeholder='Описание' className='h-40 resize-none leading-7 input-box pl-4' onChange={handleDesChange} onKeyDown={handleKeyDown}></textarea>
-
-          <p className='mt-1 text-dark-grey text-sm text-right'>{ characterLimit - des.length } / { characterLimit } </p>
-
-          <p className='text-dark-grey mb-2 mt-9'>Метки. Для добавления нажмите Enter ^_^</p>
-
-          <div className='input-box pl-2 py-2 pb-4'>
-            <input type="text" placeholder='Метка' className='sticky font-normal text-dark-grey input-box bg-white top-0 left-0 pl-4 mb-5 focus:bg-white' 
-            onKeyDown={handleTopic}/>
-            
-            {
-              tags.map((tag, i) => {
-                return <Tags tag={tag} key={i} />
-              })
-            }
-
-          </div>
+        <div className='w-full lg:p-6 bg-white rounded-lg mt-4'>
+          <h1 className='text-3xl font-medium mb-6 leading-tight'>Последние шаги ᓚᘏᗢ</h1>
           
-          <p className='mt-1 text-dark-grey text-sm text-right'>{ tagLimit - tags.length } / { tagLimit } </p>
-        
-            <button className='btn-dark px-8' onClick={publishBlog}>Опубликовать</button>
+          <p className='text-dark-grey mb-2'>Заголовок конспекта</p>
+          <input
+            type="text"
+            placeholder='Заголовок'
+            value={title}
+            className='input-box pl-4 w-full mb-4'
+            onChange={handleTitleChange}
+          />
+
+          <p className='text-dark-grey mb-2'>Описание конспекта</p>
+          <textarea
+            value={des}
+            maxLength={characterLimit}
+            placeholder='Описание'
+            className='h-32 resize-none leading-7 input-box pl-4 w-full mb-4'
+            onChange={handleDesChange}
+            onKeyDown={handleKeyDown}
+          ></textarea>
+
+          <p className='text-dark-grey text-sm text-right mb-4'>
+            {characterLimit - des.length} / {characterLimit}
+          </p>
+
+          <p className='text-dark-grey mb-2'>Метки. Для добавления нажмите Enter ^_^</p>
+          <div className='input-box pl-2 py-2 mb-4'>
+            <input
+              type="text"
+              placeholder='Метка'
+              className='w-full font-normal text-dark-grey input-box bg-white pl-4 mb-3 focus:bg-white'
+              onKeyDown={handleTopic}
+            />
+
+            {tags.map((tag, i) => (
+              <Tags tag={tag} key={i} />
+            ))}
+          </div>
+
+          <p className='text-dark-grey text-sm text-right mb-6'>
+            {tagLimit - tags.length} / {tagLimit}
+          </p>
+
+          <button 
+            className='btn-dark px-8 py-2 rounded-md'
+            onClick={publishBlog}
+          >
+            Опубликовать
+          </button>
         </div>
       </section>
     </AnimationWrapper>
   );
-}
+};
 
 export default PublishForm;

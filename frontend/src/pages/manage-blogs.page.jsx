@@ -7,6 +7,7 @@ import Loader from '../components/loader.component';
 import NoDataMessage from '../components/nodata.component';
 import AnimationWrapper from '../common/page-animation';
 import { ManageBlogCard, ManageDraftCard } from '../components/manage-blogcard.component';
+import ScrollButton from '../components/scroll-button.component';
 
 const ManageBlogs = () => {
     const [blogs, setBlogs] = useState(null);
@@ -71,6 +72,7 @@ const ManageBlogs = () => {
 
     return (
         <>
+            <ScrollButton/>
             <h1 className='max-md:hidden text-2xl lg:text-3xl font-medium text-dark-grey text-center'>Мои конспекты</h1>
             <div className='relative max-md:mt-5 md:mt-8 mb-10'>
                 <input type="search" 

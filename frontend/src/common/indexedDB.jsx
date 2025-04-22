@@ -102,14 +102,14 @@ const IndexedDBViewer = ({ onLoad, onClose, isInitialLoad = false }) => {
                             <li key={draft.id} className="flex justify-between items-center p-2 border-b">
                                 <div>
                                     <span className="font-medium">
-                                        {draft.data && draft.data.title 
+                                        {draft.data?.title
                                             ? `${draft.data.title} от ${new Date(draft.timestamp).toLocaleString()}`
-                                            : draft.blogId 
-                                                ? `Блог ${draft.blogId} от ${new Date(draft.timestamp).toLocaleString()}`
-                                                : `Новый черновик от ${new Date(draft.timestamp).toLocaleString()}`}
+                                            : draft.blogId
+                                              ? `Блог ${draft.blogId} от ${new Date(draft.timestamp).toLocaleString()}`
+                                              : `Новый черновик от ${new Date(draft.timestamp).toLocaleString()}`}
                                     </span>
                                     <p className="text-sm text-dark-grey">
-                                        Размер: {draft.data ? JSON.stringify(draft.data).length : 0} байт
+                                        Размер: {draft.data?.content ? JSON.stringify(draft.data.content).length : 0} байт
                                     </p>
                                 </div>
                                 <div className="flex gap-2">

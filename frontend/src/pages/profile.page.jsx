@@ -13,6 +13,7 @@ import BlogPostCard from '../components/blog-post.component';
 import LoadMoreDataBtn from '../components/load-more.component';
 import NoDataMessage from '../components/nodata.component';
 import NotFound from './404.page';
+import ScrollButton from '../components/scroll-button.component';
 
 export const profileDataStructure = {
   personal_info: {
@@ -128,13 +129,7 @@ const ProfilePage = () => {
 
   return (
     <AnimationWrapper>
-      <button 
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="max-lg:hidden fixed bottom-0 left-0 w-[4%] h-screen hover:bg-grey text-dark-grey text-xl justify-center items-center"
-        title="Наверх"
-      >
-        <i className='fi fi-rr-angle-small-up fixed top-[100px] left-6'></i>
-      </button>
+      <ScrollButton/>
       {
         loading ? <Loader /> : 
         profile_username.length ?

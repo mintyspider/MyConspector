@@ -56,14 +56,6 @@ const BlogInteraction = () => {
             .catch(err => console.error('Ошибка копирования: ', err));
     };
 
-    const handlePrintPDF = () => {
-        if (username) {
-            window.print();
-        } else {
-            showAuthErrorNotification();
-        }
-    };
-
     const showAuthErrorNotification = () => {
         if (!notificationShown) {
             toast.error("Для этого действия необходима авторизация");
@@ -73,7 +65,7 @@ const BlogInteraction = () => {
     };
 
     return (
-        <div className="fixed bottom-0 left-0 w-full z-50 bg-white shadow-lg border-t border-grey">
+        <div className="fixed bottom-0 left-[5%] right-[5%] w-[90%] center z-50 bg-white shadow-lg border-t border-grey">
             <div className="max-w-5xl mx-auto px-4 py-2 flex items-center justify-between">
                 {/* Лайки и комментарии */}
                 <div className="flex gap-6 items-center">
@@ -104,11 +96,6 @@ const BlogInteraction = () => {
                         onClick={handleShareClick}
                         className="text-dark-grey hover:text-purple transition-colors">
                         <i className="fi fi-rr-share text-2xl"></i>
-                    </button>
-                    <button
-                        onClick={handlePrintPDF}
-                        className="text-dark-grey hover:text-purple transition-colors">
-                        <i className="fi fi-rr-print text-2xl"></i>
                     </button>
                 </div>
             </div>

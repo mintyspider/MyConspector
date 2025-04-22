@@ -24,6 +24,44 @@ import IndexedDBViewer from '../common/indexedDB';
 import Toolbar from './toolbar.component';
 import { v4 as uuidv4 } from 'uuid';
 import { blogStructure } from '../pages/blog.page';
+import ScrollButton from './scroll-button.component';
+
+// Кастомные стили для EditorJS
+const editorStyles = `
+  .ce-block__content {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+  .ce-block {
+    margin: 1rem 0;
+  }
+  .ce-header {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: inherit;
+  }
+  .codex-editor__redactor {
+    padding-bottom: 100px !important;
+  }
+  .ce-toolbar__content {
+    max-width: 100%;
+  }
+  .dark .ce-block {
+    color: #ffffff;
+  }
+  .dark .ce-header {
+    color: #ffffff;
+  }
+  @media (max-width: 640px) {
+    .ce-block__content {
+      padding: 0 0.5rem;
+    }
+    .ce-header {
+      font-size: 1.25rem;
+    }
+  }
+`;
+
 // Функции для работы с IndexedDB
 const openDB = () => {
     return new Promise((resolve, reject) => {
@@ -52,7 +90,7 @@ const saveToIndexedDB = async (data, key, blogId) => {
         const draft = {
             id: key,
             blogId: blogId,
-            data: data,
+            data: data, // Полный объект blog
             timestamp: new Date().toISOString(),
         };
         store.put(draft);
@@ -74,7 +112,7 @@ const loadFromIndexedDB = async (key) => {
             request.onsuccess = () => {
                 const result = request.result ? request.result.data : null;
                 console.log(`Загружен блог из IndexedDB с ключом ${key}:`, result);
-                resolve(result);
+                resolve(result); // Полный объект blog
             };
             request.onerror = () => {
                 reject(request.error);
@@ -94,6 +132,46 @@ const ContentEditor = ({ onClose, value }) => {
     const [showIndexedDBViewer, setShowIndexedDBViewer] = useState(false);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [showInitialDraftModal, setShowInitialDraftModal] = useState(false);
+    const [title, setTitle] = useState(blog.title || '');
+    const [des, setDes] = useState(blog.des || '');
+    const [tags, setTags] = useState(blog.tags || []);
+
+    // Обновление заголовка
+    const handleTitleChange = (e) => {
+        const newTitle = e.target.value;
+        setTitle(newTitle);
+        setBlog(prevBlog => ({ ...prevBlog, title: newTitle }));
+    };
+
+    // Обновление описания
+    const handleDesChange = (e) => {
+        const newDes = e.target.value;
+        setDes(newDes);
+        setBlog(prevBlog => ({ ...prevBlog, des: newDes }));
+    };
+
+    // Обновление тегов
+    const handleTagKeyDown = (e) => {
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            const tag = e.target.value.toLowerCase();
+            if (tags.length < 10 && !tags.includes(tag) && tag.length) {
+                const newTags = [...tags, tag];
+                setTags(newTags);
+                setBlog(prevBlog => ({ ...prevBlog, tags: newTags }));
+                e.target.value = '';
+            } else if (tags.length >= 10) {
+                toast.error('Максимальное количество меток: 10');
+            }
+        }
+    };
+
+    // Удаление тега
+    const removeTag = (tagToRemove) => {
+        const newTags = tags.filter(tag => tag !== tagToRemove);
+        setTags(newTags);
+        setBlog(prevBlog => ({ ...prevBlog, tags: newTags }));
+    };
 
     // Кастомный инструмент для DoodleThing
     const DoodleTool = {
@@ -257,7 +335,16 @@ const ContentEditor = ({ onClose, value }) => {
         try {
             if (editorRef.current && editorRef.current.clear) {
                 await editorRef.current.clear();
-                setBlog(prevBlog => ({ ...prevBlog, content: { blocks: [] } }));
+                setBlog(prevBlog => ({
+                    ...prevBlog,
+                    content: { blocks: [] },
+                    title: '',
+                    des: '',
+                    tags: [],
+                }));
+                setTitle('');
+                setDes('');
+                setTags([]);
                 toast.success("Редактор очищен");
             }
         } catch (error) {
@@ -288,8 +375,14 @@ const ContentEditor = ({ onClose, value }) => {
         if (hasBlogIdInUrl) {
             initialBlog = blog;
             initialData = blog.content[0] ? blog.content[0] : blog.content;
+            setTitle(blog.title || '');
+            setDes(blog.des || '');
+            setTags(blog.tags || []);
         } else if (initialBlog.content) {
             initialData = initialBlog.content;
+            setTitle(initialBlog.title || '');
+            setDes(initialBlog.des || '');
+            setTags(initialBlog.tags || []);
         }
 
         console.log("initialData =>", initialData);
@@ -302,9 +395,6 @@ const ContentEditor = ({ onClose, value }) => {
                     tools: tools,
                     autofocus: true,
                     placeholder: "Начните писать здесь...",
-                    onChange: debounce(async () => {
-                        await saveData();
-                    }, 2000),
                     i18n: {
                         messages: {
                             ui: {
@@ -385,7 +475,7 @@ const ContentEditor = ({ onClose, value }) => {
                                 },
                             },
                             blockTunes: {
-                                "Convert to": "Изменить", 
+                                "Convert to": "Изменить",
                                 "Filter": "Фильтр",
                                 delete: {
                                     "Delete": "Удалить",
@@ -425,11 +515,13 @@ const ContentEditor = ({ onClose, value }) => {
         try {
             if (editorRef.current && editorRef.current.save) {
                 const outputData = await editorRef.current.save();
-                console.log("Данные из EditorJS:", outputData);
-
-                const key = getStorageKey();
-                await saveToIndexedDB(outputData, key, blog.id);
-                setBlog(prevBlog => ({ ...prevBlog, content: { blocks: outputData.blocks } }));
+                setBlog(prevBlog => ({
+                    ...prevBlog,
+                    content: { blocks: outputData.blocks },
+                    title,
+                    des,
+                    tags,
+                }));
             }
         } catch (error) {
             console.error('Ошибка при сохранении данных:', error);
@@ -449,25 +541,31 @@ const ContentEditor = ({ onClose, value }) => {
             onClose();
             return;
         }
-        let initialBlog = null;
+        let initialBlog = { ...blogStructure };
         if (key) {
-            initialBlog = await loadFromIndexedDB(key);
+            const draftData = await loadFromIndexedDB(key);
+            if (draftData) {
+                initialBlog = { ...blogStructure, ...draftData };
+            }
         }
-        await initializeEditor({ ...blogStructure, content: initialBlog });
-        setBlog({ ...blogStructure, content: initialBlog });
+        await initializeEditor(initialBlog);
+        setBlog(initialBlog);
+        setTitle(initialBlog.title || '');
+        setDes(initialBlog.des || '');
+        setTags(initialBlog.tags || []);
         setShowInitialDraftModal(false);
     };
 
     const handleLoadDraft = async (key) => {
-        const blogData = await loadFromIndexedDB(key);
-        if (blogData) {
-            const contentData = blogData.blocks ? blogData : { blocks: [] };
+        const draftData = await loadFromIndexedDB(key);
+        if (draftData) {
+            const contentData = draftData.content?.blocks ? draftData.content : { blocks: [] };
             if (editorRef.current && editorRef.current.render) {
                 await editorRef.current.render(contentData);
-                setBlog(prevBlog => ({
-                    ...prevBlog,
-                    content: contentData,
-                }));
+                setBlog(prevBlog => ({ ...prevBlog, ...draftData }));
+                setTitle(draftData.title || '');
+                setDes(draftData.des || '');
+                setTags(draftData.tags || []);
                 toast.success(`Загружен блог ${key}`);
             }
         }
@@ -493,7 +591,8 @@ const ContentEditor = ({ onClose, value }) => {
     }, [blog]);
 
     return (
-        <div className={`w-full min-h-screen mt-[60px] flex flex-col ${currentTheme}`}>
+        <div className={`w-full min-h-screen flex flex-col ${currentTheme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}>
+            <style>{editorStyles}</style>
             {showClearConfirm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-md w-1/3">
@@ -538,15 +637,37 @@ const ContentEditor = ({ onClose, value }) => {
                 setIsPaintOpen={setIsPaintOpen}
                 setShowIndexedDBViewer={setShowIndexedDBViewer}
                 setShowClearConfirm={setShowClearConfirm}
+                saveToIndexedDB={saveToIndexedDB}
+                blogId={blog.id}
+                setBlog={setBlog}
+                blog={blog}
             />
 
-            <div id="textEditor" className={`w-full top-auto ${currentTheme === "dark" ? "text-white" : ""}`}></div>
+            <div className="w-full px-4 sm:px-8 mt-8">
+                <input
+                    type="text"
+                    value={title}
+                    onChange={handleTitleChange}
+                    placeholder="Введите заголовок конспекта..."
+                    className={`w-full center text-center p-3 text-4xl font-semibold border-b-2 border-gray-300 focus:outline-none focus:border-purple-500 bg-transparent transition-colors ${
+                        currentTheme === 'dark' ? 'text-white border-gray-600' : 'text-black border-gray-300'
+                    }`}
+                />
+            </div>
+
+            <div
+                id="textEditor"
+                className={`w-full px-4 sm:px-8 ${
+                    currentTheme === 'dark' ? 'text-white' : 'text-black'
+                }`}
+            ></div>
 
             {isPaintOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <DoodleThing onSave={handleSaveImage} onClose={() => setIsPaintOpen(false)} />
                 </div>
             )}
+            <ScrollButton />
         </div>
     );
 };

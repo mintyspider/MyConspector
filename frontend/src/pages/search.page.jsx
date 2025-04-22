@@ -9,6 +9,7 @@ import LoadMoreDataBtn from '../components/load-more.component';
 import axios from 'axios';
 import { filterPaginationData } from '../common/filter-pagination-data';
 import UserCard from '../components/usercard.component';
+import ScrollButton from '../components/scroll-button.component';
 
 const SearchPage = () => {
     const { query: initialQuery } = useParams();
@@ -90,6 +91,7 @@ const SearchPage = () => {
 
     return (
         <section className="h-cover flex justify-center gap-10">
+            <ScrollButton/>
             <div className="w-full">
                 {/* Поле поиска с кнопкой крестика */}
                 <div className="flex items-center mb-6">

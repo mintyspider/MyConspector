@@ -6,6 +6,7 @@ import AnimationWrapper from './../common/page-animation';
 import axios from "axios";
 import InputBox from "../components/input.component";
 import Loader from "../components/loader.component";
+import ScrollButton from "../components/scroll-button.component";
 
 const EditProfile = () => {
     let { userAuth: { accessToken, username } } = useContext(UserContext);
@@ -223,6 +224,7 @@ const EditProfile = () => {
                     </div>
                 </form>
             }
+            <ScrollButton/>
         </AnimationWrapper>
     )
 }

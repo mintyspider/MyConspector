@@ -1,8 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { toast } from 'react-hot-toast';
 
-const Toolbar = ({ editorRef, setIsPaintOpen, setShowIndexedDBViewer, setShowClearConfirm }) => {
+const Toolbar = ({
+  editorRef,
+  setIsPaintOpen,
+  setShowIndexedDBViewer,
+  setShowClearConfirm,
+  saveToIndexedDB,
+  blogId,
+  setBlog,
+  blog, // Теперь принимаем весь blog
+}) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const lastContentRef = useRef(null);
 
   const toggleToolbar = () => {
     setIsVisible((prev) => {
@@ -28,6 +40,57 @@ const Toolbar = ({ editorRef, setIsPaintOpen, setShowIndexedDBViewer, setShowCle
     }
   };
 
+  // Сохранение в IndexedDB
+  const handleSave = async () => {
+    if (!editorRef.current) {
+      console.error('EditorJS not initialized');
+      return;
+    }
+
+    try {
+      const content = await editorRef.current.save();
+      if (!content.blocks || content.blocks.length === 0) {
+        console.log('No content to save');
+        return;
+      }
+
+      // Формируем полный объект blog
+      const dataToSave = { ...blog, content: { blocks: content.blocks } };
+
+      // Сравниваем с последним сохранённым состоянием
+      const contentString = JSON.stringify(dataToSave);
+      if (contentString === lastContentRef.current) {
+        console.log('No changes detected, skipping save');
+        return;
+      }
+
+      setIsSaving(true); // Включаем подсветку
+      console.log('Saving to IndexedDB:', dataToSave);
+
+      // Сохраняем с фиксированным ключом current_draft
+      await saveToIndexedDB(dataToSave, 'current_draft', blogId);
+
+      // Обновляем состояние blog
+      setBlog(dataToSave);
+
+      lastContentRef.current = contentString; // Обновляем последний контент
+    } catch (error) {
+      console.error('Error saving content:', error);
+      toast.error('Ошибка при сохранении');
+    } finally {
+      setTimeout(() => setIsSaving(false), 1000); // Выключаем подсветку через 1 сек
+    }
+  };
+
+  // Автосохранение каждые 5 секунд
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleSave();
+    }, 10000);
+
+    return () => clearInterval(interval); // Очищаем интервал при размонтировании
+  }, [editorRef, blogId, saveToIndexedDB, setBlog, blog]);
+
   return (
     <>
       <div
@@ -44,11 +107,11 @@ const Toolbar = ({ editorRef, setIsPaintOpen, setShowIndexedDBViewer, setShowCle
       </div>
 
       <div
-        className="fixed top-[80px] left-0 w-full bg-white dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700 z-20 transition-all duration-300"
+        className="fixed top-[80px] left-0 w-full bg-white dark:bg-gray-800 z-20 transition-all duration-300"
         style={{
           opacity: isVisible ? 1 : 0,
           visibility: isVisible ? 'visible' : 'hidden',
-          height: isExpanded ? '80px' : '50px',
+          height: isExpanded ? '70px' : '50px',
         }}
       >
         <div className="flex justify-center items-center gap-4 p-2 max-w-5xl mx-auto">
@@ -57,7 +120,7 @@ const Toolbar = ({ editorRef, setIsPaintOpen, setShowIndexedDBViewer, setShowCle
               onClick={toggleToolbar}
               className="p-2 text-gray-700 hover:text-purple-600 dark:text-gray-300 dark:hover:text-purple-400 transition-colors"
             >
-              <i className="fi fi-rr-angle-up text-lg"></i>
+              <i className={`fi fi-rr-${isExpanded ? 'cross-circle' : 'angle-up'} text-lg`}></i>
             </button>
             {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Скрыть</span>}
           </div>
@@ -184,6 +247,20 @@ const Toolbar = ({ editorRef, setIsPaintOpen, setShowIndexedDBViewer, setShowCle
               <i className="fi fi-rr-folder-open text-lg"></i>
             </button>
             {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Записи</span>}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <button
+              onClick={handleSave}
+              className={`p-2 transition-colors ${
+                isSaving
+                  ? 'text-purple'
+                  : 'text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              <i className="fi fi-rr-disk text-lg"></i>
+            </button>
+            {isExpanded && <span className="text-xs text-gray-700 dark:text-gray-300">Сохранить</span>}
           </div>
 
           <div className="flex flex-col items-center">

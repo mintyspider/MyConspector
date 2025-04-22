@@ -7,6 +7,7 @@ import AnimationWrapper from '../common/page-animation';
 import NoDataMessage from '../components/nodata.component';
 import NotificationCard from '../components/notification-card.component';
 import LoadMoreDataBtn from '../components/load-more.component';
+import ScrollButton from '../components/scroll-button.component';
 
 const Notification = () => {
     const [filter, setFilter] = useState("Все");
@@ -79,6 +80,7 @@ const Notification = () => {
 
     return (
         <div>
+            <ScrollButton/>
             <h1 className="max-md:hidden text-2xl lg:text-3xl font-medium text-dark-grey text-center">
                 Оповещения
             </h1>

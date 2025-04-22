@@ -255,8 +255,9 @@
     border-width: 5px 0 5px 5px;
     border-color: transparent transparent transparent #333;
   }
-   
-
+    #blog-page-content img{
+        @apply bg-grey;
+  }
 }
 
 [data-theme="dark"] .w-full {

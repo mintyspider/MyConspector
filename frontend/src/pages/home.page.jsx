@@ -9,7 +9,6 @@ import { activeTabLineRef, activeTabRef } from '../components/inpage-navigation.
 import NoDataMessage from '../components/nodata.component'
 import { filterPaginationData } from '../common/filter-pagination-data'
 import LoadMoreDataBtn from '../components/load-more.component'
-import mascot from '../imgs/mascot.png'
 import ScrollButton from '../components/scroll-button.component'
 
 const HomePage = () => {
