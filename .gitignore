@@ -3,7 +3,7 @@
 .pnp.js
 /coverage
 
-/.next/
+docs/.vitepress/dist//.next/
 /out/
 build
 .next
