@@ -22,6 +22,10 @@ export const navigation: DefaultTheme.NavItem[] = [
         link: "/disciplines/pis/",
       },
       {
+        text: "Теория вероятностей и математическая статистика",
+        link: "/disciplines/prob/",
+      },
+      {
         text: "Технология производства программного обеспечения",
         link: "/disciplines/tppo/",
       },

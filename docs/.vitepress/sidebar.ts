@@ -90,6 +90,21 @@ export const sidebar: DefaultTheme.Sidebar = {
       items: getLectures("./docs/disciplines/pis/lectures"),
     },
   ],
+  "/disciplines/prob": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Описание дисциплины",
+          link: "/disciplines/prob/",
+        },
+      ],
+    },
+    {
+      text: "Лекции",
+      items: getLectures("./docs/disciplines/prob/lectures"),
+    },
+  ],
   "/disciplines/tppo": [
     {
       text: "О курсе",

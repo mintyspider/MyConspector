@@ -15,6 +15,7 @@
 * [Базы данных](/disciplines/db/index.md)
 * [Кибериммунная методология разработки ПО](/disciplines/kirpo/index.md)
 * [Проектирование информационных систем](/disciplines/pis/index.md)
+* [Теория вероятностей и математическая статистика](/disciplines/prob/index.md)
 * [Технология производства программного обеспечения](/disciplines/tppo/index.md)
 * [Философия](/disciplines/psix/index.md)
 * [Web-проектирование](/disciplines/web/index.md)
