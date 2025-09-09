@@ -1,11 +1,27 @@
 :root {
-  --vp-c-brand: #8b5cf6;
-  --vp-c-brand-light: #a78bfa;
-  --vp-c-brand-dark: #7c3aed;
-  --vp-button-brand-bg: #8b5cf6;
-  --vp-button-brand-border: #8b5cf6;
-  --vp-button-brand-hover-border: #a78bfa;
-  --vp-button-brand-active-border: #a78bfa;
-  --vp-link-color: #8b5cf6;
-  --vp-link-color-hover: #7c3aed;
+  --vp-c-brand: #60a5fa;
+  --vp-c-brand-light: #93c5fd;
+  --vp-c-brand-dark: #3b82f6;
+  --vp-button-brand-bg: #60a5fa;
+  --vp-button-brand-border: #60a5fa;
+  --vp-button-brand-hover-border: #93c5fd;
+  --vp-button-brand-active-border: #93c5fd;
+  --vp-link-color: #60a5fa;
+  --vp-link-color-hover: #3b82f6;
+  --vp-button-brand-hover-bg: #93c5fd;
+  --vp-button-brand-active-bg: #93c5fd;
+}
+
+.dark {
+  --vp-c-brand: #a855f7;
+  --vp-c-brand-light: #c084fc;
+  --vp-c-brand-dark: #9333ea;
+  --vp-button-brand-bg: #a855f7;
+  --vp-button-brand-border: #a855f7;
+  --vp-button-brand-hover-border: #c084fc;
+  --vp-button-brand-active-border: #c084fc;
+  --vp-link-color: #a855f7;
+  --vp-link-color-hover: #9333ea;
+  --vp-button-brand-hover-bg: #c084fc;
+  --vp-button-brand-active-bg: #c084fc;
 }
