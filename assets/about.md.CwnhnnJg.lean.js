@@ -1,0 +1,1 @@
+import{_ as e,c as o,o as r,ag as a}from"./chunks/framework.CSlL02hu.js";const u=JSON.parse('{"title":"О проекте","description":"","frontmatter":{},"headers":[],"relativePath":"about.md","filePath":"about.md"}'),s={name:"about.md"};function n(c,t,p,i,l,d){return r(),o("div",null,t[0]||(t[0]=[a("",9)]))}const m=e(s,[["render",n]]);export{u as __pageData,m as default};
