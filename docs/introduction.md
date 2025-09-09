@@ -11,13 +11,13 @@
 
 В нашей базе знаний представлены следующие дисциплины:
 
-* [Алгоритмы и структуры данных](/disciplines/algos)
-* [Базы данных](/disciplines/db)
-* [Кибериммунная методология разработки ПО](/disciplines/kirpo)
-* [Проектирование информационных систем](/disciplines/pis)
-* [Технология производства программного обеспечения](/disciplines/tppo)
-* [Философия](/disciplines/psix/)
-* [Web-проектирование](/disciplines/web)
+* [Алгоритмы и структуры данных](/disciplines/algos/index.md)
+* [Базы данных](/disciplines/db/index.md)
+* [Кибериммунная методология разработки ПО](/disciplines/kirpo/index.md)
+* [Проектирование информационных систем](/disciplines/pis/index.md)
+* [Технология производства программного обеспечения](/disciplines/tppo/index.md)
+* [Философия](/disciplines/psix/index.md)
+* [Web-проектирование](/disciplines/web/index.md)
 
 
 :::info
