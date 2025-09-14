@@ -17,6 +17,15 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     },
     {
+      text: "Блог",
+      items: [
+        {
+          text: "Ошибка выжившего",
+          link: "/blog/survivorship.md",
+        },
+      ],
+    },
+    {
       text: "Гайды",
       items: [
         {

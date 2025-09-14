@@ -44,6 +44,10 @@ export const navigation: DefaultTheme.NavItem[] = [
     link: "/about",
   },
   {
+    text: "Блог",
+    link: "/blog/",
+  },
+  {
     text: "Гайды",
     link: "/guides/",
   },

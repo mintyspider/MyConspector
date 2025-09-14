@@ -55,6 +55,14 @@ const members = [
       { icon: 'github', link: 'https://github.com/FirstVlad99' },
       { icon: 'vk', link: 'https://vk.com/bebrbebr' }
     ]
+  },
+  {
+    avatar: 'https://avatars.githubusercontent.com/u/115343310?v=4',
+    name: 'Джордж Поскитт',
+    title: 'Соавтор контента',
+    links: [
+      { icon: 'github', link: 'https://github.com/MessySpagetty' }
+    ]
   }
 ]
 </script>
