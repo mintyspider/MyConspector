@@ -23,6 +23,10 @@ export const sidebar: DefaultTheme.Sidebar = {
           text: "Ошибка выжившего",
           link: "/blog/survivorship.md",
         },
+        {
+          text: "Как не сдаться",
+          link: "/blog/motivation.md",
+        },
       ],
     },
     {
