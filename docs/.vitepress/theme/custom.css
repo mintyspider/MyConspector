@@ -25,3 +25,139 @@
   --vp-button-brand-hover-bg: #c084fc;
   --vp-button-brand-active-bg: #c084fc;
 }
+
+.defn {
+  border: 2px solid var(--vp-c-brand); 
+  padding: 3px; 
+  display: inline-block;
+}
+
+/*Для алгосов*/
+
+.timeline {
+  position: relative;
+  max-width: 700px;
+  margin: 40px auto;
+  padding-left: 40px;
+}
+
+/* Элемент таймлайна */
+.titem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+/* Точка на линии */
+.tdot {
+  width: 16px;
+  height: 16px;
+  background: var(--vp-c-brand);
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: absolute;
+  left: -12px; /* чуть левее линии */
+  top: 50%;     /* по вертикали середина */
+  transform: translateY(-50%); /* смещаем вверх на половину точки */
+  box-shadow: 0 0 0 4px var(--vp-c-brand-soft);
+}
+
+/* Карточка */
+.tcard {
+  display: block;
+  padding: 16px 20px;
+  background: var(--vp-c-bg-soft);
+  border-radius: 12px;
+  border: 1px solid var(--vp-c-divider);
+  text-decoration: none;
+  color: var(--vp-c-text-1);
+  font-size: 16px;
+  font-weight: 500;
+  width: 100%;
+  transition: transform 0.25s, background 0.25s, border-color 0.25s;
+}
+
+/* Hover эффект */
+.titem:hover .tdot {
+  transform: translateY(-50%) scale(1.3);
+  box-shadow: 0 0 0 6px var(--vp-c-brand-soft);
+}
+
+.titem:hover .tcard {
+  background: var(--vp-c-brand-soft);
+  border-color: var(--vp-c-brand);
+  transform: translateX(6px);
+}
+
+/* Для ТППО */
+.process-timeline {
+  position: relative;
+  max-width: 700px;
+  margin: 40px auto;
+  padding-left: 50px;
+}
+
+.process-timeline::before {
+  content: "";
+  position: absolute;
+  left: 25px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+.pitem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.pdot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  position: relative;
+  top: 0;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.requirements .pdot { background: #a78bfa; }
+.design .pdot { background: #60a5fa; }
+.testing .pdot { background: #34d399; }
+.management .pdot { background: #fbbf24; }
+
+.pcard {
+  display: block;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid;
+  text-decoration: none;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 500;
+  width: 100%;
+  transition: transform 0.25s, background 0.25s, border-color 0.25s;
+}
+
+.pitem:hover .pdot {
+  transform: scale(1.3);
+  box-shadow: 0 0 0 6px rgba(0,0,0,0.15);
+}
+
+.pitem:hover .pcard {
+  border-color: #a78bfa;
+  transform: translateX(6px);
+}

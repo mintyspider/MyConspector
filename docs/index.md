@@ -41,7 +41,7 @@ const members = [
   {
     avatar: 'https://avatars.githubusercontent.com/u/173299138?v=4',
     name: 'Анастасия Ларионова',
-    title: 'Идейный вдохновитель',
+    title: 'Автор контента',
     links: [
       { icon: 'github', link: 'https://github.com/mintyspider' },
       { icon: 'vk', link: 'https://vk.com/asya.lario777' }
@@ -54,14 +54,6 @@ const members = [
     links: [
       { icon: 'github', link: 'https://github.com/FirstVlad99' },
       { icon: 'vk', link: 'https://vk.com/bebrbebr' }
-    ]
-  },
-  {
-    avatar: 'https://avatars.githubusercontent.com/u/115343310?v=4',
-    name: 'Джордж Поскитт',
-    title: 'Соавтор контента',
-    links: [
-      { icon: 'github', link: 'https://github.com/MessySpagetty' }
     ]
   }
 ]

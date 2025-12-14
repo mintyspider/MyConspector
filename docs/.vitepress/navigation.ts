@@ -47,8 +47,4 @@ export const navigation: DefaultTheme.NavItem[] = [
     text: "Блог",
     link: "/blog/",
   },
-  {
-    text: "Гайды",
-    link: "/guides/",
-  },
 ];

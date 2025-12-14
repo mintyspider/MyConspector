@@ -29,19 +29,6 @@ export const sidebar: DefaultTheme.Sidebar = {
         },
       ],
     },
-    {
-      text: "Гайды",
-      items: [
-        {
-          text: "Обозначения в лекциях",
-          link: "/guides/lecture.md",
-        },
-        {
-          text: "Шпаргалка по основным SQL-запросам",
-          link: "/guides/sql.md",
-        },
-      ],
-    },
   ],
   "/disciplines/algos": [
     {
