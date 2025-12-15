@@ -1,5 +1,5 @@
 import { DefaultTheme } from "vitepress";
-import { getLectures } from "../../utils";
+import { getLectures, getNotes } from "../../utils";
 
 export const sidebar: DefaultTheme.Sidebar = {
   "/": [
@@ -11,23 +11,18 @@ export const sidebar: DefaultTheme.Sidebar = {
           link: "/about",
         },
         {
-          text: "Доступные дисциплины",
-          link: "/introduction",
+          text: "Благодарности",
+          link: "/thanks",
+        },
+        {
+          text: "Дисциплины",
+          link: "/disciplines",
         },
       ],
     },
     {
       text: "Блог",
-      items: [
-        {
-          text: "Ошибка выжившего",
-          link: "/blog/survivorship.md",
-        },
-        {
-          text: "Как не сдаться",
-          link: "/blog/motivation.md",
-        },
-      ],
+      items: getNotes("./docs/blog/notes"),
     },
   ],
   "/disciplines/algos": [
@@ -41,7 +36,7 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     },
     {
-      text: "Лекции",
+      text: "Материалы",
       items: getLectures("./docs/disciplines/algos/lectures"),
     },
   ],
@@ -56,7 +51,7 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     },
     {
-      text: "Лекции",
+      text: "Материалы",
       items: getLectures("./docs/disciplines/db/lectures"),
     },
   ],
@@ -71,7 +66,7 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     },
     {
-      text: "Лекции",
+      text: "Материалы",
       items: getLectures("./docs/disciplines/kirpo/lectures"),
     },
   ],
@@ -86,7 +81,7 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     },
     {
-      text: "Лекции",
+      text: "Материалы",
       items: getLectures("./docs/disciplines/pis/lectures"),
     },
   ],
@@ -101,7 +96,7 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     },
     {
-      text: "Лекции",
+      text: "Материалы",
       items: getLectures("./docs/disciplines/prob/lectures"),
     },
   ],
@@ -116,7 +111,7 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     },
     {
-      text: "Лекции",
+      text: "Материалы",
       items: getLectures("./docs/disciplines/tppo/lectures"),
     },
   ],
@@ -131,7 +126,7 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     },
     {
-      text: "Лекции",
+      text: "Материалы",
       items: getLectures("./docs/disciplines/psix/lectures"),
     },
   ],
@@ -146,7 +141,7 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     },
     {
-      text: "Лекции",
+      text: "Материалы",
       items: getLectures("./docs/disciplines/web/lectures"),
     },
   ],

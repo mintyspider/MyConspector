@@ -33,3 +33,28 @@ export const getLectures = (path: string): DefaultTheme.SidebarItem[] => {
   });
 };
 
+export const getNotes = (path: string): DefaultTheme.SidebarItem[] => {
+  const lectures = readdirSync(path)
+    .filter(file => file.endsWith(".md"))
+    .sort(); // Простая сортировка по имени файла
+
+  const items: DefaultTheme.SidebarItem[] = [];
+
+  for (const file of lectures) {
+    const content = readFileSync(`${path}/${file}`, "utf-8");
+    const firstLine = content.split("\n")[0];
+
+    // Ищем первый заголовок H1 (начинается с # и пробела)
+    if (firstLine.startsWith("# ")) {
+      const title = firstLine.substring(2).trim();
+      const fileName = file.replace(".md", "");
+
+      items.push({
+        text: title,
+        link: `${path.split("./docs")[1]}/${fileName}`,
+      });
+    }
+  }
+
+  return items;
+};
