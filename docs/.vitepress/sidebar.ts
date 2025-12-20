@@ -16,7 +16,7 @@ export const sidebar: DefaultTheme.Sidebar = {
         },
         {
           text: "Дисциплины",
-          link: "/disciplines",
+          link: "/disciplines.md",
         },
       ],
     },
