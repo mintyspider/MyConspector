@@ -40,7 +40,7 @@
   <!-- Прогресс внутри рамки -->
   <div style="
     background: linear-gradient(90deg, #646cff 0%, #4caf50 100%);
-    width: 78%;
+    width: 88%;
     height: 100%;
   "></div>
 
@@ -104,7 +104,7 @@
         <a class="tcard" href="./lectures/13">13. Сравнение строк с помощью полиномиального хеширования.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/14">14. Ахо - Корасик.</a>
     </div>
     <div class="titem">
@@ -112,7 +112,7 @@
         <a class="tcard" href="./lectures/15">15. Префикс функция, Алгоритм Кнута – Морриса – Пратта.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/16">16. Z-функция, построение использование.</a>
     </div>
     <div class="titem">
