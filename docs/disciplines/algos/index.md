@@ -23,6 +23,7 @@
     - <a href="/MyConspector/files/algos/МашинаТьюринга.pdf" target="_blank" rel="noopener noreferrer">Машина Тьюринга</a>
 - <a href="/MyConspector/files/algos/БазовыйКонспект.pdf" target="_blank" rel="noopener noreferrer">"Базовый конспект"</a> с прошлого семестра
 - Материалы с сайта [Викиконспекты ИТМО](https://neerc.ifmo.ru/wiki/index.php?title=Алгоритмы_и_структуры_данных)
+- Изображения с сайтов [Хабр](https://habr.com/ru/)
 
 **Прогресс по вопросам:**
 
