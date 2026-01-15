@@ -40,24 +40,10 @@
   <!-- Прогресс внутри рамки -->
   <div style="
     background: linear-gradient(90deg, #646cff 0%, #4caf50 100%);
-    width: 11%;
+    width: 50%;
     height: 100%;
   "></div>
-  
-  <!-- Текст поверх -->
-  <div style="
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #646cff;
-    font-size: 0.9em;
-    font-weight: bold;
-    text-shadow: none;
-  ">
-    2 / 18 — 11%
-  </div>
+
 </div>
 
 # Содержание
@@ -74,31 +60,31 @@
         <a class="tcard" href="./lectures/2">2. Определение компонент сильной связности графа. Построение графа Герца.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/3">3. Кратчайшие пути. Виды задач поиска кратчайших путей. Поиск кратчайших путей в бесконтурном графе. Про один алгоритм рассказать подробнее.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/4">4. Алгоритм Форда – Беллмана.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/5">5. Алгоритм Флойда.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/6">6. Алгоритм Дейкстры.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/7">7. Минимальные покрывающие деревья. Алгоритм Прима.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/8">8. Минимальные покрывающие деревья. Алгоритм Крускала.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/9">9. Максимальное паросочетание. Алгоритм Куна.</a>
     </div>
     <div class="titem">
