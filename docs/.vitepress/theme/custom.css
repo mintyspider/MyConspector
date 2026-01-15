@@ -176,3 +176,57 @@
   border-color: #a78bfa;
   transform: translateX(6px);
 }
+
+/* Дополнительные стили для улучшения внешнего вида */
+
+/* Для темной темы */
+.dark .sidebar-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .sidebar-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--vp-c-brand);
+}
+
+/* Анимация для лучшего UX */
+.VPSidebar {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Улучшенный вид для скрытого состояния */
+body.hide-sidebar .VPContent {
+  transition: padding-left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Иконка анимация */
+.toggle-icon {
+  stroke-width: 2.5;
+}
+
+/* Адаптация для разных экранов */
+@media (min-width: 1280px) {
+  body:not(.hide-sidebar) .VPContent.has-sidebar {
+    padding-left: calc(var(--vp-sidebar-width) + 48px) !important;
+  }
+  
+  body.hide-sidebar .VPContent.has-sidebar {
+    padding-left: 48px !important;
+    padding-right: 48px !important;
+  }
+}
+
+/* Для очень широких экранов */
+@media (min-width: 1600px) {
+  body:not(.hide-sidebar) .VPContent.has-sidebar {
+    max-width: calc(100% - var(--vp-sidebar-width) - 96px) !important;
+  }
+  
+  body.hide-sidebar .VPContent.has-sidebar {
+    max-width: calc(100% - 96px) !important;
+  }
+}
