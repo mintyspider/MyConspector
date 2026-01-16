@@ -22,29 +22,7 @@
     - <a href="/MyConspector/files/algos/Полиномиальная.pdf" target="_blank" rel="noopener noreferrer">Полиномиальная и экспоненциальные сложности. Классы P и NP. Полиномиальная сводимость. NP-полные задачи. Проблема тысячилетия. Примеры</a>
     - <a href="/MyConspector/files/algos/МашинаТьюринга.pdf" target="_blank" rel="noopener noreferrer">Машина Тьюринга</a>
 - <a href="/MyConspector/files/algos/БазовыйКонспект.pdf" target="_blank" rel="noopener noreferrer">"Базовый конспект"</a> с прошлого семестра
-- Материалы с сайтов: [Викиконспекты ИТМО](https://neerc.ifmo.ru/wiki/index.php?title=Алгоритмы_и_структуры_данных), [WikiGRAPP](https://pco.iis.nsk.su/grapp/index.php/Заглавная_страница)
-- Изображения с сайта [Хабр](https://habr.com/ru/)
-
-**Прогресс по вопросам:**
-
-<div style="
-  height: 20px;
-  border-radius: 10px;
-  border: 1px solid rgba(100, 108, 255, 0.5);
-  background: transparent;
-  overflow: hidden;
-  position: relative;
-  margin: 1em 0;
-  box-sizing: border-box;
-">
-  <!-- Прогресс внутри рамки -->
-  <div style="
-    background: linear-gradient(90deg, #646cff 0%, #4caf50 100%);
-    width: 88%;
-    height: 100%;
-  "></div>
-
-</div>
+- Материалы с сайтов: [Викиконспекты ИТМО](https://neerc.ifmo.ru/wiki/index.php?title=Алгоритмы_и_структуры_данных), [WikiGRAPP](https://pco.iis.nsk.su/grapp/index.php/Заглавная_страница), [Хабр](https://habr.com/ru/)
 
 # Содержание
 
@@ -116,12 +94,16 @@
         <a class="tcard" href="./lectures/16">16. Z-функция, построение использование.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/17">17. Машина Тьюринга. Разрешимость алгоритмических проблем.</a>
     </div>
     <div class="titem">
-        <div class="tdot unchecked"></div>
+        <div class="tdot"></div>
         <a class="tcard" href="./lectures/18">18. Полиномиальная и экспоненциальные сложности. Классы P и NP. Полиномиальная сводимость. NP-полные задачи. Примеры.</a>
+    </div>
+    <div class="titem">
+        <div class="tdot"></div>
+        <a class="tcard" href="./lectures/19">19. Пример задачи билета. Разбор.</a>
     </div>
 </div>
 ___________________________________
