@@ -22,7 +22,7 @@
     - <a href="/MyConspector/files/algos/Полиномиальная.pdf" target="_blank" rel="noopener noreferrer">Полиномиальная и экспоненциальные сложности. Классы P и NP. Полиномиальная сводимость. NP-полные задачи. Проблема тысячилетия. Примеры</a>
     - <a href="/MyConspector/files/algos/МашинаТьюринга.pdf" target="_blank" rel="noopener noreferrer">Машина Тьюринга</a>
 - <a href="/MyConspector/files/algos/БазовыйКонспект.pdf" target="_blank" rel="noopener noreferrer">"Базовый конспект"</a> с прошлого семестра
-- Материалы с сайтов: [Викиконспекты ИТМО](https://neerc.ifmo.ru/wiki/index.php?title=Алгоритмы_и_структуры_данных), [WikiGRAPP](https://pco.iis.nsk.su/grapp/index.php/Заглавная_страница), [Хабр](https://habr.com/ru/)
+- Материалы с сайтов: [Викиконспекты ИТМО](https://neerc.ifmo.ru/wiki/index.php?title=Алгоритмы_и_структуры_данных), [WikiGRAPP](https://pco.iis.nsk.su/grapp/index.php/Заглавная_страница), [Хабр](https://habr.com/ru/), [МИИГАиК](https://ratcatcher.ru/)
 
 # Содержание
 
@@ -106,4 +106,3 @@
         <a class="tcard" href="./lectures/19">19. Пример задачи билета. Разбор.</a>
     </div>
 </div>
-___________________________________
