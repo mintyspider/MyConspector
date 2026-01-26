@@ -19,11 +19,7 @@ export const sidebar: DefaultTheme.Sidebar = {
           link: "/disciplines.md",
         },
       ],
-    },
-    {
-      text: "Блог",
-      items: getNotes("./docs/blog/notes"),
-    },
+    }
   ],
   "/disciplines/algos": [
     {
@@ -53,21 +49,6 @@ export const sidebar: DefaultTheme.Sidebar = {
     {
       text: "Материалы",
       items: getLectures("./docs/disciplines/db/lectures"),
-    },
-  ],
-  "/disciplines/kirpo": [
-    {
-      text: "О курсе",
-      items: [
-        {
-          text: "Описание дисциплины",
-          link: "/disciplines/kirpo/",
-        },
-      ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/kirpo/lectures"),
     },
   ],
   "/disciplines/pis": [
@@ -128,21 +109,6 @@ export const sidebar: DefaultTheme.Sidebar = {
     {
       text: "Материалы",
       items: getLectures("./docs/disciplines/psix/lectures"),
-    },
-  ],
-  "/disciplines/web": [
-    {
-      text: "О курсе",
-      items: [
-        {
-          text: "Описание дисциплины",
-          link: "/disciplines/web/",
-        },
-      ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/web/lectures"),
     },
   ],
 };

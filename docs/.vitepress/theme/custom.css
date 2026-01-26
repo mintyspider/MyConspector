@@ -10,6 +10,7 @@
   --vp-link-color-hover: #3b82f6;
   --vp-button-brand-hover-bg: #93c5fd;
   --vp-button-brand-active-bg: #93c5fd;
+  --vp-text-color: #000000;
 }
 
 .dark {
@@ -24,7 +25,15 @@
   --vp-link-color-hover: #9333ea;
   --vp-button-brand-hover-bg: #c084fc;
   --vp-button-brand-active-bg: #c084fc;
+  --vp-text-color: #eeeeee;
 }
+
+highlight {
+    background-color: var(--vp-button-brand-hover-bg);
+    color: var(--vp-text-color);
+    padding: 0 4px;          
+    border-radius: 6px;
+  }
 
 .reading-progress {
   position: fixed;

@@ -9,8 +9,4 @@ export const navigation: DefaultTheme.NavItem[] = [
     text: "О проекте",
     link: "/about",
   },
-  {
-    text: "Блог",
-    link: "/blog/",
-  },
 ];
