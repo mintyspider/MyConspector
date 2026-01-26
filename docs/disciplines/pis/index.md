@@ -61,4 +61,6 @@
 <div class="pitem design"><div class="pdot">3</div><a href="./lectures/51" class="pcard">Умение строить дерево функций</a></div>
 <div class="pitem design"><div class="pdot">4</div><a href="./lectures/52" class="pcard">Умение строить спецификации функций</a></div>
 </div>
-___________________________________
+
+## Решение тестов
+<div class="pitem design"><div class="pdot">1</div><a href="./lectures/53" class="pcard">Решение тестов</a></div>

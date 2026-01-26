@@ -4,9 +4,9 @@
 
 <div class="features-grid">
 
-<a href="./disciplines/algos/">
+<a href="./disciplines/psix/">
     <div class="feature-card">
-    <h3>Алгоритмы и структуры данных</h3>
+    <h3>Философия</h3>
     </div>
 </a>
 
@@ -16,9 +16,9 @@
     </div>
 </a>
 
-<a href="./disciplines/kirpo/">
+<a href="./disciplines/algos/">
     <div class="feature-card">
-    <h3>Кибериммунная методология разработки ПО</h3>
+    <h3>Алгоритмы и структуры данных</h3>
     </div>
 </a>
 
@@ -37,18 +37,6 @@
 <a href="./disciplines/tppo/">
     <div class="feature-card">
     <h3>Технология производства программного обеспечения</h3>
-    </div>
-</a>
-
-<a href="./disciplines/psix/">
-    <div class="feature-card">
-    <h3>Философия</h3>
-    </div>
-</a>
-
-<a href="./disciplines/web/">
-    <div class="feature-card">
-    <h3>Web-проектирование</h3>
     </div>
 </a>
 
