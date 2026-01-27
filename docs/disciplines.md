@@ -4,37 +4,37 @@
 
 <div class="features-grid">
 
-<a href="./disciplines/psix/">
+<a href="./disciplines/5semester/psix/">
     <div class="feature-card">
     <h3>Философия</h3>
     </div>
 </a>
 
-<a href="./disciplines/db/">
+<a href="./disciplines/5semester/db/">
     <div class="feature-card">
     <h3>Базы данных</h3>
     </div>
 </a>
 
-<a href="./disciplines/algos/">
+<a href="./disciplines/5semester/algos/">
     <div class="feature-card">
     <h3>Алгоритмы и структуры данных</h3>
     </div>
 </a>
 
-<a href="./disciplines/pis/">
+<a href="./disciplines/5semester/pis/">
     <div class="feature-card">
     <h3>Проектирование информационных систем</h3>
     </div>
 </a>
 
-<a href="./disciplines/prob/">
+<a href="./disciplines/5semester/prob/">
     <div class="feature-card">
     <h3>Теория вероятностей и математическая статистика</h3>
     </div>
 </a>
 
-<a href="./disciplines/tppo/">
+<a href="./disciplines/5semester/tppo/">
     <div class="feature-card">
     <h3>Технология производства программного обеспечения</h3>
     </div>

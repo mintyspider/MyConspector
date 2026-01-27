@@ -21,94 +21,94 @@ export const sidebar: DefaultTheme.Sidebar = {
       ],
     }
   ],
-  "/disciplines/algos": [
+  "/disciplines/5semester/algos": [
     {
       text: "О курсе",
       items: [
         {
           text: "Описание дисциплины",
-          link: "/disciplines/algos/",
+          link: "/disciplines/5semester/algos/",
         },
       ],
     },
     {
       text: "Материалы",
-      items: getLectures("./docs/disciplines/algos/lectures"),
+      items: getLectures("./docs/disciplines/5semester/algos/lectures"),
     },
   ],
-  "/disciplines/db": [
+  "/disciplines/5semester/db": [
     {
       text: "О курсе",
       items: [
         {
           text: "Описание дисциплины",
-          link: "/disciplines/db/",
+          link: "/disciplines/5semester/db/",
         },
       ],
     },
     {
       text: "Материалы",
-      items: getLectures("./docs/disciplines/db/lectures"),
+      items: getLectures("./docs/disciplines/5semester/db/lectures"),
     },
   ],
-  "/disciplines/pis": [
+  "/disciplines/5semester/pis": [
     {
       text: "О курсе",
       items: [
         {
           text: "Описание дисциплины",
-          link: "/disciplines/pis/",
+          link: "/disciplines/5semester/pis/",
         },
       ],
     },
     {
       text: "Материалы",
-      items: getLectures("./docs/disciplines/pis/lectures"),
+      items: getLectures("./docs/disciplines/5semester/pis/lectures"),
     },
   ],
-  "/disciplines/prob": [
+  "/disciplines/5semester/prob": [
     {
       text: "О курсе",
       items: [
         {
           text: "Описание дисциплины",
-          link: "/disciplines/prob/",
+          link: "/disciplines/5semester/prob/",
         },
       ],
     },
     {
       text: "Материалы",
-      items: getLectures("./docs/disciplines/prob/lectures"),
+      items: getLectures("./docs/disciplines/5semester/prob/lectures"),
     },
   ],
-  "/disciplines/tppo": [
+  "/disciplines/5semester/tppo": [
     {
       text: "О курсе",
       items: [
         {
           text: "Описание дисциплины",
-          link: "/disciplines/tppo/",
+          link: "/disciplines/5semester/tppo/",
         },
       ],
     },
     {
       text: "Материалы",
-      items: getLectures("./docs/disciplines/tppo/lectures"),
+      items: getLectures("./docs/disciplines/5semester/tppo/lectures"),
     },
   ],
-  "/disciplines/psix": [
+  "/disciplines/5semester/psix": [
     {
       text: "О курсе",
       items: [
         {
           text: "Описание дисциплины",
-          link: "/disciplines/psix/",
+          link: "/disciplines/5semester/psix/",
         },
       ],
     },
     {
       text: "Материалы",
-      items: getLectures("./docs/disciplines/psix/lectures"),
+      items: getLectures("./docs/disciplines/5semester/psix/lectures"),
     },
   ],
 };
