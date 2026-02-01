@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: Начните учиться
-      link: /disciplines
+      link: /semesters
     - theme: alt
       text: GitHub
       link: https://github.com/mintyspider
