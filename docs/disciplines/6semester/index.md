@@ -14,12 +14,6 @@
     </div>
 </a>
 
-<a href="./ais/">
-    <div class="feature-card">
-    <h3>Администрирование информационных систем</h3>
-    </div>
-</a>
-
 <a href="./pis/">
     <div class="feature-card">
     <h3>Проектирование информационных систем</h3>
@@ -32,20 +26,15 @@
     </div>
 </a>
 
-<a href="./its/">
-    <div class="feature-card">
-    <h3>Управление ИТ-сервисами и контентом</h3>
-    </div>
-</a>
 <a href="./cipt/">
     <div class="feature-card">
     <h3>Криптографические средства защиты информации</h3>
     </div>
 </a>
 
-<a href="./tppo/">
+<a href="./aurora/">
     <div class="feature-card">
-    <h3>Технология производства программного обеспечения (практика)</h3>
+    <h3>Практический интенсив «Flutter на ОС Aurora»</h3>
     </div>
 </a>
 

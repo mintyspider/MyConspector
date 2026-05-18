@@ -1,7 +1,7 @@
 import os
 
 # Укажите путь к папке (можно изменить)
-folder_path = "docs\\disciplines\\6semester\\"
+folder_path = "docs\\disciplines\\6semester\\aurora"
 
 # Создаем основную папку, если ее нет
 os.makedirs(folder_path, exist_ok=True)
@@ -17,7 +17,7 @@ print(f"Создана папка: images")
 print(f"Создана папка: lectures")
 
 # Создаем 15 файлов
-for i in range(1, 16):  # от 1 до 15 включительно
+for i in range(1, 4):  # от 1 до 15 включительно
     file_name = f"{i}.md"  # без ведущих нулей!
     file_path = os.path.join(lectures_path, file_name)
     
@@ -31,7 +31,7 @@ for i in range(1, 16):  # от 1 до 15 включительно
 index_path = os.path.join(folder_path, "index.md")
 with open(index_path, 'w', encoding='utf-8') as f:
     f.write("# Index\n\n")
-    for i in range(1, 16):
+    for i in range(1, 4):
         f.write(f"- [{i}. ]({i}.md)\n")
 
 print(f"\nСоздан: index.md")

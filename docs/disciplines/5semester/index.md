@@ -2,18 +2,6 @@
 
 <div class="features-grid">
 
-<a href="./psix/">
-    <div class="feature-card">
-    <h3>Философия</h3>
-    </div>
-</a>
-
-<a href="./db/">
-    <div class="feature-card">
-    <h3>Базы данных</h3>
-    </div>
-</a>
-
 <a href="./algos/">
     <div class="feature-card">
     <h3>Алгоритмы и структуры данных</h3>

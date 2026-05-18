@@ -4,18 +4,6 @@
 
 <div class="features-grid">
 
-<a href="./disciplines/5semester/psix/">
-    <div class="feature-card">
-    <h3>Философия</h3>
-    </div>
-</a>
-
-<a href="./disciplines/5semester/db/">
-    <div class="feature-card">
-    <h3>Базы данных</h3>
-    </div>
-</a>
-
 <a href="./disciplines/5semester/algos/">
     <div class="feature-card">
     <h3>Алгоритмы и структуры данных</h3>
@@ -59,12 +47,6 @@
     </div>
 </a>
 
-<a href="./disciplines/6semester/ais/">
-    <div class="feature-card">
-    <h3>Администрирование информационных систем</h3>
-    </div>
-</a>
-
 <a href="./disciplines/6semester/pis/">
     <div class="feature-card">
     <h3>Проектирование информационных систем</h3>
@@ -77,20 +59,15 @@
     </div>
 </a>
 
-<a href="./disciplines/6semester/its/">
-    <div class="feature-card">
-    <h3>Управление ИТ-сервисами и контентом</h3>
-    </div>
-</a>
 <a href="./disciplines/6semester/cipt/">
     <div class="feature-card">
     <h3>Криптографические средства защиты информации</h3>
     </div>
 </a>
 
-<a href="./disciplines/6semester/tppo/">
+<a href="./disciplines/6semester/aurora/">
     <div class="feature-card">
-    <h3>Технология производства программного обеспечения (практика)</h3>
+    <h3>Практический интенсив «Flutter на ОС Aurora»</h3>
     </div>
 </a>
 

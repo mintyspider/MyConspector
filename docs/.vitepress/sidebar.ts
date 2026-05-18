@@ -36,21 +36,6 @@ export const sidebar: DefaultTheme.Sidebar = {
       items: getLectures("./docs/disciplines/5semester/algos/lectures"),
     },
   ],
-  "/disciplines/5semester/db": [
-    {
-      text: "О курсе",
-      items: [
-        {
-          text: "Описание дисциплины",
-          link: "/disciplines/5semester/db/",
-        },
-      ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/5semester/db/lectures"),
-    },
-  ],
   "/disciplines/5semester/pis": [
     {
       text: "О курсе",
@@ -96,36 +81,6 @@ export const sidebar: DefaultTheme.Sidebar = {
       items: getLectures("./docs/disciplines/5semester/tppo/lectures"),
     },
   ],
-  "/disciplines/5semester/psix": [
-    {
-      text: "О курсе",
-      items: [
-        {
-          text: "Описание дисциплины",
-          link: "/disciplines/5semester/psix/",
-        },
-      ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/5semester/psix/lectures"),
-    },
-  ],
-  "/disciplines/6semester/ais/": [
-    {
-      text: "О курсе",
-      items: [
-        {
-          text: "Описание дисциплины",
-          link: "/disciplines/6semester/ais/",
-        },
-      ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/6semester/ais/lectures"),
-    },
-  ],
   "/disciplines/6semester/cipt/": [
     {
       text: "О курсе",
@@ -154,21 +109,6 @@ export const sidebar: DefaultTheme.Sidebar = {
     {
       text: "Материалы",
       items: getLectures("./docs/disciplines/6semester/econ/lectures"),
-    },
-  ],
-  "/disciplines/6semester/its/": [
-    {
-      text: "О курсе",
-      items: [
-        {
-          text: "Описание дисциплины",
-          link: "/disciplines/6semester/its/",
-        },
-      ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/6semester/its/lectures"),
     },
   ],
   "/disciplines/6semester/ml/": [
@@ -216,19 +156,19 @@ export const sidebar: DefaultTheme.Sidebar = {
       items: getLectures("./docs/disciplines/6semester/pis/lectures"),
     },
   ],
-  "/disciplines/6semester/tppo": [
+  "/disciplines/6semester/aurora": [
     {
       text: "О курсе",
       items: [
         {
           text: "Описание дисциплины",
-          link: "/disciplines/6semester/tppo/",
+          link: "/disciplines/6semester/aurora/",
         },
       ],
     },
     {
       text: "Материалы",
-      items: getLectures("./docs/disciplines/6semester/tppo/lectures"),
+      items: getLectures("./docs/disciplines/6semester/aurora/lectures"),
     },
   ],
 };
