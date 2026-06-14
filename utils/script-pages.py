@@ -1,13 +1,13 @@
 import os
 
 # Укажите путь к папке (можно изменить)
-folder_path = ""
+folder_path = "docs\\disciplines\\6semester\\opres\\lectures"
 
 # Создаем папку, если ее нет
 os.makedirs(folder_path, exist_ok=True)
 
-# Создаем 48 файлов
-for i in range(8, 49):  # от 1 до 48 включительно
+# Создаем файлы
+for i in range(1, 13):  # от 1 до 48 включительно
     file_name = f"{i}.md"  # без ведущих нулей!
     file_path = os.path.join(folder_path, file_name)
     

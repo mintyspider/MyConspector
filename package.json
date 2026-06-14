@@ -9,9 +9,9 @@
   "author": "Anastasia Larionova <m1ntyspider@yandex.ru>",
   "license": "MIT",
   "scripts": {
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs",
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs",
     "lint": "eslint --ext .js,.ts .",
     "lint:fix": "yarn lint --fix"
   },
@@ -233,6 +233,7 @@
     "tsconfig-paths": "^3.14.1",
     "tslib": "^1.14.1",
     "tsutils": "^3.21.0",
+    "tsx": "^4.22.4",
     "type-check": "^0.4.0",
     "type-fest": "^0.20.2",
     "typed-array-length": "^1.0.4",

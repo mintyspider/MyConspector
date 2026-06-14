@@ -39,9 +39,4 @@
 <div class="pitem requirements"><div class="pdot">31</div><a href="./lectures/31" class="pcard">Описать метрики Абреу</a></div>
 <div class="pitem requirements"><div class="pdot">32</div><a href="./lectures/32" class="pcard">Для чего и как применяются метрики объектно-ориентированных систем?</a></div>
 
-## Практическая часть
-<div class="pitem design"><div class="pdot">1</div><a href="./lectures/33" class="pcard">Уметь построить любую диаграмму UML</a></div>
-<div class="pitem design"><div class="pdot">2</div><a href="./lectures/34" class="pcard">Уметь содержательно описать (объяснить), что означает каждый элемент диаграммы UML</a></div>
-<div class="pitem design"><div class="pdot">3</div><a href="./lectures/35" class="pcard">Уметь рассчитать метрики Чидамбера и Кемерера, Лоренца и Кидда, Абреу для заданной диаграммы классов</a></div>
-
 </div>

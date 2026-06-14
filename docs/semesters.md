@@ -35,39 +35,15 @@
 
 <div class="features-grid">
 
-<a href="./disciplines/6semester/econ/">
-    <div class="feature-card">
-    <h3>Эконометрика</h3>
-    </div>
-</a>
-
-<a href="./disciplines/6semester/opres/">
-    <div class="feature-card">
-    <h3>Исследование операций</h3>
-    </div>
-</a>
-
 <a href="./disciplines/6semester/pis/">
     <div class="feature-card">
     <h3>Проектирование информационных систем</h3>
     </div>
 </a>
 
-<a href="./disciplines/6semester/ml/">
-    <div class="feature-card">
-    <h3>Введение в машинное обучение</h3>
-    </div>
-</a>
-
 <a href="./disciplines/6semester/cipt/">
     <div class="feature-card">
     <h3>Криптографические средства защиты информации</h3>
-    </div>
-</a>
-
-<a href="./disciplines/6semester/aurora/">
-    <div class="feature-card">
-    <h3>Практический интенсив «Flutter на ОС Aurora»</h3>
     </div>
 </a>
 

@@ -12,7 +12,21 @@ const replaceHighlight = (folderPath: string): void => {
   const processFile = (filePath: string) => {
     try {
       const content = readFileSync(filePath, 'utf-8');
-      const updatedContent = content.replace(/==([^=]+)==/g, '<highlight>$1</highlight>');
+      
+      // Исправлено: правильная замена с захватом всех символов, включая переносы строк
+      // Используем флаг s (dotAll) в современном JS
+      let updatedContent = content;
+      
+      // Вариант 1: Если окружение поддерживает флаг 's' (Node.js 8+)
+      try {
+        updatedContent = content.replace(/==(.*?)==/gs, '<highlight>$1</highlight>');
+      } catch {
+        // Вариант 2: Fallback для старых версий
+        updatedContent = content.replace(/==([\s\S]*?)==/g, '<highlight>$1</highlight>');
+      }
+      
+      // Вариант 3: Альтернативная замена на жирный шрифт (для сохранения TeX)
+      // updatedContent = content.replace(/==([\s\S]*?)==/g, '**$1**');
       
       if (content !== updatedContent) {
         writeFileSync(filePath, updatedContent, 'utf-8');
@@ -27,18 +41,23 @@ const replaceHighlight = (folderPath: string): void => {
 
   const processFolder = (currentPath: string): number => {
     let processedCount = 0;
-    const items = readdirSync(currentPath);
     
-    items.forEach(item => {
-      const itemPath = join(currentPath, item);
-      const stats = statSync(itemPath);
+    try {
+      const items = readdirSync(currentPath);
       
-      if (stats.isDirectory()) {
-        processedCount += processFolder(itemPath);
-      } else if (item.endsWith('.md')) {
-        processedCount += processFile(itemPath);
+      for (const item of items) {
+        const itemPath = join(currentPath, item);
+        const stats = statSync(itemPath);
+        
+        if (stats.isDirectory()) {
+          processedCount += processFolder(itemPath);
+        } else if (item.endsWith('.md')) {
+          processedCount += processFile(itemPath);
+        }
       }
-    });
+    } catch (error) {
+      console.error(`❌ Ошибка при чтении папки ${currentPath}:`, error);
+    }
     
     return processedCount;
   };
@@ -55,7 +74,12 @@ if (!folderPath) {
   console.log('❌ Укажите путь к папке!');
   console.log('Использование: npx tsx script.ts <путь_к_папке>');
   console.log('Пример: npx tsx script.ts ./docs/lectures');
+  console.log('Другой пример: npx tsx script.ts .');
   process.exit(1);
 }
+
+// Дополнительная проверка: поддержка относительных путей
+const resolvedPath = join(process.cwd(), folderPath);
+console.log(`📂 Будет обработана папка: ${resolvedPath}`);
 
 replaceHighlight(folderPath);

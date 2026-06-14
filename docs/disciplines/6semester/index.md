@@ -2,39 +2,15 @@
 
 <div class="features-grid">
 
-<a href="./econ/">
-    <div class="feature-card">
-    <h3>Эконометрика</h3>
-    </div>
-</a>
-
-<a href="./opres/">
-    <div class="feature-card">
-    <h3>Исследование операций</h3>
-    </div>
-</a>
-
 <a href="./pis/">
     <div class="feature-card">
     <h3>Проектирование информационных систем</h3>
     </div>
 </a>
 
-<a href="./ml/">
-    <div class="feature-card">
-    <h3>Введение в машинное обучение</h3>
-    </div>
-</a>
-
 <a href="./cipt/">
     <div class="feature-card">
     <h3>Криптографические средства защиты информации</h3>
-    </div>
-</a>
-
-<a href="./aurora/">
-    <div class="feature-card">
-    <h3>Практический интенсив «Flutter на ОС Aurora»</h3>
     </div>
 </a>
 

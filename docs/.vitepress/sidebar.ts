@@ -96,51 +96,6 @@ export const sidebar: DefaultTheme.Sidebar = {
       items: getLectures("./docs/disciplines/6semester/cipt/lectures"),
     },
   ],
-  "/disciplines/6semester/econ": [
-    {
-      text: "О курсе",
-      items: [
-        {
-          text: "Описание дисциплины",
-          link: "/disciplines/6semester/econ/",
-        },
-      ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/6semester/econ/lectures"),
-    },
-  ],
-  "/disciplines/6semester/ml/": [
-    {
-      text: "О курсе",
-      items: [
-        {
-          text: "Описание дисциплины",
-          link: "/disciplines/6semester/ml/",
-        },
-      ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/6semester/ml/lectures"),
-    },
-  ],
-  "/disciplines/6semester/opres": [
-    {
-      text: "О курсе",
-      items: [
-        {
-          text: "Описание дисциплины",
-          link: "/disciplines/6semester/opres/",
-        },
-      ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/6semester/opres/lectures"),
-    },
-  ],
   "/disciplines/6semester/pis": [
     {
       text: "О курсе",
@@ -154,21 +109,6 @@ export const sidebar: DefaultTheme.Sidebar = {
     {
       text: "Материалы",
       items: getLectures("./docs/disciplines/6semester/pis/lectures"),
-    },
-  ],
-  "/disciplines/6semester/aurora": [
-    {
-      text: "О курсе",
-      items: [
-        {
-          text: "Описание дисциплины",
-          link: "/disciplines/6semester/aurora/",
-        },
-      ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/6semester/aurora/lectures"),
     },
   ],
 };
