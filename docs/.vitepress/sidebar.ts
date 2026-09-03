@@ -111,4 +111,109 @@ export const sidebar: DefaultTheme.Sidebar = {
       items: getLectures("./docs/disciplines/6semester/pis/lectures"),
     },
   ],
+  "/disciplines/7semester/aot": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Описание дисциплины",
+          link: "/disciplines/7semester/aot/",
+        },
+      ],
+    },
+    {
+      text: "Материалы",
+      items: getLectures("./docs/disciplines/7semester/aot/lectures"),
+    },
+  ],
+  "/disciplines/7semester/ap": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Описание дисциплины",
+          link: "/disciplines/7semester/ap/",
+        },
+      ],
+    },
+    {
+      text: "Материалы",
+      items: getLectures("./docs/disciplines/7semester/ap/lectures"),
+    },
+  ],
+  "/disciplines/7semester/dap": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Описание дисциплины",
+          link: "/disciplines/7semester/dap/",
+        },
+      ],
+    },
+    {
+      text: "Материалы",
+      items: getLectures("./docs/disciplines/7semester/dap/lectures"),
+    },
+  ],
+  "/disciplines/7semester/ip": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Описание дисциплины",
+          link: "/disciplines/7semester/ip/",
+        },
+      ],
+    },
+    {
+      text: "Материалы",
+      items: getLectures("./docs/disciplines/7semester/ip/lectures"),
+    },
+  ],
+  "/disciplines/7semester/mobile": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Описание дисциплины",
+          link: "/disciplines/7semester/mobile/",
+        },
+      ],
+    },
+    {
+      text: "Материалы",
+      items: getLectures("./docs/disciplines/7semester/mobile/lectures"),
+    },
+  ],
+  "/disciplines/7semester/ssukpo": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Описание дисциплины",
+          link: "/disciplines/7semester/ssukpo/",
+        },
+      ],
+    },
+    {
+      text: "Материалы",
+      items: getLectures("./docs/disciplines/7semester/ssukpo/lectures"),
+    },
+  ],
+  "/disciplines/7semester/test": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Описание дисциплины",
+          link: "/disciplines/7semester/test/",
+        },
+      ],
+    },
+    {
+      text: "Материалы",
+      items: getLectures("./docs/disciplines/7semester/test/lectures"),
+    },
+  ],
 };

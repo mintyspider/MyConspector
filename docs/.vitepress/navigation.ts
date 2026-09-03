@@ -12,6 +12,10 @@ export const navigation: DefaultTheme.NavItem[] = [
         text: "6 семестр",
         link: "/disciplines/6semester"
       },
+      {
+        text: "7 семестр",
+        link: "/disciplines/7semester"
+      },
     ],
   },
   {

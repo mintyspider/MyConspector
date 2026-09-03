@@ -50,6 +50,55 @@
 </div>
 :::
 
+::: details 7 семестр
+
+<div class="features-grid">
+
+<a href="./disciplines/7semester/aot/">
+    <div class="feature-card">
+    <h3>Автоматическая обработка текста</h3>
+    </div>
+</a>
+
+<a href="./disciplines/7semester/mobile/">
+    <div class="feature-card">
+    <h3>Разработка приложений для мобильных ОС</h3>
+    </div>
+</a>
+
+<a href="./disciplines/7semester/test/">
+    <div class="feature-card">
+    <h3>Тестирование программного обеспечения</h3>
+    </div>
+</a>
+
+<a href="./disciplines/7semester/ip/">
+    <div class="feature-card">
+    <h3>Интернет-предпринимательство</h3>
+    </div>
+</a>
+
+<a href="./disciplines/7semester/ap/">
+    <div class="feature-card">
+    <h3>Архитектура предприятий</h3>
+    </div>
+</a>
+
+<a href="./disciplines/7semester/dap/">
+    <div class="feature-card">
+    <h3>Анализ данных на Python</h3>
+    </div>
+</a>
+
+</div>
+
+<a href="./disciplines/7semester/ssukpo/">
+    <div class="feature-card">
+    <h3>Стандартизация, сертификация и управление качеством ПО</h3>
+    </div>
+</a>
+:::
+
 <style scoped>
 .features-grid {
   display: grid;

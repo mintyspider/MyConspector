@@ -1,7 +1,7 @@
 import os
 
 # Укажите путь к папке (можно изменить)
-folder_path = "docs\\disciplines\\6semester\\aurora"
+folder_path = "docs\\disciplines\\7semester\\test"
 
 # Создаем основную папку, если ее нет
 os.makedirs(folder_path, exist_ok=True)
