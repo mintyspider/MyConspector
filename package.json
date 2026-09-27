@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@builtbysasha/eslint-config": "^1.0.0",
-    "@types/node": "^18.14.0",
+    "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.52.0",
     "eslint": "^8.0.1",
@@ -250,10 +250,7 @@
     "yocto-queue": "^0.1.0"
   },
   "allowScripts": {
-    "esbuild@0.16.17": true,
-    "esbuild@0.28.2": true,
-    "esbuild@0.18.20": true,
-    "esbuild@0.21.5": true
+    "esbuild@0.25.12": true
   },
   "overrides": {
     "esbuild": "$esbuild",
