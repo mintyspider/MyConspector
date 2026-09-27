@@ -1,15 +1,12 @@
 // .vitepress/theme/index.ts
 import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
-import JupyterLiteNotebook from '@jupyterlite/server/components/JupyterLiteNotebook.vue'
 import './custom.css'
 
 export default {
   extends: DefaultTheme,
 
   enhanceApp({ app, router }) {
-
-    app.component('JupyterLiteNotebook', JupyterLiteNotebook)
 
     if (typeof window === 'undefined') return
 
@@ -100,7 +97,7 @@ export default {
     }
 
     /* ── После переходов между страницами ── */
-    router.onAfterRouteChanged = () => {
+    router.onAfterRouteChange = () => {
       requestAnimationFrame(() => {
         const progress = document.getElementById('reading-progress')
         if (progress) {

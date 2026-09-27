@@ -26,7 +26,7 @@
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.0.0",
     "typescript": "*",
-    "vitepress": "^1.6.4",
+    "vitepress": "^2.0.0-alpha.20",
     "vue": "^3.2.47"
   },
   "description": "WIP.",
@@ -77,7 +77,7 @@
     "es-set-tostringtag": "^2.0.1",
     "es-shim-unscopables": "^1.0.0",
     "es-to-primitive": "^1.2.1",
-    "esbuild": "^0.16.17",
+    "esbuild": "^0.25.12",
     "escape-string-regexp": "^4.0.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-import-resolver-node": "^0.3.7",
@@ -165,7 +165,6 @@
     "lru-cache": "^6.0.0",
     "magic-string": "^0.25.9",
     "markdown-it": "^14.1.0",
-    "markdown-it-katex": "^2.0.3",
     "markdown-it-mathjax3": "^4.3.2",
     "merge2": "^1.4.1",
     "micromatch": "^4.0.5",
@@ -239,7 +238,7 @@
     "typed-array-length": "^1.0.4",
     "unbox-primitive": "^1.0.2",
     "uri-js": "^4.4.1",
-    "vite": "^4.1.2",
+    "vite": "^8.3.1",
     "vscode-oniguruma": "^1.7.0",
     "vscode-textmate": "^8.0.0",
     "which": "^2.0.2",
@@ -249,5 +248,15 @@
     "wrappy": "^1.0.2",
     "yallist": "^4.0.0",
     "yocto-queue": "^0.1.0"
+  },
+  "allowScripts": {
+    "esbuild@0.16.17": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.18.20": true,
+    "esbuild@0.21.5": true
+  },
+  "overrides": {
+    "esbuild": "$esbuild",
+    "@xmldom/xmldom": "^0.9.12"
   }
 }
