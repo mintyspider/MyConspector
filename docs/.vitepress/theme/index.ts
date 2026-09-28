@@ -6,7 +6,7 @@ import './custom.css'
 export default {
   extends: DefaultTheme,
 
-  enhanceApp({ app, router }) {
+  enhanceApp({ router }) {
 
     if (typeof window === 'undefined') return
 

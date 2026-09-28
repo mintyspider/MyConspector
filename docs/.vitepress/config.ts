@@ -1,6 +1,6 @@
 import { defineConfig } from "vitepress";
-import { sidebar } from "./sidebar";
-import { navigation } from "./navigation";
+import { sidebar } from "./sidebar.ts";
+import { navigation } from "./navigation.ts";
 import mathjax3 from 'markdown-it-mathjax3';
 
 export default defineConfig({

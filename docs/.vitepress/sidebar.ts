@@ -1,5 +1,5 @@
 import { DefaultTheme } from "vitepress";
-import { getLectures, getNotes } from "../../utils";
+import { getLectures} from "../../utils/index.ts";
 
 export const sidebar: DefaultTheme.Sidebar = {
   "/": [
