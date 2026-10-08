@@ -16,6 +16,10 @@ export const navigation: DefaultTheme.NavItem[] = [
         text: "7 семестр",
         link: "/disciplines/7semester"
       },
+      {
+        text: "Дополнительные материалы",
+        link: "/disciplines/dop"
+      },
     ],
   },
   {

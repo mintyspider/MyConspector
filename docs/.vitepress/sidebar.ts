@@ -216,4 +216,34 @@ export const sidebar: DefaultTheme.Sidebar = {
       items: getLectures("./docs/disciplines/7semester/test/lectures"),
     },
   ],
+  "/disciplines/dop/ib/": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Описание дисциплины",
+          link: "/disciplines/dop/ib/",
+        },
+      ],
+    },
+    {
+      text: "Материалы",
+      items: getLectures("./docs/disciplines/dop/ib/lectures"),
+    },
+  ],
+  "/disciplines/dop/aurora/": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Описание дисциплины",
+          link: "/disciplines/dop/aurora/",
+        },
+      ],
+    },
+    {
+      text: "Материалы",
+      items: getLectures("./docs/disciplines/dop/aurora/lectures"),
+    },
+  ],
 };
