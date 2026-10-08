@@ -14,9 +14,9 @@
     </div>
 </a>
 
-<a href="./test/">
+<a href="./ooib/">
     <div class="feature-card">
-    <h3>Тестирование программного обеспечения</h3>
+    <h3>Организационное обеспечение ИБ</h3>
     </div>
 </a>
 
@@ -38,13 +38,21 @@
     </div>
 </a>
 
-</div>
-
 <a href="./ssukpo/">
     <div class="feature-card">
     <h3>Стандартизация, сертификация и управление качеством ПО</h3>
     </div>
 </a>
+
+<a href="./test/">
+    <div class="feature-card">
+    <h3>Тестирование программного обеспечения</h3>
+    </div>
+</a>
+
+</div>
+
+
 
 <style scoped>
 /* Базовая сетка */

@@ -66,9 +66,9 @@
     </div>
 </a>
 
-<a href="./disciplines/7semester/test/">
+<a href="./disciplines/7semester/ooib/">
     <div class="feature-card">
-    <h3>Тестирование программного обеспечения</h3>
+    <h3>Организационное обеспечение ИБ</h3>
     </div>
 </a>
 
@@ -90,13 +90,38 @@
     </div>
 </a>
 
-</div>
+<a href="./test/">
+    <div class="feature-card">
+    <h3>Тестирование программного обеспечения</h3>
+    </div>
+</a>
 
 <a href="./disciplines/7semester/ssukpo/">
     <div class="feature-card">
     <h3>Стандартизация, сертификация и управление качеством ПО</h3>
     </div>
 </a>
+
+</div>
+:::
+
+::: details Дополнительные материалы
+
+<div class="features-grid">
+
+<a href="./ib/">
+    <div class="feature-card">
+    <h3>Информационная безопасность в корпоративных сетях</h3>
+    </div>
+</a>
+
+<a href="./aurora/">
+    <div class="feature-card">
+    <h3>Разработка приложений для Аврора ОС</h3>
+    </div>
+</a>
+
+</div>
 :::
 
 <style scoped>

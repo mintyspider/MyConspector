@@ -171,19 +171,26 @@ export const sidebar: DefaultTheme.Sidebar = {
       items: getLectures("./docs/disciplines/7semester/ip/lectures"),
     },
   ],
+  "/disciplines/7semester/ooib": [
+    {
+      text: "О курсе",
+      items: [
+        {
+          text: "Материалы",
+          link: "/disciplines/7semester/ooib/",
+        },
+      ],
+    },
+  ],
   "/disciplines/7semester/mobile": [
     {
       text: "О курсе",
       items: [
         {
-          text: "Описание дисциплины",
+          text: "Материалы",
           link: "/disciplines/7semester/mobile/",
         },
       ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/7semester/mobile/lectures"),
     },
   ],
   "/disciplines/7semester/ssukpo": [
@@ -206,14 +213,10 @@ export const sidebar: DefaultTheme.Sidebar = {
       text: "О курсе",
       items: [
         {
-          text: "Описание дисциплины",
+          text: "Материалы",
           link: "/disciplines/7semester/test/",
         },
       ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/7semester/test/lectures"),
     },
   ],
   "/disciplines/dop/ib/": [
@@ -236,14 +239,10 @@ export const sidebar: DefaultTheme.Sidebar = {
       text: "О курсе",
       items: [
         {
-          text: "Описание дисциплины",
+          text: "Материалы",
           link: "/disciplines/dop/aurora/",
         },
       ],
-    },
-    {
-      text: "Материалы",
-      items: getLectures("./docs/disciplines/dop/aurora/lectures"),
     },
   ],
 };
