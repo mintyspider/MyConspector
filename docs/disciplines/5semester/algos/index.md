@@ -17,11 +17,11 @@
 - Конспекты Панькова В.
 - Конспекты Поскитта Д. и компании (январь 2025 года)
 - Материалы Рейкенена Я. О. с лекций:
-    - <a href="/MyConspector/files/algos/КонечныеАвтомат.pdf" target="_blank" rel="noopener noreferrer">Конечные автоматы</a>
-    - <a href="/MyConspector/files/algos/Хеширование.pdf" target="_blank" rel="noopener noreferrer">Хеширование</a>
-    - <a href="/MyConspector/files/algos/Полиномиальная.pdf" target="_blank" rel="noopener noreferrer">Полиномиальная и экспоненциальные сложности. Классы P и NP. Полиномиальная сводимость. NP-полные задачи. Проблема тысячилетия. Примеры</a>
-    - <a href="/MyConspector/files/algos/МашинаТьюринга.pdf" target="_blank" rel="noopener noreferrer">Машина Тьюринга</a>
-- <a href="/MyConspector/files/algos/БазовыйКонспект.pdf" target="_blank" rel="noopener noreferrer">"Базовый конспект"</a> с прошлого семестра
+    - <a href="/files/algos/КонечныеАвтомат.pdf" target="_blank" rel="noopener noreferrer">Конечные автоматы</a>
+    - <a href="/files/algos/Хеширование.pdf" target="_blank" rel="noopener noreferrer">Хеширование</a>
+    - <a href="/files/algos/Полиномиальная.pdf" target="_blank" rel="noopener noreferrer">Полиномиальная и экспоненциальные сложности. Классы P и NP. Полиномиальная сводимость. NP-полные задачи. Проблема тысячилетия. Примеры</a>
+    - <a href="/files/algos/МашинаТьюринга.pdf" target="_blank" rel="noopener noreferrer">Машина Тьюринга</a>
+- <a href="/files/algos/БазовыйКонспект.pdf" target="_blank" rel="noopener noreferrer">"Базовый конспект"</a> с прошлого семестра
 - Материалы с сайтов: [Викиконспекты ИТМО](https://neerc.ifmo.ru/wiki/index.php?title=Алгоритмы_и_структуры_данных), [WikiGRAPP](https://pco.iis.nsk.su/grapp/index.php/Заглавная_страница), [Хабр](https://habr.com/ru/), [МИИГАиК](https://ratcatcher.ru/)
 
 # Содержание

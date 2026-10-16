@@ -1,5 +1,5 @@
 import { DefaultTheme } from "vitepress";
-import { getLectures} from "../../utils/index.ts";
+import { getLectures, getNotes} from "../../utils/index.ts";
 
 export const sidebar: DefaultTheme.Sidebar = {
   "/": [
@@ -232,6 +232,10 @@ export const sidebar: DefaultTheme.Sidebar = {
     {
       text: "Материалы",
       items: getLectures("./docs/disciplines/dop/ib/lectures"),
+    },
+    {
+      text: "Обзоры документов",
+      items: getNotes("./docs/disciplines/dop/ib/overview"),
     },
   ],
   "/disciplines/dop/aurora/": [

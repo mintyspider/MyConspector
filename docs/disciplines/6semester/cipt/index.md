@@ -6,18 +6,18 @@
 
 В ходе этой работы использовались следующие источники:
 - Конспекты Панькова В.
-- <a href="/MyConspector/files/cipt/crypto.pdf" target="_blank" rel="noopener noreferrer">Большая презентация</a>
-- <a href="/MyConspector/files/cipt/KMZI.pdf" target="_blank" rel="noopener noreferrer">Московское учебное пособие</a>
-- <a href="/MyConspector/files/cipt/Posobie.pdf" target="_blank" rel="noopener noreferrer">Петрозаводское учебное пособие</a>
+- <a href="/files/cipt/crypto.pdf" target="_blank" rel="noopener noreferrer">Большая презентация</a>
+- <a href="/files/cipt/KMZI.pdf" target="_blank" rel="noopener noreferrer">Московское учебное пособие</a>
+- <a href="/files/cipt/Posobie.pdf" target="_blank" rel="noopener noreferrer">Петрозаводское учебное пособие</a>
 - Ссылки с дополнительной информацией прямо в конспектах
 - А также презентации с лекций:
-    1. <a href="/MyConspector/files/cipt/Лекция1.pdf" target="_blank" rel="noopener noreferrer">Введение в криптографию</a>
-    2. <a href="/MyConspector/files/cipt/Лекция2.pdf" target="_blank" rel="noopener noreferrer">Математический фундамент криптосистем</a>
-    3. <a href="/MyConspector/files/cipt/Лекция3.pdf" target="_blank" rel="noopener noreferrer">Архитектура криптосистем: алгоритмы и методы шифрования</a>
-    4. <a href="/MyConspector/files/cipt/Лекция4.pdf" target="_blank" rel="noopener noreferrer">Криптоанализ: Как раскрываются тайны</a>
-    5. <a href="/MyConspector/files/cipt/Лекция5.pdf" target="_blank" rel="noopener noreferrer">SSH и Диффи - Хеллман</a>
-    6. <a href="/MyConspector/files/cipt/Лекция6.pdf" target="_blank" rel="noopener noreferrer">Криптографические протоколы</a>
-    7. <a href="/MyConspector/files/cipt/Лекция7.pdf" target="_blank" rel="noopener noreferrer">Средства криптографической защиты информации</a>
+    1. <a href="/files/cipt/Лекция1.pdf" target="_blank" rel="noopener noreferrer">Введение в криптографию</a>
+    2. <a href="/files/cipt/Лекция2.pdf" target="_blank" rel="noopener noreferrer">Математический фундамент криптосистем</a>
+    3. <a href="/files/cipt/Лекция3.pdf" target="_blank" rel="noopener noreferrer">Архитектура криптосистем: алгоритмы и методы шифрования</a>
+    4. <a href="/files/cipt/Лекция4.pdf" target="_blank" rel="noopener noreferrer">Криптоанализ: Как раскрываются тайны</a>
+    5. <a href="/files/cipt/Лекция5.pdf" target="_blank" rel="noopener noreferrer">SSH и Диффи - Хеллман</a>
+    6. <a href="/files/cipt/Лекция6.pdf" target="_blank" rel="noopener noreferrer">Криптографические протоколы</a>
+    7. <a href="/files/cipt/Лекция7.pdf" target="_blank" rel="noopener noreferrer">Средства криптографической защиты информации</a>
 
 Если вдруг не хватит информации, пользуйтесь источниками 😸
 
