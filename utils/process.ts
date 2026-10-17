@@ -1,3 +1,5 @@
+// Запускаем файл командой: npx tsx process.ts <полный путь>
+
 import { readdirSync, readFileSync, writeFileSync, statSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
 
