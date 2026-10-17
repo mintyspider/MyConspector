@@ -90,7 +90,7 @@
     </div>
 </a>
 
-<a href="./test/">
+<a href="./disciplines/7semester/test/">
     <div class="feature-card">
     <h3>Тестирование программного обеспечения</h3>
     </div>
@@ -109,13 +109,13 @@
 
 <div class="features-grid">
 
-<a href="./ib/">
+<a href="./disciplines/dop/ib/">
     <div class="feature-card">
     <h3>Информационная безопасность в корпоративных сетях</h3>
     </div>
 </a>
 
-<a href="./aurora/">
+<a href="./disciplines/dop/aurora/">
     <div class="feature-card">
     <h3>Разработка приложений для Аврора ОС</h3>
     </div>

@@ -21,10 +21,73 @@
     <a href="./lectures/1" class="pcard">Модель угроз</a>
 </div>
 
+<div class="pitem requirements">
+    <div class="pdot">1</div>
+    <a href="./lectures/2" class="pcard">Нормативно-правовая база в области информационной безопасности</a>
+</div>
+
 </div>
 
 Если вдруг не хватит информации, пользуйтесь источниками 😸
 
 ## Источники
 
-Тут будут презентации и документы
+### Обзоры документов
+
+<div class="process-timeline">
+
+<div class="pitem design">
+    <div class="pdot">1</div>
+    <a href="./overview/1" class="pcard">NIST SP 800-30 Rev. 1</a>
+</div>
+
+<div class="pitem design">
+    <div class="pdot">2</div>
+    <a href="./overview/2" class="pcard">Нормативно-правовая база в области информационной безопасности</a>
+</div>
+
+<div class="pitem design">
+    <div class="pdot">3</div>
+    <a href="./overview/3" class="pcard">ФЗ-152 "О персональных данных". Глава 4. ОБЯЗАННОСТИ ОПЕРАТОРА</a>
+</div>
+
+</div>
+
+### Документы в оригинале
+
+<div class="process-timeline">
+
+<div class="pitem testing">
+    <div class="pdot">1</div>
+    <a href="/files/dopib/1.pdf" class="pcard">Ресурс Google по кибербезопасности</a>
+</div>
+
+<div class="pitem testing">
+    <div class="pdot">2</div>
+    <a href="/files/dopib/2.pdf" class="pcard">NIST SP 800-30 Rev. 1</a>
+</div>
+
+<div class="pitem testing">
+    <div class="pdot">3</div>
+    <a href="/files/dopib/3.pdf" class="pcard">ФЗ-152 "О персональных данных"</a>
+</div>
+
+</div>
+
+### Презентации
+
+<div class="process-timeline">
+
+<div class="pitem management">
+    <div class="pdot">1</div>
+    <a href="" class="pcard">Модель угроз</a>
+</div>
+
+<div class="pitem management">
+    <div class="pdot">1</div>
+    <a href="" class="pcard">Нормативно-правовая база в области информационной безопасности</a>
+</div>
+
+</div>
+
+Тут будут презентации
