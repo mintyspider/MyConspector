@@ -22,8 +22,13 @@
 </div>
 
 <div class="pitem requirements">
-    <div class="pdot">1</div>
+    <div class="pdot">2</div>
     <a href="./lectures/2" class="pcard">Нормативно-правовая база в области информационной безопасности</a>
+</div>
+
+<div class="pitem requirements">
+    <div class="pdot">3</div>
+    <a href="./lectures/3" class="pcard">Топология компьютерных сетей</a>
 </div>
 
 </div>
@@ -43,7 +48,7 @@
 
 <div class="pitem design">
     <div class="pdot">2</div>
-    <a href="./overview/2" class="pcard">Нормативно-правовая база в области информационной безопасности</a>
+    <a href="./overview/2" class="pcard">MITRE ATT&CK® </a>
 </div>
 
 <div class="pitem design">
@@ -59,17 +64,17 @@
 
 <div class="pitem testing">
     <div class="pdot">1</div>
-    <a href="/files/dopib/1.pdf" class="pcard">Ресурс Google по кибербезопасности</a>
+    <a href="/MyConspector/files/dopib/1.pdf" class="pcard">Ресурс Google по кибербезопасности</a>
 </div>
 
 <div class="pitem testing">
     <div class="pdot">2</div>
-    <a href="/files/dopib/2.pdf" class="pcard">NIST SP 800-30 Rev. 1</a>
+    <a href="/MyConspector/files/dopib/2.pdf" class="pcard">NIST SP 800-30 Rev. 1</a>
 </div>
 
 <div class="pitem testing">
     <div class="pdot">3</div>
-    <a href="/files/dopib/3.pdf" class="pcard">ФЗ-152 "О персональных данных"</a>
+    <a href="/MyConspector/files/dopib/3.pdf" class="pcard">ФЗ-152 "О персональных данных"</a>
 </div>
 
 </div>
@@ -80,14 +85,13 @@
 
 <div class="pitem management">
     <div class="pdot">1</div>
-    <a href="" class="pcard">Модель угроз</a>
+    <a href="/MyConspector/files/dopib/Модели угроз.pdf" class="pcard">Модель угроз</a>
 </div>
 
 <div class="pitem management">
-    <div class="pdot">1</div>
-    <a href="" class="pcard">Нормативно-правовая база в области информационной безопасности</a>
+    <div class="pdot">2</div>
+    <a href="/MyConspector/files/dopib/НПБ.pdf" class="pcard">Нормативно-правовая база в области информационной безопасности</a>
 </div>
 
 </div>
 
-Тут будут презентации
